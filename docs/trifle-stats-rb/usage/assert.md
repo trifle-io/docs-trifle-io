@@ -17,6 +17,7 @@ key | String | required |  | Identifier for the metric (e.g., `event::logs`).
 at | Time | required |  | Timestamp for the sample, usually `Time.now` or `Time.zone.now`. `Trifle::Stats` will convert to configured timezone.
 values | Hash<String, Numeric or Hash> | required |  | Nested hashes are allowed; every leaf must be numeric (Integer, Float, BigDecimal).
 config | Trifle::Stats::Configuration | optional | `nil` | Override configuration for this call. Defaults to the global configuration when omitted.
+untracked | Boolean | optional | `false` | When true, system tracking uses `__untracked__` instead of the metric key.
 :::
 
 ## Examples
@@ -42,6 +43,8 @@ Trifle::Stats.assert(key: 'event::logs', at: Time.now, values: {count: 1, durati
 
 Use the same `key` to set latest values correctly.
 :::
+
+Use `untracked: true` when you want system tracking to group under `__untracked__`.
 
 :::callout warn "Common mistakes"
 - Passing non-numeric objects in `values` raises an error.

@@ -8,13 +8,14 @@ nav_order: 1
 
 Tracking values runs `inc` on the driver. Each call increments the counters for the given key and all configured granularities.
 
-## `Track(cfg *Config, key string, at time.Time, values map[string]any) error`
+## `Track(cfg *Config, key string, at time.Time, values map[string]any, opts ...TrackOption) error`
 
-:::signature Track(cfg *Config, key string, at time.Time, values map[string]any) error
+:::signature Track(cfg *Config, key string, at time.Time, values map[string]any, opts ...TrackOption) error
 cfg | *Config | required |  | Configuration with a driver.
 key | string | required |  | Metric identifier (e.g. `event::logs`).
 at | time.Time | required |  | Timestamp for the sample. It is floored to configured granularities and normalized to `cfg.TimeZone`.
 values | map[string]any | required |  | Nested maps are allowed; every leaf must be numeric.
+opts | ...TrackOption | optional |  | Supports `TrifleStats.Untracked()` to use `__untracked__` for system tracking.
 :::
 
 ## Examples
@@ -54,6 +55,17 @@ TrifleStats.Track(cfg, "event::logs", time.Now().UTC(), map[string]any{
 ```
 
 Nested maps are supported as long as leaf values are numeric.
+
+@tab Untracked system key
+```go
+TrifleStats.Track(
+  cfg,
+  "event::logs",
+  time.Now().UTC(),
+  map[string]any{"count": 1},
+  TrifleStats.Untracked(),
+)
+```
 :::
 
 :::callout warn "Common mistakes"

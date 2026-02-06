@@ -17,6 +17,7 @@ key | String | required |  | Identifier for the metric (e.g., `event::logs`).
 at | Time | required |  | Timestamp for the sample, usually `Time.now` or `Time.zone.now`. `Trifle::Stats` will convert to configured timezone.
 values | Hash<String, Numeric or Hash> | required |  | Nested hashes are allowed; every leaf must be numeric (Integer, Float, BigDecimal).
 config | Trifle::Stats::Configuration | optional | `nil` | Override configuration for this call. Defaults to the global configuration when omitted.
+untracked | Boolean | optional | `false` | When true, system tracking uses `__untracked__` instead of the metric key.
 :::
 
 ## Examples
@@ -54,6 +55,18 @@ Trifle::Stats.track(key: 'event::logs', at: Time.now, values: {
 ```
 
 Nested hashes are allowed; each leaf must be numeric so rollups stay safe.
+
+@tab Untracked system key
+```ruby
+Trifle::Stats.track(
+  key: 'event::logs',
+  at: Time.now,
+  values: { count: 1 },
+  untracked: true
+)
+```
+
+System tracking records under `__untracked__` instead of the metric key.
 :::
 
 :::callout warn "Common mistakes"

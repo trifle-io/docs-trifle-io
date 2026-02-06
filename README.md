@@ -1,6 +1,6 @@
-# Trifle.io
+# docs-trifle-io
 
-Public website for [trifle.io](https://trifle.io) build on top of Trifle::Docs.
+Documentation website for [trifle.io](https://trifle.io), built on top of `Trifle::Docs`.
 
 ## Deploy
 

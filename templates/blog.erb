@@ -1,2 +1,11 @@
+<div class="mb-8 text-sm text-slate-500 dark:text-slate-400">
+  <% if meta.dig('author') %>
+    <span>By <%= meta.dig('author') %></span>
+  <% end %>
+  <% if meta.dig('date') %>
+    <span class="mx-2">•</span>
+    <time datetime="<%= meta.dig('date') %>"><%= meta.dig('date') %></time>
+  <% end %>
+</div>
+
 <%= content %>
-<span class="text-gray-500 font-mono text-sm">by <%= meta.dig('author') %> on <%= meta.dig('date') %></span>

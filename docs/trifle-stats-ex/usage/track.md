@@ -6,13 +6,14 @@ nav_order: 1
 
 # Track values
 
-`track/4` increments counters for all configured granularities.
+`track/4` (or `track/5` with options) increments counters for all configured granularities.
 
 :::signature Trifle.Stats.track
 key | String | required |  | Metric key (e.g., `"event::logs"`).
 at | DateTime | required |  | Timestamp of the sample.
 values | map | required |  | Nested maps allowed, all leaf values must be numeric.
 config | Trifle.Stats.Configuration | optional | `nil` | Overrides global config.
+opts | keyword | optional | `[]` | Supports `untracked: true` to use `__untracked__` for system tracking.
 :::
 
 ## Examples
@@ -36,6 +37,11 @@ Trifle.Stats.track("event::logs", DateTime.utc_now(), %{
   duration: 30,
   breakdown: %{ parse: 21, upload: 9 }
 })
+```
+
+@tab Untracked system key
+```elixir
+Trifle.Stats.track("event::logs", DateTime.utc_now(), %{count: 1}, untracked: true)
 ```
 :::
 

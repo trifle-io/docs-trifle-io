@@ -1,722 +1,418 @@
 <!DOCTYPE html>
-<html class="antialiased" data-theme="light" lang="en">
-  <head>
-    <meta name="viewport" content="width=device-width"/>
-    <meta charSet="utf-8"/>
-    <title><%= meta['breadcrumbs'] ? meta['breadcrumbs'].count.times.map {|i| sitemap.dig(*meta['breadcrumbs'].take(i+1)).dig('_meta', 'title') }.join(' > ') : 'Trifle' rescue 'Trifle'%></title>
-    <meta name="description" content="<%= meta['breadcrumbs'] ? meta['breadcrumbs'].count.times.map {|i| sitemap.dig(*meta['breadcrumbs'].take(i+1)).dig('_meta', 'title') }.join('/') : 'Trifle: Suite of little big tools.' rescue 'Trifle: Suite of little big tools.' %>"/>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
-    <script src="//unpkg.com/alpinejs" defer></script>
-
-    <style>
-      <%= Rouge::Themes::Base16.new.render %>
-    </style>
-
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= meta&.dig('title') ? "#{meta['title']} | Trifle Docs" : 'Trifle Docs' %></title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'media',
+      theme: {
+        extend: {
+          colors: {
+            teal: {
+              50: '#f0fdfa',
+              100: '#ccfbf1',
+              200: '#99f6e4',
+              300: '#5eead4',
+              400: '#2dd4bf',
+              500: '#14b8a6',
+              600: '#0d9488',
+              700: '#0f766e',
+              800: '#115e59',
+              900: '#134e4a',
+              950: '#042f2e'
+            }
           }
         }
       }
-    </script>
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-    <style type="text/tailwindcss">
-      img {
-        @apply inline;
-      }
+  <style>
+    <%= Rouge::Themes::Base16.new.render %>
 
-      nav#on-this-page ul {
-        @apply mt-4 space-y-2 text-sm pl-0 list-none;
-      }
+    body {
+      font-family: 'Inter', sans-serif;
+    }
 
-      nav#on-this-page ul li {
-        @apply mt-2 space-y-2 text-slate-500 dark:text-slate-400;
-      }
+    .prose pre {
+      border-radius: 0.75rem;
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      padding: 1rem;
+      overflow-x: auto;
+    }
 
-      nav#on-this-page > ul > li {
-        @apply pl-0;
-      }
+    .prose code {
+      font-family: 'JetBrains Mono', monospace;
+    }
 
-      nav#on-this-page > ul > li > ul > li {
-        @apply pl-4;
-      }
+    nav#on-this-page ul {
+      margin-top: 1rem;
+      list-style: none;
+      padding-left: 0;
+      font-size: 0.875rem;
+    }
 
-      nav#on-this-page > ul > li > ul > li > ul > li {
-        @apply pl-4;
-      }
+    nav#on-this-page ul li {
+      margin-top: 0.5rem;
+      color: rgb(100 116 139);
+    }
 
-      nav#on-this-page ul li a {
-        @apply hover:text-slate-600 dark:hover:text-slate-300 no-underline;
-      }
+    nav#on-this-page ul li a {
+      text-decoration: none;
+    }
 
-      div#content {
-        display: flex;
-        flex-direction: column;
-      }
+    nav#on-this-page ul li a:hover {
+      color: rgb(15 118 110);
+    }
 
-      div#content > h1:nth-of-type(1) {
-        order: -1;
-      }
+    .callout {
+      border-radius: 0.75rem;
+      border: 1px solid rgb(203 213 225);
+      background: rgb(248 250 252);
+      padding: 1rem;
+      margin: 1.25rem 0;
+    }
 
-      [x-cloak] {
-        display: none !important;
-      }
+    .callout-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgb(15 118 110);
+      margin-bottom: 0.5rem;
+    }
 
-      .prose > h1 :where(code):not(:where([class~="not-prose"] *))::after,
-      .prose > h2 :where(code):not(:where([class~="not-prose"] *))::after,
-      .prose > h3 :where(code):not(:where([class~="not-prose"] *))::after {
-        content: '';
-      }
-      .prose > h1 :where(code):not(:where([class~="not-prose"] *))::before,
-      .prose > h2 :where(code):not(:where([class~="not-prose"] *))::before,
-      .prose > h3 :where(code):not(:where([class~="not-prose"] *))::before {
-        content: '';
-      }
-      .prose :where(code):not(:where(pre code, [class~="not-prose"] *))::before,
-      .prose :where(code):not(:where(pre code, [class~="not-prose"] *))::after {
-        content: '';
-      }
+    .doc-card {
+      border-radius: 0.75rem;
+      border: 1px solid rgb(226 232 240);
+      background: white;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
 
-      /* Ensure signature/code badges don't pick up auto backticks */
-      .method-card code::before,
-      .method-card code::after {
-        content: '';
-      }
+    .doc-card-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin: 0;
+    }
 
-      /* Signature/spec card */
-      .method-card {
-        @apply relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white px-6 py-5 shadow-sm shadow-slate-900/5;
-        @apply dark:border-slate-700 dark:bg-slate-800/60 dark:shadow-none;
-      }
+    .doc-card-body {
+      color: rgb(71 85 105);
+    }
 
-      .method-card::after {
-        content: '';
-        @apply absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-teal-400/60 via-sky-400/40 to-emerald-400/60;
-      }
+    .doc-card-meta,
+    .doc-card-link {
+      font-size: 0.75rem;
+      color: rgb(100 116 139);
+      margin-top: 0.25rem;
+    }
 
-      .method-card-title {
-        @apply flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500;
-        @apply dark:text-slate-300;
-      }
+    .doc-card a {
+      color: rgb(13 148 136);
+      text-decoration: none;
+    }
 
-      .method-card-signature {
-        @apply mt-2 font-mono text-sm text-slate-900;
-        @apply dark:text-white;
-      }
+    .doc-card a:hover {
+      color: rgb(15 118 110);
+    }
 
-      .method-card-summary {
-        @apply mt-2 text-sm text-slate-600;
-        @apply dark:text-slate-300;
-      }
+    .tab-group {
+      border: 1px solid rgb(226 232 240);
+      border-radius: 0.75rem;
+      overflow: hidden;
+      margin: 1rem 0;
+    }
 
-      /* Badges */
-      .badge {
-        @apply inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-semibold tracking-[0.08em] text-slate-700;
-        @apply dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-200;
-      }
+    .tab-select {
+      padding: 0.75rem;
+      background: rgb(248 250 252);
+      border-bottom: 1px solid rgb(226 232 240);
+    }
 
-      .badge-required {
-        @apply border-transparent bg-teal-100 text-teal-800 uppercase tracking-[0.08em];
-        @apply dark:bg-teal-500/20 dark:text-teal-100;
-      }
+    .tab-select select {
+      width: 100%;
+    }
 
-      .badge-optional {
-        @apply border-transparent bg-slate-100 text-slate-700 uppercase tracking-[0.08em];
-        @apply dark:bg-slate-700/60 dark:text-slate-200;
-      }
+    .tab-nav {
+      display: none;
+    }
 
-      .badge-type {
-        @apply border-transparent bg-indigo-50 text-indigo-700 normal-case tracking-normal;
-        @apply dark:bg-indigo-500/20 dark:text-indigo-100;
-      }
+    .tab-panel {
+      padding: 1rem;
+    }
 
-      .badge-default {
-        @apply border-transparent bg-emerald-50 text-emerald-700 normal-case tracking-normal;
-        @apply dark:bg-emerald-500/20 dark:text-emerald-100;
-      }
-
-      .badge-hint {
-        @apply border-transparent bg-amber-50 text-amber-800 uppercase tracking-[0.08em];
-        @apply dark:bg-amber-500/20 dark:text-amber-100;
-      }
-
-      /* Arguments */
-      .arg-list {
-        @apply mt-4 grid gap-3 sm:gap-4;
-      }
-
-      .arg-row {
-        @apply rounded-xl border border-slate-200/90 bg-slate-50/80 px-4 py-3 shadow-sm;
-        @apply dark:border-slate-700 dark:bg-slate-800/60 dark:shadow-none;
-      }
-
-      .arg-row dt {
-        @apply flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-900;
-        @apply dark:text-white;
-      }
-
-      .arg-row dd {
-        @apply mt-1 text-sm leading-relaxed text-slate-600;
-        @apply dark:text-slate-300;
-      }
-
-      /* Callouts */
-      .callout {
-        @apply relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-base text-slate-800 shadow-sm shadow-slate-900/5;
-        @apply dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 dark:shadow-none;
-      }
-
-      .callout-note {
-        @apply border-teal-100 bg-teal-50/80;
-        @apply dark:border-teal-500/30 dark:bg-teal-500/10;
-      }
-
-      .callout-warn {
-        @apply border-amber-100 bg-amber-50/80;
-        @apply dark:border-amber-400/30 dark:bg-amber-500/10;
-      }
-
-      .callout::before {
-        content: '';
-        @apply absolute inset-y-0 left-0 w-1 bg-slate-200;
-        @apply dark:bg-slate-700;
-      }
-
-      .callout-note::before {
-        @apply bg-teal-400/80;
-        @apply dark:bg-teal-400/70;
-      }
-
-      .callout-warn::before {
-        @apply bg-amber-400/80;
-        @apply dark:bg-amber-400/70;
-      }
-
-      .callout-title {
-        @apply text-xs font-semibold uppercase tracking-[0.08em] text-slate-500;
-        @apply dark:text-slate-300;
-      }
-
-      .callout-list {
-        @apply mt-2 list-disc pl-5 text-slate-700;
-        @apply dark:text-slate-200;
-      }
-
-      /* Tabs */
-      .tab-group {
-        @apply overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm shadow-slate-900/5;
-        @apply dark:border-slate-700 dark:bg-slate-800/60 dark:shadow-none;
-      }
-
+    @media (min-width: 640px) {
       .tab-select {
-        @apply relative px-4 pt-4 sm:hidden;
-      }
-
-      .tab-select select {
-        @apply w-full appearance-none rounded-md border border-slate-200 bg-white py-2 pr-10 pl-3 text-sm font-semibold text-slate-700 shadow-sm;
-        @apply focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500;
-        @apply dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-teal-400 dark:focus:ring-teal-400;
-      }
-
-      .tab-select svg {
-        @apply pointer-events-none absolute right-6 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400;
-      }
-
-      /* Doc cards */
-      .doc-card {
-        @apply rounded-lg border border-gray-200 bg-white/70 p-4 shadow-sm shadow-slate-900/5;
-        @apply dark:border-slate-700 dark:bg-slate-900/40 dark:shadow-none;
-      }
-
-      .doc-card-header {
-        @apply flex items-start justify-between gap-3;
-      }
-
-      .doc-card-title {
-        @apply text-xl font-semibold;
-      }
-
-      .doc-card-meta {
-        @apply mt-0.5;
-      }
-
-      .doc-card-body {
-        @apply mt-2 text-sm text-gray-600;
-        @apply dark:text-slate-300;
-      }
-
-      .doc-card-body pre {
-        @apply mt-3;
+        display: none;
       }
 
       .tab-nav {
-        @apply hidden border-b border-slate-100 px-4 pt-4 sm:block;
-        @apply dark:border-slate-700;
+        display: block;
+        border-bottom: 1px solid rgb(226 232 240);
+        padding: 0.75rem 1rem 0;
+        background: rgb(248 250 252);
       }
 
       .tab-nav-links {
-        @apply -mb-px flex space-x-6 overflow-x-auto pb-1;
+        display: flex;
+        gap: 1rem;
       }
 
       .tab-link {
-        @apply border-b-2 border-transparent px-1 pb-3 pt-2 text-sm font-semibold text-slate-500 whitespace-nowrap transition;
-        @apply hover:text-slate-700 dark:text-slate-300 dark:hover:text-white;
+        border: 0;
+        background: transparent;
+        padding: 0 0 0.5rem;
+        font-size: 0.875rem;
+        color: rgb(100 116 139);
+        cursor: pointer;
       }
 
       .tab-link-active {
-        @apply border-teal-500 text-teal-600 dark:text-teal-300;
+        color: rgb(13 148 136);
+        border-bottom: 2px solid rgb(13 148 136);
+      }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .doc-card {
+        border-color: rgb(51 65 85);
+        background: rgb(15 23 42 / 0.72);
       }
 
-      .tab-panel {
-        @apply px-4 pb-4 pt-3 space-y-3;
+      .doc-card-title {
+        color: rgb(248 250 252);
       }
 
-      /* Code + copy buttons */
-      .prose pre {
-        @apply relative pr-12;
+      .doc-card-body,
+      .doc-card-meta,
+      .doc-card-link {
+        color: rgb(148 163 184);
       }
 
-      .code-wrapper {
-        @apply relative;
+      .doc-card a {
+        color: rgb(45 212 191);
       }
 
-      .copy-button {
-        @apply absolute right-3 top-3 inline-flex items-center rounded-full border border-white/10 bg-slate-900/80 px-2.5 py-1 text-xs font-semibold text-white opacity-0 transition;
-        @apply hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500;
-        @apply dark:border-slate-600 dark:bg-slate-800/80 dark:hover:bg-slate-800;
+      .doc-card a:hover {
+        color: rgb(94 234 212);
       }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased transition-colors">
+  <% current_path = request.path_info.to_s.empty? ? '/' : request.path_info %>
+  <% search_action = [request.script_name, 'search'].join('/').gsub(%r{/+}, '/') %>
+  <% search_action = "/#{search_action}" unless search_action.start_with?('/') %>
 
-      .code-wrapper:hover .copy-button,
-      .code-wrapper:focus-within .copy-button {
-        opacity: 1;
-      }
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800" aria-label="Main navigation">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+      <a href="/" class="flex items-center gap-2" aria-label="Trifle Docs Home">
+        <svg
+          viewBox="0 0 72 84"
+          class="h-8 w-8 text-teal-500"
+          xmlns="http://www.w3.org/2000/svg"
+          style="fill-rule:evenodd;clip-rule:evenodd;"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <g>
+            <g transform="matrix(1,0,0,1,0.442181,0.243718)">
+              <path d="M31.5,2.441C32.41,0.973 33.062,0.441 34.328,0.133C35.938,-0.258 37.812,0.203 40.109,1.551C42.781,3.121 44.746,4.824 46.457,7.059C48.188,9.324 48.191,9.328 49.949,9.789C51.508,10.203 55.07,11.488 56.129,12.023C57.98,12.957 59.535,14.426 60.996,16.617C61.805,17.828 61.949,17.945 63.098,18.285C66.676,19.355 68.371,20.211 69.688,21.609C71.105,23.117 71.52,24.871 71.086,27.527C70.887,28.754 69.461,35.641 68.605,39.504C67.988,42.305 67.125,46.43 66.637,48.918C66.496,49.637 65.625,54.031 64.698,58.684C63.773,63.336 62.844,68.066 62.633,69.188C61.766,73.816 61.184,75.285 59.305,77.625C57.098,80.367 53.527,82.055 48.273,82.836C45.016,83.32 43.504,83.402 37.293,83.445C29.031,83.5 25.117,83.285 21.359,82.578C17.242,81.801 14.508,80.531 12.48,78.457C11.734,77.691 11.434,77.301 10.84,76.352C9.531,74.262 9.191,73.16 8.128,67.578C7.801,65.844 7.367,63.633 7.16,62.66C6.957,61.691 6.012,56.98 5.059,52.195C2.784,40.777 2.594,39.84 1.444,34.504C0.905,32.008 0.375,29.453 0.262,28.832C-0.293,25.77 0.008,24.168 1.418,22.66C2.879,21.09 5.582,19.801 8.984,19.051C9.707,18.891 10.469,18.684 10.672,18.594C11.09,18.41 11.07,18.434 11.984,17.023C13.133,15.25 14.125,14.156 15.531,13.113C17.25,11.84 19.172,10.898 22.293,9.797C25.559,8.645 26.203,8.363 27.125,7.688C28.543,6.645 29.918,4.992 31.5,2.441ZM34.734,6.745C35.085,6.25 35.374,5.622 35.582,4.758C35.642,4.51 36.817,4.538 37.579,5.188C38.595,6.055 38.775,6.146 40.189,7.537C41.072,8.406 41.063,8.663 42.614,10.601C43.985,12.316 44.749,12.811 45.393,13.308C46.28,13.999 47.615,14.101 49.764,14.691C51.299,15.113 53.209,15.944 53.881,16.279C54.552,16.615 55.159,17.202 55.686,17.714C56.073,18.085 56.538,18.716 56.968,19.56C58.136,21.853 58.887,22.126 61.519,22.946C63.828,23.665 65.197,23.828 65.792,24.277C65.952,24.398 63.632,24.709 61.726,25.201C59.468,25.787 54.561,26.193 51.514,26.517C44.788,27.232 39.696,27.33 32.606,27.244C26.172,27.166 24.206,27.315 19.572,27.054C18.458,26.992 9.227,26.125 7.371,25.535C6.559,25.273 5.683,25.054 5.683,25.054C5.683,25.054 8.711,24.248 11.304,23.517C13.336,22.943 14.174,22.668 14.788,22.096C15.344,21.579 16.143,21.105 16.928,19.617C17.814,17.933 17.884,17.679 18.685,16.874C19.814,15.737 20.523,15.249 23.5,14.374C28.055,13.031 29.767,11.527 31.388,10.039C32.485,9.031 33.836,8.014 34.734,6.745ZM36.966,32.393C40.358,32.42 55.253,31.273 58.916,30.863C62.753,30.434 65.952,29.492 65.902,29.784C65.866,30.001 65.332,33.197 64.996,34.904C64.438,37.72 63.254,42.159 63.254,42.159C63.254,42.159 62.357,42.276 60.488,41.743C58.488,41.173 54.915,35.081 52.086,35.097C49.199,35.113 45.938,38.551 43.796,38.648C41.816,38.738 38.558,33.922 36.472,33.895C34.387,33.867 29.347,38.691 24.985,43.37C20.948,47.7 18.168,50.684 15.659,50.376C14.338,50.213 13.783,49.631 9.421,48.619C8.96,48.512 7.428,39.915 7.123,38.458C6.619,36.024 4.879,29.776 4.898,29.752C4.898,29.752 14.403,31.881 19.164,32.039C23.695,32.188 33.764,32.368 36.966,32.393ZM51.768,39.812C53.68,39.816 56.64,45.333 58.792,45.922C61.955,46.788 62.39,46.771 62.39,46.771C62.39,46.771 62.127,48.142 61.66,50.519L60.646,54.754C60.646,54.754 59.789,54.705 59.182,54.3C57.837,53.401 54.638,52.125 53.532,51.498C51.618,50.413 48.266,49.504 46.242,49.345C43.402,49.123 41.191,49.616 37.837,50.69C34.954,51.614 33.852,52.399 31.434,52.954C28.804,53.557 25.944,52.846 25.309,52.662C22.189,51.755 24.074,50.945 28.314,46.258C30.729,43.589 34.162,39.638 36.024,39.584C37.63,39.538 41.474,43.47 43.607,43.444C45.731,43.417 49.622,39.808 51.768,39.812ZM23.993,56.884C26.927,57.485 29.623,57.595 32.211,57.26C34.625,56.948 37.69,55.258 41.236,54.095C43.228,53.441 47.171,53.611 48.72,54.064C51.122,54.767 53.572,56.026 56.297,57.621C58.173,58.72 59.945,59.259 59.945,59.259L59.126,63.698C59.126,63.698 57.441,63.054 56.319,62.559C53.256,61.208 50.066,61.336 47.892,61.89C43.691,62.962 41.873,63.71 38.188,64.952C34.321,66.255 32.594,66.921 29.925,67.705C28.272,68.19 26.087,68.692 23.407,68.997C19.602,69.43 18.697,69.379 17.055,69.166C14.794,68.872 12.426,67.466 12.426,67.466C12.426,67.466 9.719,53.428 9.957,53.456C13.092,53.82 13.177,54.293 15.642,54.841C17.86,55.335 20.597,56.188 23.993,56.884ZM51.557,66.165C57.88,66.668 58.404,68.352 58.404,68.352C58.404,68.352 58.512,70.388 56.584,73.763C56.142,74.537 54.963,75.751 54.271,76.216C53.26,76.891 51.77,77.506 50.285,77.885C45.918,78.998 37.197,79.369 27.236,78.779C24.16,78.599 20.977,77.844 18.607,76.869C14.811,75.306 13.653,72.496 13.653,72.496C13.653,72.496 16.258,73.228 17.004,73.295C18.403,73.421 19.037,73.52 20.954,73.52C23.326,73.52 26.06,73.097 28.169,72.648C31.017,72.041 33.737,71.276 35.728,70.431C37.806,69.549 42.729,67.943 45.969,66.928C47.182,66.548 49.871,66.031 51.557,66.165Z"/>
+            </g>
+            <g transform="matrix(2.779089,0,-0,-7.279669,-18.643586,306.024137)">
+              <ellipse cx="12.041" cy="36.556" rx="0.898" ry="0.342"/>
+            </g>
+          </g>
+        </svg>
+        <span class="font-semibold text-lg">Trifle</span>
+      </a>
 
-      .copy-button.copied {
-        @apply bg-teal-600 text-white dark:bg-teal-500;
-      }
-    </style>
-
-    <script>
-      let mediaQuery = window.matchMedia('(prefers-color-scheme: light)')
-
-      function updateTheme(savedTheme) {
-          let theme = 'system'
-          try {
-              if (!savedTheme) {
-                  savedTheme = window.localStorage.theme
-              }
-              if (savedTheme === 'dark') {
-                  theme = 'dark'
-                  document.documentElement.classList.add('dark')
-              } else if (savedTheme === 'light') {
-                  theme = 'light'
-                  document.documentElement.classList.remove('dark')
-              } else if (mediaQuery.matches) {
-                  document.documentElement.classList.remove('dark')
-              } else {
-                  document.documentElement.classList.add('dark')
-              }
-          } catch {
-              theme = 'light'
-              document.documentElement.classList.remove('dark')
-          }
-          return theme
-      }
-
-      function updateThemeWithoutTransitions(savedTheme) {
-          updateTheme(savedTheme)
-          document.documentElement.classList.add('[&_*]:!transition-none')
-          window.setTimeout(() => {
-              document.documentElement.classList.remove('[&_*]:!transition-none')
-          }, 0)
-      }
-
-      document.documentElement.setAttribute('data-theme', updateTheme())
-
-      new MutationObserver(([{oldValue}]) => {
-          let newValue = document.documentElement.getAttribute('data-theme')
-          if (newValue !== oldValue) {
-              try {
-                  window.localStorage.setItem('theme', newValue)
-              } catch {}
-              updateThemeWithoutTransitions(newValue)
-          }
-      }).observe(document.documentElement, {
-          attributeFilter: ['data-theme'],
-          attributeOldValue: true
-      })
-
-      mediaQuery.addEventListener('change', updateThemeWithoutTransitions)
-      window.addEventListener('storage', updateThemeWithoutTransitions)
-    </script>
-    <noscript data-n-css=""></noscript>
-  </head>
-  <body class="bg-white dark:bg-slate-900" x-data="{ isMobileVisible: false }">
-    <header class="sticky top-0 z-50 flex flex-wrap items-center justify-between bg-white px-4 py-5 shadow-md shadow-slate-900/5 transition duration-500 dark:shadow-none sm:px-6 lg:px-8 dark:bg-transparent">
-      <div class="relative flex flex-grow basis-0 items-center">
-        <a class="block w-48 overflow-hidden lg:w-auto" href="/">
-          <span class="font-mono text-slate-900 dark:text-white">Trifle</span>
-        </a>
-      </div>
-      <div class="relative flex basis-0 justify-end items-center space-x-4 md:flex-grow">
-        <form action="/search" method="get" class="relative hidden sm:block">
-          <div class="flex items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md focus-within:border-teal-500 focus-within:ring-1 focus-within:ring-teal-500 dark:focus-within:border-teal-400 dark:focus-within:ring-teal-400 w-96">
-            <select name="scope" class="flex-shrink-0 border-0 bg-transparent text-sm text-slate-600 dark:text-slate-300 focus:ring-0 focus:outline-none pr-1 w-32">
-              <option value="">All</option>
-              <% sitemap.sort_by {|(key, option)| option.dig('_meta', 'nav_order') || 0 }.each do |(key, option)| %>
-                <% next if key == '_meta' %>
-                <% next if option.dig('_meta', 'url').nil? %>
-                <% scope_value = option.dig('_meta', 'url').sub(/^\//, '') %>
-                <option value="<%= scope_value %>" <%= defined?(params) && params[:scope] == scope_value ? 'selected' : '' %>>
-                  <%= option.dig('_meta', 'title') %>
-                </option>
-              <% end %>
-            </select>
-            <div class="w-px h-6 bg-slate-200 dark:bg-slate-600 mx-1"></div>
-            <input type="text" 
-                   name="query" 
-                   placeholder="Search..." 
-                   value="<%= defined?(params) && params[:query] ? params[:query] : '' %>"
-                   class="flex-1 border-0 bg-transparent px-2 py-1.5 text-sm placeholder-slate-400 focus:ring-0 focus:outline-none dark:text-slate-100 dark:placeholder-slate-400">
-            <button type="submit" class="flex items-center pr-2">
-              <svg class="h-4 w-4 text-slate-400 hover:text-slate-500 dark:hover:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-              </svg>
-            </button>
-          </div>
-        </form>
-        
-        <a class="group flex items-center" href="https://github.com/trifle-io">
-          <span class="sr-only">GitHub</span>
-          <svg aria-hidden="true" viewBox="0 0 16 16" class="h-6 w-6 fill-slate-400 group-hover:fill-slate-500 dark:group-hover:fill-slate-300">
-            <path d="M8 0C3.58 0 0 3.58 0 8C0 11.54 2.29 14.53 5.47 15.59C5.87 15.66 6.02 15.42 6.02 15.21C6.02 15.02 6.01 14.39 6.01 13.72C4 14.09 3.48 13.23 3.32 12.78C3.23 12.55 2.84 11.84 2.5 11.65C2.22 11.5 1.82 11.13 2.49 11.12C3.12 11.11 3.57 11.7 3.72 11.94C4.44 13.15 5.59 12.81 6.05 12.6C6.12 12.08 6.33 11.73 6.56 11.53C4.78 11.33 2.92 10.64 2.92 7.58C2.92 6.71 3.23 5.99 3.74 5.43C3.66 5.23 3.38 4.41 3.82 3.31C3.82 3.31 4.49 3.1 6.02 4.13C6.66 3.95 7.34 3.86 8.02 3.86C8.7 3.86 9.38 3.95 10.02 4.13C11.55 3.09 12.22 3.31 12.22 3.31C12.66 4.41 12.38 5.23 12.3 5.43C12.81 5.99 13.12 6.7 13.12 7.58C13.12 10.65 11.25 11.33 9.47 11.53C9.76 11.78 10.01 12.26 10.01 13.01C10.01 14.08 10 14.94 10 15.21C10 15.42 10.15 15.67 10.55 15.59C13.71 14.53 16 11.53 16 8C16 3.58 12.42 0 8 0Z"></path>
-          </svg>
-        </a>
-        
-        <button type="button" class="flex items-center justify-center p-2 text-slate-500 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-300 lg:hidden" x-on:click="isMobileVisible = !isMobileVisible">
-          <span class="sr-only">Open navigation</span>
-          <svg aria-hidden="true" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-            <path d="M4 7h16M4 12h16M4 17h16"></path>
-          </svg>
-        </button>
-      </div>
-    </header>
-
-    <!-- Mobile navigation overlay -->
-    <div x-show="isMobileVisible" 
-         x-transition:enter="transition-opacity ease-linear duration-300" 
-         x-transition:enter-start="opacity-0" 
-         x-transition:enter-end="opacity-100" 
-         x-transition:leave="transition-opacity ease-linear duration-300" 
-         x-transition:leave-start="opacity-100" 
-         x-transition:leave-end="opacity-0"
-         class="fixed inset-0 z-50 lg:hidden" 
-         @click="isMobileVisible = false">
-      <div class="fixed inset-0 bg-slate-900/50"></div>
-    </div>
-
-    <!-- Mobile navigation panel -->
-    <div x-show="isMobileVisible"
-         x-transition:enter="transition ease-in-out duration-300 transform"
-         x-transition:enter-start="-translate-x-full"
-         x-transition:enter-end="translate-x-0"
-         x-transition:leave="transition ease-in-out duration-300 transform"
-         x-transition:leave-start="translate-x-0"
-         x-transition:leave-end="-translate-x-full"
-         class="fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-slate-900 shadow-xl lg:hidden">
-      <div class="h-full overflow-y-auto py-6 px-4">
-        <div class="flex items-center justify-between mb-6">
-          <span class="font-mono text-lg font-semibold text-slate-900 dark:text-white">Trifle</span>
-          <button @click="isMobileVisible = false" class="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
+      <form action="<%= search_action %>" method="get" class="w-full md:w-auto md:min-w-[28rem] lg:min-w-[34rem]" role="search" aria-label="Search documentation">
+        <div class="flex items-center rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden">
+          <label for="scope" class="sr-only">Scope</label>
+          <select id="scope" name="scope" class="border-0 bg-transparent text-sm text-slate-600 dark:text-slate-300 pl-3 py-2 focus:ring-0">
+            <option value="">All docs</option>
+            <% sitemap.sort_by { |(_key, option)| option.dig('_meta', 'nav_order') || 0 }.each do |(key, option)| %>
+              <% next if key == '_meta' %>
+              <% next unless option.dig('_meta', 'url') %>
+              <% scope_value = option.dig('_meta', 'url').sub(%r{^/}, '') %>
+              <option value="<%= scope_value %>" <%= params['scope'] == scope_value ? 'selected' : '' %>><%= option.dig('_meta', 'title') %></option>
+            <% end %>
+          </select>
+          <div class="h-5 w-px bg-slate-200 dark:bg-slate-700"></div>
+          <label for="query" class="sr-only">Search query</label>
+          <input
+            id="query"
+            type="text"
+            name="query"
+            value="<%= params['query'] %>"
+            placeholder="Search docs..."
+            class="w-full border-0 bg-transparent px-3 py-2 text-sm placeholder-slate-400 focus:ring-0"
+          >
+          <button type="submit" class="px-3 py-2 text-sm font-semibold text-teal-700 dark:text-teal-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+            Search
           </button>
         </div>
-        <nav class="text-base text-slate-700 dark:text-slate-300">
-            <form action="/search" method="get" class="mb-6 sm:hidden">
-              <div class="space-y-2">
-                <select name="scope" class="block w-full rounded-md border-slate-200 bg-white px-3 py-2 text-sm shadow-sm text-slate-600 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:focus:border-teal-400 dark:focus:ring-teal-400">
-                  <option value="">Search in: All</option>
-                  <% sitemap.sort_by {|(key, option)| option.dig('_meta', 'nav_order') || 0 }.each do |(key, option)| %>
-                    <% next if key == '_meta' %>
-                    <% next if option.dig('_meta', 'url').nil? %>
-                    <% scope_value = option.dig('_meta', 'url').sub(/^\//, '') %>
-                    <option value="<%= scope_value %>" <%= defined?(params) && params[:scope] == scope_value ? 'selected' : '' %>>
-                      Search in: <%= option.dig('_meta', 'title') %>
-                    </option>
-                  <% end %>
-                </select>
-                <div class="relative">
-                  <input type="text" 
-                         name="query" 
-                         placeholder="Search..." 
-                         value="<%= defined?(params) && params[:query] ? params[:query] : '' %>"
-                         class="block w-full rounded-md border-slate-200 bg-white px-3 py-2 pr-10 text-sm shadow-sm placeholder-slate-400 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder-slate-400 dark:focus:border-teal-400 dark:focus:ring-teal-400">
-                  <button type="submit" class="absolute inset-y-0 right-0 flex items-center pr-3">
-                    <svg class="h-4 w-4 text-slate-400 hover:text-slate-500 dark:hover:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            </form>
-            <ul class="space-y-4">
-              <li>
-                <% if meta.dig('url') == "/" %>
-                  <a href="/" class="font-display text-base font-bold text-slate-900 dark:text-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline mr-2 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-1.5.545m0 6.205l3 1m1.5.5l-1.5-.5M6.75 7.364V3h-3v18m3-13.636l10.5-3.819" />
-                    </svg>
-                    Home
-                  </a>
-                <% else %>
-                  <a href="/" class="font-display text-base font-bold text-slate-600 dark:text-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline mr-2 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-1.5.545m0 6.205l3 1m1.5.5l-1.5-.5M6.75 7.364V3h-3v18m3-13.636l10.5-3.819" />
-                    </svg>
-                    Home
-                  </a>
-                <% end %>
-              </li>
-              <% sitemap.sort_by {|(key, option)| option.dig('_meta', 'nav_order') || 0 }.each do |(key, option)| %>
-                <% next if key == '_meta' %>
-                <% next if option.dig('_meta', 'url').nil? %>
-                <li>
-                  <% if "/#{url}".start_with?(option.dig('_meta', 'url')) %>
-                    <a href="<%= option.dig('_meta', 'url') %>" class="font-display text-base font-bold text-teal-600">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline mr-2 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="<%= option.dig('_meta', 'svg') %>" />
-                      </svg>
-                      <%= option.dig('_meta', 'title') %>
-                      <svg viewBox="0 0 128 128" class="w-5 h-5 inline float-right" fill="currentColor">
-                        <%= option.dig('_meta', 'lang') %>
-                      </svg>
-                    </a>
-                  <% else %>
-                    <a href="<%= option.dig('_meta', 'url') %>" class="font-display text-base font-bold text-slate-600 dark:text-white">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline mr-2 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="<%= option.dig('_meta', 'svg') %>" />
-                      </svg>
-                      <%= option.dig('_meta', 'title') %>
-                      <svg viewBox="0 0 128 128" class="w-5 h-5 inline float-right" fill="currentColor">
-                        <%= option.dig('_meta', 'lang') %>
-                      </svg>
-                    </a>
-                  <% end %>
-                  <% next if option.dig('_meta', 'url') == '/blog' %>
-                  <% next unless "/#{url}".start_with?(option.dig('_meta', 'url')) %>
+      </form>
 
-                  <ul class="mt-2 space-y-1 lg:mt-4 lg:space-y-2">
-                    <% option.sort_by {|(key, option)| option.dig('_meta', 'nav_order') || 0 }.each do |(key, option)| %>
-                      <% next if key == '_meta' %>
-                      <li class="relative">
-                        <% if option.dig('_meta', 'url') == "/#{url}" %>
-                          <a href="<%= option.dig('_meta', 'url') %>" class="block w-full pl-3.5 font-semibold text-teal-500"><%= option.dig('_meta', 'title') %></a>
-                        <% else %>
-                          <a href="<%= option.dig('_meta', 'url') %>" class="block w-full pl-3.5 text-slate-500 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-300"><%= option.dig('_meta', 'title') %></a>
-                        <% end %>
-
-                        <ul class="ml-4 mt-1 mb-4 space-y-1 border-l-2 border-slate-100 dark:border-slate-800 lg:mt-2 lg:space-y-4 lg:border-slate-200">
-                          <% option.sort_by {|(key, option)| option.dig('_meta', 'nav_order') || 0 }.each do |(key, option)| %>
-                            <% next if key == '_meta' %>
-                            <li class="relative">
-                              <% if option.dig('_meta', 'url') == "/#{url}" %>
-                                <a href="<%= option.dig('_meta', 'url') %>" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:-translate-y-1/2 font-semibold text-teal-500 before:bg-teal-500"><%= option.dig('_meta', 'title') %></a>
-                              <% else %>
-                                <a href="<%= option.dig('_meta', 'url') %>" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:-translate-y-1/2 text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300"><%= option.dig('_meta', 'title') %></a>
-                              <% end %>
-                            </li>
-                          <% end %>
-                        </ul>
-                      </li>
-                    <% end %>
-                  </ul>
-                </li>
-              <% end %>
-            </ul>
-        </nav>
+      <div class="hidden md:flex items-center gap-6 text-sm text-slate-500 dark:text-slate-400">
+        <a href="https://trifle.io/blog" class="hover:text-teal-600 dark:hover:text-teal-400 transition">Blog</a>
+        <a href="https://app.trifle.io" class="hover:text-teal-600 dark:hover:text-teal-400 transition">App</a>
+        <a href="https://github.com/trifle-io" class="hover:text-teal-600 dark:hover:text-teal-400 transition">GitHub</a>
       </div>
     </div>
+  </nav>
 
-    <!-- Main content area -->
-    <div class="relative mx-auto flex max-w-8xl justify-center px-2 lg:px-8 xl:px-12">
-      <!-- Desktop sidebar -->
-      <div class="hidden lg:block lg:flex-none w-64">
-        <div class="sticky top-[4.5rem] -ml-0.5 h-[calc(100vh-4.5rem)] overflow-y-auto py-16 pl-0.5">
-          <nav class="text-base lg:text-sm w-128 pr-8 xl:w-72 xl:pr-16 min-w-64">
-            <ul class="space-y-4">
+  <div class="pt-28 pb-20 px-6">
+    <div class="max-w-[88rem] mx-auto flex gap-10">
+      <aside class="hidden lg:block w-72 shrink-0">
+        <div class="sticky top-28">
+          <nav aria-label="Documentation navigation">
+            <ul class="space-y-5 text-sm">
               <li>
-                <% if meta.dig('url') == "/" %>
-                  <a href="/" class="font-display text-base font-bold text-slate-900 dark:text-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline mr-2 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-1.5.545m0 6.205l3 1m1.5.5l-1.5-.5M6.75 7.364V3h-3v18m3-13.636l10.5-3.819" />
-                    </svg>
-                    Home
-                  </a>
-                <% else %>
-                  <a href="/" class="font-display text-base font-bold text-slate-600 dark:text-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline mr-2 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-1.5.545m0 6.205l3 1m1.5.5l-1.5-.5M6.75 7.364V3h-3v18m3-13.636l10.5-3.819" />
-                    </svg>
-                    Home
-                  </a>
-                <% end %>
+                <a href="/" class="group flex items-center gap-2 font-semibold <%= current_path == '/' ? 'text-teal-600 dark:text-teal-400' : 'text-slate-700 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-400' %>">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-1.5.545m0 6.205l3 1m1.5.5l-1.5-.5M6.75 7.364V3h-3v18m3-13.636l10.5-3.819" />
+                  </svg>
+                  <span>Home</span>
+                </a>
               </li>
-              <% sitemap.sort_by {|(key, option)| option.dig('_meta', 'nav_order') || 0 }.each do |(key, option)| %>
-                <% next if key == '_meta' %>
-                <% next if option.dig('_meta', 'url').nil? %>
+
+              <% sitemap.sort_by { |(_key, option)| option.dig('_meta', 'nav_order') || 0 }.each do |(section_key, section)| %>
+                <% next if section_key == '_meta' %>
+                <% section_url = section.dig('_meta', 'url') %>
+                <% next unless section_url %>
+                <% section_active = current_path.start_with?(section_url) %>
+                <% section_icon = section.dig('_meta', 'svg') %>
+                <% section_lang = section.dig('_meta', 'lang') %>
+
                 <li>
-                  <% if "/#{url}".start_with?(option.dig('_meta', 'url')) %>
-                    <a href="<%= option.dig('_meta', 'url') %>" class="font-display text-base font-bold text-teal-600">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline mr-2 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="<%= option.dig('_meta', 'svg') %>" />
+                  <a href="<%= section_url %>" class="group flex items-center gap-2 font-semibold <%= section_active ? 'text-teal-600 dark:text-teal-400' : 'text-slate-700 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-400' %>">
+                    <% if section_icon && !section_icon.to_s.strip.empty? %>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="<%= section_icon %>" />
                       </svg>
-                      <%= option.dig('_meta', 'title') %>
-                      <svg viewBox="0 0 128 128" class="w-5 h-5 inline float-right" fill="currentColor">
-                        <%= option.dig('_meta', 'lang') %>
-                      </svg>
-                    </a>
-                  <% else %>
-                    <a href="<%= option.dig('_meta', 'url') %>" class="font-display text-base font-bold text-slate-600 dark:text-white">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline mr-2 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="<%= option.dig('_meta', 'svg') %>" />
-                      </svg>
-                      <%= option.dig('_meta', 'title') %>
-                      <svg viewBox="0 0 128 128" class="w-5 h-5 inline float-right" fill="currentColor">
-                        <%= option.dig('_meta', 'lang') %>
-                      </svg>
-                    </a>
-                  <% end %>
-                  <% next if option.dig('_meta', 'url') == '/blog' %>
-                  <% next unless "/#{url}".start_with?(option.dig('_meta', 'url')) %>
-
-                  <ul class="mt-2 space-y-1 lg:mt-4 lg:space-y-2">
-                    <% option.sort_by {|(key, option)| option.dig('_meta', 'nav_order') || 0 }.each do |(key, option)| %>
-                      <% next if key == '_meta' %>
-                      <li class="relative">
-                        <% if option.dig('_meta', 'url') == "/#{url}" %>
-                          <a href="<%= option.dig('_meta', 'url') %>" class="block w-full pl-3.5 font-semibold text-teal-500"><%= option.dig('_meta', 'title') %></a>
-                        <% else %>
-                          <a href="<%= option.dig('_meta', 'url') %>" class="block w-full pl-3.5 text-slate-500 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-300"><%= option.dig('_meta', 'title') %></a>
-                        <% end %>
-
-                        <ul class="ml-4 mt-1 mb-4 space-y-1 border-l-2 border-slate-100 dark:border-slate-800 lg:mt-2 lg:space-y-4 lg:border-slate-200">
-                          <% option.sort_by {|(key, option)| option.dig('_meta', 'nav_order') || 0 }.each do |(key, option)| %>
-                            <% next if key == '_meta' %>
-                            <li class="relative">
-                              <% if option.dig('_meta', 'url') == "/#{url}" %>
-                                <a href="<%= option.dig('_meta', 'url') %>" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:-translate-y-1/2 font-semibold text-teal-500 before:bg-teal-500"><%= option.dig('_meta', 'title') %></a>
-                              <% else %>
-                                <a href="<%= option.dig('_meta', 'url') %>" class="block w-full pl-3.5 before:pointer-events-none before:absolute before:-left-1 before:top-1/2 before:-translate-y-1/2 text-slate-500 before:hidden before:bg-slate-300 hover:text-slate-600 hover:before:block dark:text-slate-400 dark:before:bg-slate-700 dark:hover:text-slate-300"><%= option.dig('_meta', 'title') %></a>
-                              <% end %>
-                            </li>
-                          <% end %>
-                        </ul>
-                      </li>
                     <% end %>
-                  </ul>
+                    <span><%= section.dig('_meta', 'title') %></span>
+                    <% if section_lang && !section_lang.to_s.strip.empty? %>
+                      <svg viewBox="0 0 128 128" class="ml-auto h-4 w-4 shrink-0 opacity-70 group-hover:opacity-100" fill="currentColor" aria-hidden="true">
+                        <%= section_lang %>
+                      </svg>
+                    <% end %>
+                  </a>
+
+                  <% if section_active %>
+                    <ul class="mt-2 ml-3 border-l border-slate-200 dark:border-slate-800 pl-4 space-y-2">
+                      <% section.sort_by { |(_key, child)| child.dig('_meta', 'nav_order') || 0 }.each do |(child_key, child)| %>
+                        <% next if child_key == '_meta' %>
+                        <% child_url = child.dig('_meta', 'url') %>
+                        <% next unless child_url %>
+                        <% child_active = current_path == child_url || current_path.start_with?("#{child_url}/") %>
+
+                        <li>
+                          <a href="<%= child_url %>" class="<%= child_active ? 'text-teal-600 dark:text-teal-400 font-medium' : 'text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400' %>"><%= child.dig('_meta', 'title') %></a>
+
+                          <% if child_active %>
+                            <ul class="mt-1 ml-3 border-l border-slate-200 dark:border-slate-800 pl-3 space-y-1">
+                              <% child.sort_by { |(_key, grandchild)| grandchild.dig('_meta', 'nav_order') || 0 }.each do |(grandchild_key, grandchild)| %>
+                                <% next if grandchild_key == '_meta' %>
+                                <% grandchild_url = grandchild.dig('_meta', 'url') %>
+                                <% next unless grandchild_url %>
+                                <% grandchild_active = current_path == grandchild_url %>
+                                <li>
+                                  <a href="<%= grandchild_url %>" class="text-sm <%= grandchild_active ? 'text-teal-600 dark:text-teal-400 font-medium' : 'text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400' %>"><%= grandchild.dig('_meta', 'title') %></a>
+                                </li>
+                              <% end %>
+                            </ul>
+                          <% end %>
+                        </li>
+                      <% end %>
+                    </ul>
+                  <% end %>
                 </li>
               <% end %>
             </ul>
           </nav>
         </div>
-      </div>
-      
-      <div class="min-w-0 max-w-2xl flex-auto px-4 py-16 lg:max-w-none lg:pr-0 lg:pl-8 xl:px-16">
-        <article>
-          <header class="mb-9 space-y-1">
-            <% if meta['breadcrumbs'] %>
-              <% meta['breadcrumbs'].count.times do |i| %>
-                <% page = sitemap.dig(*meta['breadcrumbs'].take(i+1)) %>
-                <a href="<%= page.dig('_meta', 'url') %>" class="font-display text-sm font-medium text-teal-500"><%= page.dig('_meta', 'title') %></a>
-                <% next if i+1 == meta['breadcrumbs'].count %>
-                <span class="text-slate-400 dark:text-slate-400">/</span>
+      </aside>
+
+      <main class="min-w-0 flex-1">
+        <% if meta&.dig('breadcrumbs') %>
+          <div class="mb-6 text-sm text-slate-500 dark:text-slate-400 flex flex-wrap items-center gap-2">
+            <% meta['breadcrumbs'].count.times do |i| %>
+              <% breadcrumb_page = sitemap.dig(*meta['breadcrumbs'].take(i + 1)) %>
+              <% if breadcrumb_page&.dig('_meta', 'url') %>
+                <a href="<%= breadcrumb_page.dig('_meta', 'url') %>" class="hover:text-teal-600 dark:hover:text-teal-400"><%= breadcrumb_page.dig('_meta', 'title') %></a>
+                <% if i + 1 != meta['breadcrumbs'].count %>
+                  <span>/</span>
+                <% end %>
               <% end %>
             <% end %>
-          </header>
-          <div id="content" class="prose prose-slate max-w-none dark:prose-invert dark:text-slate-400 prose-headings:scroll-mt-28 prose-headings:font-display prose-headings:font-normal lg:prose-headings:scroll-mt-[8.5rem] prose-lead:text-slate-500 dark:prose-lead:text-slate-400 prose-a:font-semibold dark:prose-a:text-teal-400 prose-a:no-underline prose-a:shadow-[inset_0_-2px_0_0_var(--tw-prose-background,#fff),inset_0_calc(-1*(var(--tw-prose-underline-size,4px)+2px))_0_0_var(--tw-prose-underline,theme(colors.teal.300))] hover:prose-a:[--tw-prose-underline-size:6px] dark:[--tw-prose-background:theme(colors.slate.900)] dark:prose-a:shadow-[inset_0_calc(-1*var(--tw-prose-underline-size,2px))_0_0_var(--tw-prose-underline,theme(colors.teal.800))] dark:hover:prose-a:[--tw-prose-underline-size:6px] prose-pre:rounded-xl prose-pre:bg-slate-900 prose-pre:shadow-lg dark:prose-pre:bg-slate-800/60 dark:prose-pre:shadow-none dark:prose-pre:ring-1 dark:prose-pre:ring-slate-300/10 dark:prose-hr:border-slate-800">
-            <% if meta['description'] %>
-              <blockquote id="description-quote" class="text-gray-500 dark:text-gray-100">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-                <%= meta['description'] %>
-              </blockquote>
-            <% end %>
-            <%= yield %>
           </div>
-        </article>
-
-        <% unless meta['url'] == '/blog' || meta['url'] == '/' %>
-          <% if defined?(collection) && collection %>
-            <div class="mt-12 max-w-lg mx-auto grid gap-5 lg:grid-cols-4 lg:max-w-none">
-              <% collection.sort_by {|(key, option)| option.dig('_meta', 'nav_order') || 0 }.each do |key, item| %>
-              <% next if key == '_meta' || item.dig('_meta', 'type') == 'file' %>
-              <div class="flex flex-col rounded-lg shadow-lg overflow-hidden">
-                <div class="flex-1 bg-white dark:bg-slate-800 p-6 flex flex-col justify-between">
-                  <div class="flex-1">
-                    <a href="<%= item.dig('_meta', 'url') %>" class="block mt-2">
-                      <p class="text-xl font-semibold text-teal-600"><%= item.dig('_meta', 'title') %> &rarr;</p>
-                      <p class="mt-3 text-base text-gray-500"><%= item.dig('_meta', 'description') %></p>
-                    </a>
-                  </div>
-                </div>
-              </div>
-              <% end %>
-            </div>
-          <% end %>
         <% end %>
-      </div>
-      <div class="hidden xl:sticky xl:top-[4.5rem] xl:-mr-6 xl:block xl:h-[calc(100vh-4.5rem)] xl:flex-none xl:overflow-y-auto xl:py-16 xl:pr-6">
-        <nav id="on-this-page" aria-labelledby="on-this-page-title" class="w-56">
-          <h2 id="on-this-page-title" class="font-display text-lg font-medium text-slate-900 dark:text-white">On this page</h2>
-          <%= meta.dig('toc') %>
-        </nav>
+
+        <article class="prose prose-slate dark:prose-invert max-w-none prose-a:text-teal-700 dark:prose-a:text-teal-400">
+          <%= yield %>
+        </article>
+      </main>
+
+      <aside class="hidden xl:block w-56 shrink-0">
+        <% if meta&.dig('toc') && !meta.dig('toc').to_s.strip.empty? %>
+          <div class="sticky top-28">
+            <nav id="on-this-page" aria-labelledby="on-this-page-title">
+              <h2 id="on-this-page-title" class="font-semibold text-slate-900 dark:text-white">On this page</h2>
+              <%= meta.dig('toc') %>
+            </nav>
+          </div>
+        <% end %>
+      </aside>
     </div>
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        const pres = document.querySelectorAll('#content pre');
-        pres.forEach((pre) => {
-          if (pre.dataset.copyBound === 'true') return;
-          const code = pre.querySelector('code');
-          if (!code) return;
+  </div>
 
-          pre.dataset.copyBound = 'true';
+  <footer class="py-12 px-6 border-t border-slate-200 dark:border-slate-800" role="contentinfo">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+        <a href="https://trifle.io" class="flex items-center gap-2" aria-label="Trifle - Home">
+          <svg
+            viewBox="0 0 72 84"
+            class="h-6 w-6 text-teal-500"
+            xmlns="http://www.w3.org/2000/svg"
+            style="fill-rule:evenodd;clip-rule:evenodd;"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <g>
+              <g transform="matrix(1,0,0,1,0.442181,0.243718)">
+                <path d="M31.5,2.441C32.41,0.973 33.062,0.441 34.328,0.133C35.938,-0.258 37.812,0.203 40.109,1.551C42.781,3.121 44.746,4.824 46.457,7.059C48.188,9.324 48.191,9.328 49.949,9.789C51.508,10.203 55.07,11.488 56.129,12.023C57.98,12.957 59.535,14.426 60.996,16.617C61.805,17.828 61.949,17.945 63.098,18.285C66.676,19.355 68.371,20.211 69.688,21.609C71.105,23.117 71.52,24.871 71.086,27.527C70.887,28.754 69.461,35.641 68.605,39.504C67.988,42.305 67.125,46.43 66.637,48.918C66.496,49.637 65.625,54.031 64.698,58.684C63.773,63.336 62.844,68.066 62.633,69.188C61.766,73.816 61.184,75.285 59.305,77.625C57.098,80.367 53.527,82.055 48.273,82.836C45.016,83.32 43.504,83.402 37.293,83.445C29.031,83.5 25.117,83.285 21.359,82.578C17.242,81.801 14.508,80.531 12.48,78.457C11.734,77.691 11.434,77.301 10.84,76.352C9.531,74.262 9.191,73.16 8.128,67.578C7.801,65.844 7.367,63.633 7.16,62.66C6.957,61.691 6.012,56.98 5.059,52.195C2.784,40.777 2.594,39.84 1.444,34.504C0.905,32.008 0.375,29.453 0.262,28.832C-0.293,25.77 0.008,24.168 1.418,22.66C2.879,21.09 5.582,19.801 8.984,19.051C9.707,18.891 10.469,18.684 10.672,18.594C11.09,18.41 11.07,18.434 11.984,17.023C13.133,15.25 14.125,14.156 15.531,13.113C17.25,11.84 19.172,10.898 22.293,9.797C25.559,8.645 26.203,8.363 27.125,7.688C28.543,6.645 29.918,4.992 31.5,2.441ZM34.734,6.745C35.085,6.25 35.374,5.622 35.582,4.758C35.642,4.51 36.817,4.538 37.579,5.188C38.595,6.055 38.775,6.146 40.189,7.537C41.072,8.406 41.063,8.663 42.614,10.601C43.985,12.316 44.749,12.811 45.393,13.308C46.28,13.999 47.615,14.101 49.764,14.691C51.299,15.113 53.209,15.944 53.881,16.279C54.552,16.615 55.159,17.202 55.686,17.714C56.073,18.085 56.538,18.716 56.968,19.56C58.136,21.853 58.887,22.126 61.519,22.946C63.828,23.665 65.197,23.828 65.792,24.277C65.952,24.398 63.632,24.709 61.726,25.201C59.468,25.787 54.561,26.193 51.514,26.517C44.788,27.232 39.696,27.33 32.606,27.244C26.172,27.166 24.206,27.315 19.572,27.054C18.458,26.992 9.227,26.125 7.371,25.535C6.559,25.273 5.683,25.054 5.683,25.054C5.683,25.054 8.711,24.248 11.304,23.517C13.336,22.943 14.174,22.668 14.788,22.096C15.344,21.579 16.143,21.105 16.928,19.617C17.814,17.933 17.884,17.679 18.685,16.874C19.814,15.737 20.523,15.249 23.5,14.374C28.055,13.031 29.767,11.527 31.388,10.039C32.485,9.031 33.836,8.014 34.734,6.745ZM36.966,32.393C40.358,32.42 55.253,31.273 58.916,30.863C62.753,30.434 65.952,29.492 65.902,29.784C65.866,30.001 65.332,33.197 64.996,34.904C64.438,37.72 63.254,42.159 63.254,42.159C63.254,42.159 62.357,42.276 60.488,41.743C58.488,41.173 54.915,35.081 52.086,35.097C49.199,35.113 45.938,38.551 43.796,38.648C41.816,38.738 38.558,33.922 36.472,33.895C34.387,33.867 29.347,38.691 24.985,43.37C20.948,47.7 18.168,50.684 15.659,50.376C14.338,50.213 13.783,49.631 9.421,48.619C8.96,48.512 7.428,39.915 7.123,38.458C6.619,36.024 4.879,29.776 4.898,29.752C4.898,29.752 14.403,31.881 19.164,32.039C23.695,32.188 33.764,32.368 36.966,32.393ZM51.768,39.812C53.68,39.816 56.64,45.333 58.792,45.922C61.955,46.788 62.39,46.771 62.39,46.771C62.39,46.771 62.127,48.142 61.66,50.519L60.646,54.754C60.646,54.754 59.789,54.705 59.182,54.3C57.837,53.401 54.638,52.125 53.532,51.498C51.618,50.413 48.266,49.504 46.242,49.345C43.402,49.123 41.191,49.616 37.837,50.69C34.954,51.614 33.852,52.399 31.434,52.954C28.804,53.557 25.944,52.846 25.309,52.662C22.189,51.755 24.074,50.945 28.314,46.258C30.729,43.589 34.162,39.638 36.024,39.584C37.63,39.538 41.474,43.47 43.607,43.444C45.731,43.417 49.622,39.808 51.768,39.812ZM23.993,56.884C26.927,57.485 29.623,57.595 32.211,57.26C34.625,56.948 37.69,55.258 41.236,54.095C43.228,53.441 47.171,53.611 48.72,54.064C51.122,54.767 53.572,56.026 56.297,57.621C58.173,58.72 59.945,59.259 59.945,59.259L59.126,63.698C59.126,63.698 57.441,63.054 56.319,62.559C53.256,61.208 50.066,61.336 47.892,61.89C43.691,62.962 41.873,63.71 38.188,64.952C34.321,66.255 32.594,66.921 29.925,67.705C28.272,68.19 26.087,68.692 23.407,68.997C19.602,69.43 18.697,69.379 17.055,69.166C14.794,68.872 12.426,67.466 12.426,67.466C12.426,67.466 9.719,53.428 9.957,53.456C13.092,53.82 13.177,54.293 15.642,54.841C17.86,55.335 20.597,56.188 23.993,56.884ZM51.557,66.165C57.88,66.668 58.404,68.352 58.404,68.352C58.404,68.352 58.512,70.388 56.584,73.763C56.142,74.537 54.963,75.751 54.271,76.216C53.26,76.891 51.77,77.506 50.285,77.885C45.918,78.998 37.197,79.369 27.236,78.779C24.16,78.599 20.977,77.844 18.607,76.869C14.811,75.306 13.653,72.496 13.653,72.496C13.653,72.496 16.258,73.228 17.004,73.295C18.403,73.421 19.037,73.52 20.954,73.52C23.326,73.52 26.06,73.097 28.169,72.648C31.017,72.041 33.737,71.276 35.728,70.431C37.806,69.549 42.729,67.943 45.969,66.928C47.182,66.548 49.871,66.031 51.557,66.165Z"/>
+              </g>
+              <g transform="matrix(2.779089,0,-0,-7.279669,-18.643586,306.024137)">
+                <ellipse cx="12.041" cy="36.556" rx="0.898" ry="0.342"/>
+              </g>
+            </g>
+          </svg>
+          <span class="font-semibold">Trifle</span>
+        </a>
 
-          // Wrap pre so the copy button stays fixed while the code can scroll
-          const wrapper = document.createElement('div');
-          wrapper.className = 'code-wrapper';
-          pre.parentNode.insertBefore(wrapper, pre);
-          wrapper.appendChild(pre);
+        <nav class="flex items-center gap-6 text-sm text-slate-500" aria-label="Footer navigation">
+          <a href="https://trifle.io/blog" class="hover:text-teal-600 dark:hover:text-teal-400 transition">Blog</a>
+          <a href="/" class="hover:text-teal-600 dark:hover:text-teal-400 transition">Docs</a>
+          <a href="https://github.com/trifle-io" class="hover:text-teal-600 dark:hover:text-teal-400 transition">GitHub</a>
+          <a href="https://app.trifle.io" class="hover:text-teal-600 dark:hover:text-teal-400 transition">App</a>
+        </nav>
 
-          const button = document.createElement('button');
-          button.type = 'button';
-          button.className = 'copy-button';
-          button.innerText = 'Copy';
-          button.addEventListener('click', async (event) => {
-            event.stopPropagation();
-            try {
-              await navigator.clipboard.writeText(code.innerText.trimEnd());
-              button.innerText = 'Copied';
-              button.classList.add('copied');
-              window.setTimeout(() => {
-                button.innerText = 'Copy';
-                button.classList.remove('copied');
-              }, 1500);
-            } catch (e) {
-              button.innerText = 'Error';
-              window.setTimeout(() => {
-                button.innerText = 'Copy';
-              }, 1500);
-            }
-          });
-
-          wrapper.appendChild(button);
-        });
-      });
-    </script>
-  </body>
+        <div class="text-sm text-slate-500 dark:text-slate-400">
+          &copy; 2026 Trifle, Inc.
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
 </html>

@@ -1,113 +1,33 @@
-<% if query && !query.strip.empty? %>
-  <div class="mb-8">
-    <h1 class="text-2xl font-display font-bold text-slate-900 dark:text-white flex items-center">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 text-slate-500 dark:text-slate-400 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-      </svg>
-      Search results for "<%= query %>"
-    </h1>
-    <div class="mt-2 ml-9 text-sm text-slate-500 dark:text-slate-400">
-      <%= results.length %> result<%= results.length == 1 ? '' : 's' %> found
+<section class="mb-10">
+  <h1 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">Search Docs</h1>
+  <% if query && !query.strip.empty? %>
+    <p class="mt-2 text-slate-600 dark:text-slate-400">
+      <%= results.length %> result<%= results.length == 1 ? '' : 's' %> for "<%= query %>"
       <% if scope && !scope.strip.empty? %>
-        <% scope_title = sitemap.dig(scope, '_meta', 'title') || scope %>
-        in <span class="font-medium text-teal-600 dark:text-teal-400"><%= scope_title %></span>
-      <% else %>
-        across all sections
+        in <span class="font-semibold text-teal-700 dark:text-teal-400"><%= scope %></span>
       <% end %>
-    </div>
-  </div>
-<% end %>
-
-<% if query && !query.strip.empty? && results.any? %>
-  <hr class="my-8 border-slate-200 dark:border-slate-700">
-<% end %>
+    </p>
+  <% end %>
+</section>
 
 <% if results.any? %>
-  <div class="space-y-8">
-    <% results.each_with_index do |result, index| %>
-      <article class="group">
-        <h2 class="mb-3">
-          <a href="/<%= result[:url] %>" class="text-xl font-semibold text-slate-900 dark:text-white hover:text-teal-600 dark:hover:text-teal-400 transition-colors">
-            <%= result[:title] %>
-          </a>
+  <section class="space-y-5">
+    <% results.each do |result| %>
+      <% result_url = [request.script_name, result[:url]].join('/').gsub(%r{/+}, '/') %>
+      <% result_url = "/#{result_url}" unless result_url.start_with?('/') %>
+      <article class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-6 shadow-sm">
+        <h2 class="text-2xl font-semibold text-slate-900 dark:text-white">
+          <a href="<%= result_url %>" class="hover:text-teal-600 dark:hover:text-teal-400 transition"><%= result[:title] %></a>
         </h2>
-        
-        <div class="mb-3 text-sm flex items-center text-slate-500 dark:text-slate-400">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-1 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.102m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-          </svg>
-          <span>/<%= result[:url] %></span>
-          <span class="ml-4">Score: <%= result[:score] %></span>
-        </div>
-        
-        
         <% if result[:excerpt] && !result[:excerpt].strip.empty? %>
-          <p class="mb-4 text-slate-600 dark:text-slate-300 leading-relaxed"><%
-            excerpt_text = result[:excerpt]
-            if query && !query.strip.empty?
-              query_terms = query.strip.split(/\s+/)
-              query_terms.each do |term|
-                excerpt_text = excerpt_text.gsub(
-                  /#{Regexp.escape(term)}/i,
-                  '<mark class="bg-yellow-200 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 px-1 rounded font-medium">\0</mark>'
-                )
-              end
-            end
-          %><%= excerpt_text %></p>
+          <p class="mt-3 text-slate-600 dark:text-slate-400"><%= result[:excerpt] %></p>
         <% end %>
-        
-        <% if result[:tags] && result[:tags].any? %>
-          <div class="flex flex-wrap gap-2 items-center">
-            <% result[:tags].each do |tag| %>
-              <%
-                highlighted_tag = tag
-                if query && !query.strip.empty?
-                  query_terms = query.strip.split(/\s+/)
-                  query_terms.each do |term|
-                    highlighted_tag = highlighted_tag.gsub(
-                      /#{Regexp.escape(term)}/i,
-                      '<mark class="bg-yellow-200 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 px-1 rounded font-medium">\0</mark>'
-                    )
-                  end
-                end
-              %>
-              <a href="/search?query=<%= CGI.escape(tag) %>" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z" />
-                </svg>
-                <span><%= highlighted_tag %></span>
-              </a>
-            <% end %>
-          </div>
-        <% end %>
+        <div class="mt-4 text-sm text-slate-500 dark:text-slate-400">/<%= result[:url] %></div>
       </article>
-      
-      <% unless index == results.length - 1 %>
-        <hr class="border-slate-200 dark:border-slate-700">
-      <% end %>
     <% end %>
-  </div>
+  </section>
+<% elsif query && !query.strip.empty? %>
+  <p class="text-slate-600 dark:text-slate-400">No documentation pages matched this query.</p>
 <% else %>
-  <% if query && !query.strip.empty? %>
-    <div class="text-center py-16">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-slate-400 dark:text-slate-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-      </svg>
-      <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">No results found</h3>
-      <p class="text-slate-600 dark:text-slate-400 max-w-sm mx-auto">
-        Try different keywords or check the spelling of your search term.
-      </p>
-    </div>
-  <% else %>
-    <div class="text-center py-16">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-slate-400 dark:text-slate-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-      </svg>
-      <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">Enter a search term</h3>
-      <p class="text-slate-600 dark:text-slate-400 max-w-sm mx-auto">
-        Use the search box to find content across the documentation.
-      </p>
-    </div>
-  <% end %>
+  <p class="text-slate-600 dark:text-slate-400">Enter a term in the navbar search field to find content.</p>
 <% end %>

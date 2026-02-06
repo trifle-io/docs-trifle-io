@@ -8,7 +8,7 @@ nav_order: 1
 
 *Link*: [docs.trifle.io](https://docs.trifle.io) 
 
-Yeah, this documentation is build on top of `Trifle::Docs`. You can see its sourcecode in the public [repository](https://github.com/trifle-io/trifle-io).
+Yeah, this documentation is build on top of `Trifle::Docs`. You can see its sourcecode in the public [repository](https://github.com/trifle-io/docs-trifle-io).
 
 I could try to show you all the building blocks of this page, but that would be like having dream within a dream.
 

@@ -145,4 +145,4 @@ Trifle::Stats::Driver::Sqlite(J)                8.3348s         1.2615s         
 
 Here you can really see how `Redis` crumbles under the volume and `Mongo` shines instead. It doesn't matter if you track 1, 5, or 100 values, `Mongo` will perform (almost) the same. `Postgres` and `Sqlite` slow down a bit more in comparison to `Mongo`.
 
-> If you're interest in running test on your own, check out related blog post about [Running performance test for Trifle::Stats on your own](../../blog/2022-08-running_performance_test_for_stats).
+> If you're interest in running test on your own, check out related blog post about [Running performance test for Trifle::Stats on your own](https://trifle.io/blog/2022-08-running_performance_test_for_stats).
