@@ -68,7 +68,7 @@ module Trifle
           end
 
           def process_signature(text)
-            text.gsub(/:::signature\s+(.+?)\s*\n(.*?)\n:::/m) do
+            text.gsub(/:::signature[ \t]+([^\n]+)\n(.*?)(?:\n)?:::/m) do
               signature = Regexp.last_match(1).strip
               args_block = Regexp.last_match(2)
 
@@ -122,11 +122,13 @@ module Trifle
                 if arg[:default]
                   badges << %(<span class="badge badge-default">Default: #{arg[:default]}</span>)
                 end
-                desc_html = render_fragment(arg[:desc].to_s)
+                desc_html = render_fragment(preprocess_inner(arg[:desc].to_s))
                 %(<div class="arg-row"><dt><code>#{arg[:name]}</code> #{badges.join(' ')}</dt><dd>#{desc_html}</dd></div>)
               end.join
 
-              %(<div class="method-card"><div class="method-card-title">Signature</div><div class="method-card-signature">`#{signature}`</div><dl class="arg-list">#{arg_rows}</dl></div>)
+              args_html = arg_rows.empty? ? '' : %(<dl class="arg-list">#{arg_rows}</dl>)
+
+              %(<div class="method-card"><div class="method-card-title">Signature</div><div class="method-card-signature"><code>#{signature}</code></div>#{args_html}</div>)
             end
           end
 
@@ -161,7 +163,7 @@ module Trifle
 
               panels = tabs.each_with_index.map do |tab, idx|
                 key = "#{group}-tab-#{idx}"
-                body = render_fragment(tab[:body].strip)
+                body = render_fragment(preprocess_inner(tab[:body].strip))
                 %(<div class="tab-panel" x-show="tab === '#{key}'" x-cloak>#{body}</div>)
               end.join
 

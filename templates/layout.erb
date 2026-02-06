@@ -53,6 +53,10 @@
       font-family: 'JetBrains Mono', monospace;
     }
 
+    [x-cloak] {
+      display: none !important;
+    }
+
     nav#on-this-page ul {
       margin-top: 1rem;
       list-style: none;
@@ -79,6 +83,11 @@
       background: rgb(248 250 252);
       padding: 1rem;
       margin: 1.25rem 0;
+      color: rgb(30 41 59);
+    }
+
+    .callout > :last-child {
+      margin-bottom: 0;
     }
 
     .callout-title {
@@ -88,6 +97,16 @@
       text-transform: uppercase;
       color: rgb(15 118 110);
       margin-bottom: 0.5rem;
+    }
+
+    .callout-note {
+      border-color: rgb(153 246 228);
+      background: rgb(240 253 250);
+    }
+
+    .callout-warn {
+      border-color: rgb(253 224 71);
+      background: rgb(254 252 232);
     }
 
     .doc-card {
@@ -149,6 +168,105 @@
       padding: 1rem;
     }
 
+    .method-card {
+      border-radius: 0.75rem;
+      border: 1px solid rgb(226 232 240);
+      background: rgb(255 255 255 / 0.85);
+      padding: 1rem;
+      margin: 1.25rem 0;
+    }
+
+    .method-card-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgb(71 85 105);
+      margin-bottom: 0.5rem;
+    }
+
+    .method-card-signature {
+      margin-bottom: 0.75rem;
+    }
+
+    .method-card-signature code {
+      display: block;
+      white-space: pre-wrap;
+      border-radius: 0.5rem;
+      border: 1px solid rgb(203 213 225);
+      background: rgb(248 250 252);
+      color: rgb(15 23 42);
+      padding: 0.625rem 0.75rem;
+      font-size: 0.875rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .arg-list {
+      margin: 0;
+      padding: 0;
+    }
+
+    .arg-row {
+      padding: 0.75rem 0 0;
+      margin-top: 0.75rem;
+      border-top: 1px solid rgb(226 232 240);
+    }
+
+    .arg-row dt {
+      margin: 0;
+      font-weight: 600;
+      color: rgb(15 23 42);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.375rem;
+    }
+
+    .arg-row dd {
+      margin: 0.375rem 0 0;
+      color: rgb(71 85 105);
+      font-size: 0.875rem;
+    }
+
+    .arg-row dd p {
+      margin: 0;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 9999px;
+      padding: 0.125rem 0.5rem;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      border: 1px solid transparent;
+    }
+
+    .badge-type {
+      background: rgb(241 245 249);
+      border-color: rgb(203 213 225);
+      color: rgb(15 23 42);
+    }
+
+    .badge-required {
+      background: rgb(220 252 231);
+      border-color: rgb(134 239 172);
+      color: rgb(22 101 52);
+    }
+
+    .badge-optional {
+      background: rgb(254 249 195);
+      border-color: rgb(253 224 71);
+      color: rgb(133 77 14);
+    }
+
+    .badge-default {
+      background: rgb(224 231 255);
+      border-color: rgb(165 180 252);
+      color: rgb(55 48 163);
+    }
+
     @media (min-width: 640px) {
       .tab-select {
         display: none;
@@ -182,6 +300,26 @@
     }
 
     @media (prefers-color-scheme: dark) {
+      .callout {
+        border-color: rgb(51 65 85);
+        background: rgb(15 23 42 / 0.78);
+        color: rgb(203 213 225);
+      }
+
+      .callout-note {
+        border-color: rgb(20 83 45);
+        background: rgb(6 78 59 / 0.35);
+      }
+
+      .callout-warn {
+        border-color: rgb(146 64 14);
+        background: rgb(120 53 15 / 0.3);
+      }
+
+      .callout-title {
+        color: rgb(94 234 212);
+      }
+
       .doc-card {
         border-color: rgb(51 65 85);
         background: rgb(15 23 42 / 0.72);
@@ -203,6 +341,91 @@
 
       .doc-card a:hover {
         color: rgb(94 234 212);
+      }
+
+      .tab-group {
+        border-color: rgb(51 65 85);
+        background: rgb(15 23 42 / 0.6);
+      }
+
+      .tab-select {
+        background: rgb(15 23 42 / 0.7);
+        border-bottom-color: rgb(51 65 85);
+      }
+
+      .tab-select select {
+        background: rgb(15 23 42);
+        color: rgb(226 232 240);
+        border-color: rgb(71 85 105);
+      }
+
+      .tab-panel {
+        color: rgb(203 213 225);
+      }
+
+      .tab-nav {
+        border-bottom-color: rgb(51 65 85);
+        background: rgb(15 23 42 / 0.7);
+      }
+
+      .tab-link {
+        color: rgb(148 163 184);
+      }
+
+      .tab-link-active {
+        color: rgb(45 212 191);
+        border-bottom-color: rgb(45 212 191);
+      }
+
+      .method-card {
+        border-color: rgb(51 65 85);
+        background: rgb(15 23 42 / 0.72);
+      }
+
+      .method-card-title {
+        color: rgb(148 163 184);
+      }
+
+      .method-card-signature code {
+        border-color: rgb(51 65 85);
+        background: rgb(2 6 23);
+        color: rgb(226 232 240);
+      }
+
+      .arg-row {
+        border-top-color: rgb(51 65 85);
+      }
+
+      .arg-row dt {
+        color: rgb(226 232 240);
+      }
+
+      .arg-row dd {
+        color: rgb(148 163 184);
+      }
+
+      .badge-type {
+        background: rgb(30 41 59);
+        border-color: rgb(71 85 105);
+        color: rgb(226 232 240);
+      }
+
+      .badge-required {
+        background: rgb(20 83 45 / 0.5);
+        border-color: rgb(22 101 52);
+        color: rgb(187 247 208);
+      }
+
+      .badge-optional {
+        background: rgb(120 53 15 / 0.45);
+        border-color: rgb(146 64 14);
+        color: rgb(254 240 138);
+      }
+
+      .badge-default {
+        background: rgb(49 46 129 / 0.45);
+        border-color: rgb(67 56 202);
+        color: rgb(199 210 254);
       }
     }
   </style>
