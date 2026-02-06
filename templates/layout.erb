@@ -57,6 +57,28 @@
       display: none !important;
     }
 
+    .gradient-text {
+      background: linear-gradient(90deg, #0d9488, #0891b2, #06b6d4, #0d9488);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradient-shift 3s linear infinite;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .gradient-text {
+        background: linear-gradient(90deg, #14b8a6, #0ea5e9, #22d3ee, #14b8a6);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+    }
+
+    @keyframes gradient-shift {
+      0% { background-position: 0% center; }
+      100% { background-position: 200% center; }
+    }
+
     nav#on-this-page ul {
       margin-top: 1rem;
       list-style: none;

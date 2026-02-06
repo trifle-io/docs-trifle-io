@@ -12,3 +12,14 @@ Trifle::Docs.configure do |config|
   config.register_harvester(Trifle::Docs::Harvester::File)
   config.cache = ENV['APP_ENV'] == 'production'
 end
+
+module TrifleIo
+  class Docs < Trifle::Docs::App
+    not_found do
+      erb :not_found, layout: :layout, locals: {
+        meta: nil,
+        sitemap: Trifle::Docs.sitemap || {}
+      }
+    end
+  end
+end
