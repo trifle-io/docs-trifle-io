@@ -562,8 +562,16 @@
                         <% next unless child_url %>
                         <% child_active = current_path == child_url || current_path.start_with?("#{child_url}/") %>
 
+                        <% child_has_children = child.any? { |k, v| k != '_meta' && v.is_a?(Hash) && v.dig('_meta', 'url') } %>
                         <li>
-                          <a href="<%= child_url %>" class="<%= child_active ? 'text-teal-600 dark:text-teal-400 font-medium' : 'text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400' %>"><%= child.dig('_meta', 'title') %></a>
+                          <a href="<%= child_url %>" class="flex items-center gap-1 <%= child_active ? 'text-teal-600 dark:text-teal-400 font-medium' : 'text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400' %>">
+                            <% if child_has_children %>
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 shrink-0 transition-transform <%= child_active ? 'rotate-90' : '' %>" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                              </svg>
+                            <% end %>
+                            <span><%= child.dig('_meta', 'title') %></span>
+                          </a>
 
                           <% if child_active %>
                             <ul class="mt-1 ml-3 border-l border-slate-200 dark:border-slate-800 pl-3 space-y-1">
