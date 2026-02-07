@@ -452,14 +452,21 @@
     }
   </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased transition-colors">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased transition-colors" x-data="{ sidebarOpen: false }">
   <% current_path = request.path_info.to_s.empty? ? '/' : request.path_info %>
   <% search_action = [request.script_name, 'search'].join('/').gsub(%r{/+}, '/') %>
   <% search_action = "/#{search_action}" unless search_action.start_with?('/') %>
 
   <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800" aria-label="Main navigation">
     <div class="max-w-7xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-4">
-      <a href="/" class="flex items-center gap-2" aria-label="Trifle Docs Home">
+      <div class="flex items-center gap-2">
+        <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden p-1.5 -ml-1.5 rounded-md text-slate-600 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition" aria-label="Toggle navigation menu">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path x-show="!sidebarOpen" stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            <path x-cloak x-show="sidebarOpen" stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+        <a href="/" class="flex items-center gap-2" aria-label="Trifle Docs Home">
         <svg
           viewBox="0 0 72 84"
           class="h-8 w-8 text-teal-500"
@@ -479,6 +486,7 @@
         </svg>
         <span class="font-semibold text-lg">Trifle</span>
       </a>
+      </div>
 
       <form action="<%= search_action %>" method="get" class="w-full md:w-auto md:min-w-[28rem] lg:min-w-[34rem]" role="search" aria-label="Search documentation">
         <div class="flex items-center rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden">
@@ -516,11 +524,28 @@
     </div>
   </nav>
 
+  <!-- Mobile sidebar backdrop -->
+  <div
+    x-show="sidebarOpen"
+    x-transition:enter="transition-opacity duration-200"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition-opacity duration-150"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    @click="sidebarOpen = false"
+    class="fixed inset-0 z-30 bg-slate-900/50 backdrop-blur-sm lg:hidden"
+    x-cloak
+  ></div>
+
   <div class="pt-28 pb-20 px-6">
     <div class="max-w-[88rem] mx-auto flex gap-10">
-      <aside class="hidden lg:block w-72 shrink-0">
-        <div class="sticky top-28">
-          <nav aria-label="Documentation navigation">
+      <aside
+        class="fixed top-0 left-0 z-40 h-full w-72 bg-slate-50 dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 pt-20 pb-6 px-6 overflow-y-auto -translate-x-full transition-transform duration-200 lg:relative lg:h-auto lg:z-auto lg:border-0 lg:bg-transparent lg:dark:bg-transparent lg:pt-0 lg:pb-0 lg:px-0 lg:overflow-visible lg:translate-x-0 lg:transition-none shrink-0"
+        :class="sidebarOpen && '!translate-x-0 shadow-xl'"
+      >
+        <div class="lg:sticky lg:top-28">
+          <nav aria-label="Documentation navigation" @click="if ($event.target.closest('a')) sidebarOpen = false">
             <ul class="space-y-5 text-sm">
               <li>
                 <a href="/" class="group flex items-center gap-2 font-semibold <%= current_path == '/' ? 'text-teal-600 dark:text-teal-400' : 'text-slate-700 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-400' %>">
