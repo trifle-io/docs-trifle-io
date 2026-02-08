@@ -4,6 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= meta&.dig('title') ? "#{meta['title']} | Trifle Docs" : 'Trifle Docs' %></title>
+  <meta name="description" content="<%= meta&.dig('description') || 'Documentation for Trifle - time-series metrics library for Ruby, Elixir, and Go.' %>">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://docs.trifle.io<%= request.path_info %>">
+  <meta property="og:title" content="<%= meta&.dig('title') ? "#{meta['title']} | Trifle Docs" : 'Trifle Docs' %>">
+  <meta property="og:description" content="<%= meta&.dig('description') || 'Documentation for Trifle - time-series metrics library for Ruby, Elixir, and Go.' %>">
+  <meta property="og:image" content="https://trifle.io/landing.jpg">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<%= meta&.dig('title') ? "#{meta['title']} | Trifle Docs" : 'Trifle Docs' %>">
+  <meta name="twitter:description" content="<%= meta&.dig('description') || 'Documentation for Trifle - time-series metrics library for Ruby, Elixir, and Go.' %>">
+  <meta name="twitter:image" content="https://trifle.io/landing.jpg">
+
   <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <script>
