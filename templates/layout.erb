@@ -6,6 +6,26 @@
   <title><%= meta&.dig('title') ? "#{meta['title']} | Trifle Docs" : 'Trifle Docs' %></title>
   <meta name="description" content="<%= meta&.dig('description') || 'Documentation for Trifle - time-series metrics library for Ruby, Elixir, and Go.' %>">
 
+  <!-- Favicons -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon_dark/apple-touch-icon.png" id="apple-touch-icon">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon_dark/favicon-32x32.png" id="favicon-32">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon_dark/favicon-16x16.png" id="favicon-16">
+  <link rel="manifest" href="/favicon_dark/site.webmanifest" id="webmanifest">
+  <script>
+    (function() {
+      function setFavicons(theme) {
+        var d = theme === 'dark' ? 'favicon_light' : 'favicon_dark';
+        document.getElementById('apple-touch-icon').href = '/' + d + '/apple-touch-icon.png';
+        document.getElementById('favicon-32').href = '/' + d + '/favicon-32x32.png';
+        document.getElementById('favicon-16').href = '/' + d + '/favicon-16x16.png';
+        document.getElementById('webmanifest').href = '/' + d + '/site.webmanifest';
+      }
+      var mq = window.matchMedia('(prefers-color-scheme: dark)');
+      setFavicons(mq.matches ? 'dark' : 'light');
+      mq.addEventListener('change', function(e) { setFavicons(e.matches ? 'dark' : 'light'); });
+    })();
+  </script>
+
   <!-- Open Graph -->
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://docs.trifle.io<%= request.path_info %>">
