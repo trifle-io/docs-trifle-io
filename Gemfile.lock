@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/trifle-io/trifle-docs.git
-  revision: 1c291500427a3e7f62235a7fdd24c0cb89c2acc0
+  revision: d9ff8ae139a74726188e9804015aa37d3e4f93bd
   branch: main
   specs:
     trifle-docs (0.7.1)
