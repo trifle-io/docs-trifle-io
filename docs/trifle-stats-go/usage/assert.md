@@ -8,6 +8,8 @@ nav_order: 2
 
 Asserting values runs `set` on the driver. Use it for gauges or values you want to overwrite at a timestamp and across configured granularities.
 
+If buffering is enabled (`cfg.BufferEnabled = true`), writes may be delayed until buffer flush conditions are met.
+
 ## `Assert(cfg *Config, key string, at time.Time, values map[string]any, opts ...TrackOption) error`
 
 :::signature Assert(cfg *Config, key string, at time.Time, values map[string]any, opts ...TrackOption) error

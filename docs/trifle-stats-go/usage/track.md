@@ -8,6 +8,8 @@ nav_order: 1
 
 Tracking values runs `inc` on the driver. Each call increments the counters for the given key and all configured granularities.
 
+If buffering is enabled (`cfg.BufferEnabled = true`), writes may be delayed until buffer flush conditions are met.
+
 ## `Track(cfg *Config, key string, at time.Time, values map[string]any, opts ...TrackOption) error`
 
 :::signature Track(cfg *Config, key string, at time.Time, values map[string]any, opts ...TrackOption) error

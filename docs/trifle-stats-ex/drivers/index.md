@@ -17,6 +17,7 @@ A driver persists and retrieves values. It must implement:
 ## Available drivers
 
 - [Mongo](/trifle-stats-ex/drivers/mongo)
+- [MySQL](/trifle-stats-ex/drivers/mysql)
 - PostgreSQL (`Trifle.Stats.Driver.Postgres`)
 - Redis (`Trifle.Stats.Driver.Redis`)
 - SQLite (`Trifle.Stats.Driver.Sqlite`)

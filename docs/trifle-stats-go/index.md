@@ -7,13 +7,14 @@ lang: <circle cx="40" cy="64" r="24" fill="none" stroke="currentColor" stroke-wi
 
 # Trifle Stats
 
-`trifle_stats_go` is a Go library for tracking time-series metrics with a SQLite driver.
+`trifle_stats_go` is a Go library for tracking time-series metrics with pluggable drivers.
 
 ## What it does
 
 - Tracks counters and numeric payloads per key.
 - Reads back series by timeframe and granularity.
-- Supports SQLite as the storage backend.
+- Supports SQLite, PostgreSQL, MySQL, Redis, and MongoDB backends.
+- Supports buffered writes with size/duration/aggregation controls.
 - Includes aggregators, formatters, and transponders for post-processing series.
 
 ## Quick example
@@ -25,19 +26,23 @@ import (
   "database/sql"
   "time"
 
-  _ "modernc.org/sqlite"
+  _ "github.com/jackc/pgx/v5/stdlib"
   TrifleStats "github.com/trifle-io/trifle_stats_go"
 )
 
 func main() {
-  db, _ := sql.Open("sqlite", "file:stats.db?cache=shared&mode=rwc")
-  driver := TrifleStats.NewSQLiteDriver(db, "trifle_stats", TrifleStats.JoinedFull)
+  db, _ := sql.Open("pgx", "postgres://postgres:password@localhost:5432/postgres?sslmode=disable")
+  driver := TrifleStats.NewPostgresDriver(db, "trifle_stats", TrifleStats.JoinedSeparated)
   _ = driver.Setup()
 
   cfg := TrifleStats.DefaultConfig()
   cfg.Driver = driver
   cfg.TimeZone = "UTC"
   cfg.Granularities = []string{"1h", "1d"}
+  cfg.BufferEnabled = true
+  cfg.BufferDuration = 1 * time.Second
+  cfg.BufferSize = 256
+  cfg.BufferAggregate = true
 
   _ = TrifleStats.Track(cfg, "event::uploads", time.Now().UTC(), map[string]any{"count": 1})
 
@@ -50,7 +55,8 @@ func main() {
 
 - `Values` returns `{ at: [...], values: [...] }` for the bucketed series.
 - Payloads can be nested maps; leaf values must be numeric.
-- The SQLite driver uses JSON1 functions for in-place updates.
+- SQL and Redis drivers store packed dot-notation keys; Mongo stores nested docs.
+- Writes are buffered by default. Disable with `cfg.BufferEnabled = false` for immediate writes.
 
 ## Next steps
 

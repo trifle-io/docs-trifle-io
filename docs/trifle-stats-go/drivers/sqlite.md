@@ -24,9 +24,15 @@ _ = driver.Setup()
 
 ## Options
 
-- `tableName` — table name (default: `"trifle_stats"`)
-- `JoinedFull`, `JoinedPartial`, `JoinedSeparated` — identifier mode
-- `Separator` — key separator for joined identifiers (default: `"::"`)
+- `tableName` — table name (default: `"trifle_stats"`).
+- `JoinedFull`, `JoinedPartial`, `JoinedSeparated` — identifier mode.
+- `Separator` — key separator for joined identifiers (default: `"::"`).
+- `SystemTracking` — when true, writes are mirrored to `__system__key__` for per-key counts.
+
+```go
+driver := TrifleStats.NewSQLiteDriver(db, "trifle_stats", TrifleStats.JoinedSeparated)
+driver.SystemTracking = true
+```
 
 ## Identifier modes
 

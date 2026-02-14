@@ -68,6 +68,12 @@ You can pass a map of `driver_options:` to override driver-specific behavior:
 - `ping_table_name` (default: `"trifle_stats_ping"`)
 - `joined_identifier` (`:full`, `:partial`, or `nil`)
 
+### MySQL
+- `table_name` (default: `"trifle_stats"`)
+- `ping_table_name` (default: `"trifle_stats_ping"`)
+- `joined_identifier` (`:full`, `:partial`, or `nil`)
+- `system_tracking` (default: `true`)
+
 ### Redis
 - `prefix` (default: `"trfl"`)
 

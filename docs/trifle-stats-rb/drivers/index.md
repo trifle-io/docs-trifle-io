@@ -24,6 +24,7 @@ Not all databases support same functionality. While it is important to keep thes
 |----------|--------|-----------------|--------------------|--------------|
 | Redis    | YES    | NO              | NO                 | YES          |
 | Postgres | NO     | YES             | YES                | NO           |
+| MySQL    | NO     | YES             | YES                | NO           |
 | Mongo    | NO     | YES             | YES                | YES          |
 | Sqlite   | NO     | YES             | YES                | NO           |
 | Process  | NO     | NO              | NO                 | NO           |

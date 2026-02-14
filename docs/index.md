@@ -77,7 +77,7 @@ Trifle.Stats.track("event::signup", DateTime.utc_now(), %{count: 1})
 :::
 
 :::card "TrifleStats" "Go · Time-series metrics" "Docs" "/trifle-stats-go/"
-Go library for tracking counters and reading series with SQLite.
+Go library for tracking counters and reading series with SQLite, Postgres, MySQL, Redis, or MongoDB.
 
 ```go
 import TrifleStats "github.com/trifle-io/trifle_stats_go"

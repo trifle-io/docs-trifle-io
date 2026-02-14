@@ -8,6 +8,8 @@ nav_order: 4
 
 Trifle Stats (Go) exposes a small set of top-level functions that map directly to driver operations. You can use them as-is, or wrap returned data in `Series` for richer analysis.
 
+By default, `DefaultConfig()` enables buffered writes. Set `cfg.BufferEnabled = false` if you need fully synchronous writes.
+
 :::callout note "Main methods"
 - `Track` increments counters for a key.
 - `Assert` sets values for a key at a specific time.

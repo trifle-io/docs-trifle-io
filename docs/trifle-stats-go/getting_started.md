@@ -6,7 +6,9 @@ nav_order: 3
 
 # Getting Started
 
-## 1. Setup the SQLite driver
+## 1. Setup a driver
+
+This example uses SQLite, but you can swap in Postgres, MySQL, Redis, or MongoDB.
 
 ```go
 import (
@@ -27,6 +29,7 @@ cfg := TrifleStats.DefaultConfig()
 cfg.Driver = driver
 cfg.TimeZone = "UTC"
 cfg.Granularities = []string{"1h", "1d"}
+cfg.BufferEnabled = false // disable buffering for immediate writes in small demos
 ```
 
 ## 3. Track and read values
