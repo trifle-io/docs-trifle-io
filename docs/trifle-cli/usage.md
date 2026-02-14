@@ -25,7 +25,7 @@ export TRIFLE_TOKEN="<READ_TOKEN>"
 trifle metrics get --key event::signup --from 2026-01-24T00:00:00Z --to 2026-01-25T00:00:00Z --granularity 1h
 ```
 
-@tab SQLite (local)
+@tab Local (sqlite example)
 ```sh
 trifle metrics setup --driver sqlite --db ./stats.db
 
@@ -52,27 +52,109 @@ trifle metrics get \
 - If `--granularity` is omitted, the CLI uses the source default from `/api/v1/source`.
 - Value paths (`--value-path`) must be **single paths** (no wildcards).
 
-## SQLite driver
+## Local drivers
 
-Use `--driver sqlite` with a local SQLite database. Initialize the schema once:
+Use `--driver` with one of `sqlite`, `postgres`, `mysql`, `redis`, `mongo`.
 
+:::tabs
+@tab SQLite
 ```sh
 trifle metrics setup --driver sqlite --db ./stats.db
+trifle metrics push --driver sqlite --db ./stats.db --key event::signup --values '{"count":1}'
+trifle metrics get --driver sqlite --db ./stats.db --key event::signup --granularity 1h
 ```
 
-If you configure sqlite as a named source, select it with `--source`:
+@tab Postgres
+```sh
+trifle metrics setup \
+  --driver postgres \
+  --host 127.0.0.1 --port 5432 \
+  --user postgres --password password \
+  --database trifle_stats
+
+trifle metrics push \
+  --driver postgres \
+  --dsn "postgres://postgres:password@127.0.0.1:5432/trifle_stats?sslmode=disable" \
+  --key event::signup --values '{"count":1}'
+
+trifle metrics get \
+  --driver postgres \
+  --dsn "postgres://postgres:password@127.0.0.1:5432/trifle_stats?sslmode=disable" \
+  --key event::signup --granularity 1h
+```
+
+@tab MySQL
+```sh
+trifle metrics setup \
+  --driver mysql \
+  --host 127.0.0.1 --port 3306 \
+  --user root --password password \
+  --database trifle_stats
+
+trifle metrics push \
+  --driver mysql \
+  --dsn "root:password@tcp(127.0.0.1:3306)/trifle_stats?parseTime=true&loc=UTC" \
+  --key event::signup --values '{"count":1}'
+
+trifle metrics get \
+  --driver mysql \
+  --dsn "root:password@tcp(127.0.0.1:3306)/trifle_stats?parseTime=true&loc=UTC" \
+  --key event::signup --granularity 1h
+```
+
+@tab Redis
+```sh
+trifle metrics setup --driver redis --host 127.0.0.1 --port 6379 --prefix trifle:metrics
+trifle metrics push --driver redis --prefix trifle:metrics --key event::signup --values '{"count":1}'
+trifle metrics get --driver redis --prefix trifle:metrics --key event::signup --granularity 1h
+```
+
+@tab Mongo
+```sh
+trifle metrics setup \
+  --driver mongo \
+  --dsn mongodb://127.0.0.1:27017 \
+  --database trifle_stats \
+  --collection trifle_stats
+
+trifle metrics push \
+  --driver mongo \
+  --dsn mongodb://127.0.0.1:27017 \
+  --database trifle_stats --collection trifle_stats \
+  --key event::signup --values '{"count":1}'
+
+trifle metrics get \
+  --driver mongo \
+  --dsn mongodb://127.0.0.1:27017 \
+  --database trifle_stats --collection trifle_stats \
+  --key event::signup --granularity 1h
+```
+:::
+
+Buffering example:
 
 ```sh
-trifle metrics get --source sqlite --key event::signup --granularity 1h
+trifle metrics push \
+  --driver postgres \
+  --database trifle_stats \
+  --buffer-mode auto \
+  --buffer-drivers postgres,mysql \
+  --buffer-duration 2s \
+  --buffer-size 500 \
+  --buffer-aggregate \
+  --buffer-async \
+  --key event::signup \
+  --values '{"count":1}'
 ```
 
-Supported commands:
+Supported commands for local drivers:
 - `metrics push` (with `--mode track|assert`)
 - `metrics get` (with `--skip-blanks`)
 - `metrics keys` (reads `__system__key__` when available)
 - `metrics aggregate`
 - `metrics timeline`
 - `metrics category`
+- `metrics setup` (`sqlite`/`postgres`/`mysql`/`mongo`; for `redis` this is a no-op)
 
 ## Metrics
 
@@ -86,7 +168,7 @@ Fetch available metric keys from the system series.
 trifle metrics keys --from 2026-01-24T00:00:00Z --to 2026-01-25T00:00:00Z
 ```
 
-@tab SQLite
+@tab Local (sqlite example)
 ```sh
 trifle metrics keys --driver sqlite --db ./stats.db --granularity 1h
 ```
@@ -152,7 +234,7 @@ trifle metrics get \
   --granularity 1h
 ```
 
-@tab SQLite
+@tab Local (sqlite example)
 ```sh
 trifle metrics get \
   --driver sqlite \
@@ -188,7 +270,7 @@ trifle metrics push \
   --values '{"count": 1, "duration": 0.42}'
 ```
 
-@tab SQLite
+@tab Local (sqlite example)
 ```sh
 trifle metrics push \
   --driver sqlite \
@@ -244,7 +326,7 @@ trifle metrics aggregate \
   --format table
 ```
 
-@tab SQLite
+@tab Local (sqlite example)
 ```sh
 trifle metrics aggregate \
   --driver sqlite \
@@ -302,7 +384,7 @@ trifle metrics timeline \
   --granularity 1h
 ```
 
-@tab SQLite
+@tab Local (sqlite example)
 ```sh
 trifle metrics timeline \
   --driver sqlite \
@@ -353,7 +435,7 @@ trifle metrics category \
   --granularity 1h
 ```
 
-@tab SQLite
+@tab Local (sqlite example)
 ```sh
 trifle metrics category \
   --driver sqlite \

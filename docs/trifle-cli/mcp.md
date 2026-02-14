@@ -48,8 +48,8 @@ MCP uses the same configuration as the CLI:
 --timeout | Duration | optional | `30s` | HTTP timeout.
 :::
 
-:::callout note "SQLite sources"
-- MCP can use the sqlite driver when your config source uses `driver: sqlite`.
+:::callout note "Local sources"
+- MCP can use local drivers when your config source uses `driver: sqlite`, `postgres`, `mysql`, `redis`, or `mongo`.
 - Transponder tools/resources are only available for API sources.
 :::
 

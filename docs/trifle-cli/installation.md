@@ -16,5 +16,5 @@ nav_order: 1
 cd cli
 go build -o trifle .
 ```
-Requires Go `1.22+`.
+Requires Go `1.24+`.
 :::
