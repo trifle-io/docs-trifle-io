@@ -5,13 +5,11 @@ svg: M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.
 
 # Welcome to Trifle Documentation
 
-Opinionated [Swiss Army knife](https://en.wikipedia.org/wiki/Swiss_Army_knife) of little big tools.
+A collection of small, focused libraries for solving everyday problems — time-series metrics, execution tracing, structured logging, and more. Available for Ruby, Elixir, and Go.
 
-These gems came from necessity of building better solutions to common problems. Tired of using _shitty_ analytics and reading through _shitty_ log output. These are small and simple. And that is OK. It is not one solution fits all type of things.
+Born out of frustration with bloated tools that do too much and none of it well. Each library does one thing, keeps a small footprint, and stays out of your way.
 
-All gems from this collection are released under MIT license.
-
-Made by galons of ☕️ and 🍺 by [JozefVaclavik](https://twitter.com/JozefVaclavik).
+All libraries are released under the MIT license.
 
 ---
 

@@ -42,6 +42,14 @@
   <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <script>
+    document.addEventListener('keydown', function(e) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        document.getElementById('query').focus();
+      }
+    });
+  </script>
+  <script>
     tailwind.config = {
       darkMode: 'media',
       theme: {
@@ -524,7 +532,7 @@
       </div>
 
       <form action="<%= search_action %>" method="get" class="w-full md:w-auto md:min-w-[28rem] lg:min-w-[34rem]" role="search" aria-label="Search documentation">
-        <div class="flex items-center rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden">
+        <div class="flex items-center rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden transition-colors focus-within:border-teal-500 focus-within:ring-1 focus-within:ring-teal-500">
           <label for="scope" class="sr-only">Scope</label>
           <select id="scope" name="scope" class="border-0 bg-transparent text-sm text-slate-600 dark:text-slate-300 pl-3 py-2 focus:ring-0">
             <option value="">All docs</option>
@@ -544,7 +552,11 @@
             value="<%= params['query'] %>"
             placeholder="Search docs..."
             class="w-full border-0 bg-transparent px-3 py-2 text-sm placeholder-slate-400 focus:ring-0"
+            @keydown.escape="$el.blur()"
           >
+          <kbd class="hidden sm:inline-flex items-center gap-0.5 rounded border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 text-[10px] font-medium text-slate-400 dark:text-slate-500 mr-1 pointer-events-none" aria-hidden="true">
+            <span x-text="navigator.platform.indexOf('Mac') > -1 ? '⌘' : 'Ctrl'"></span><span>K</span>
+          </kbd>
           <button type="submit" class="px-3 py-2 text-sm font-semibold text-teal-700 dark:text-teal-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
             Search
           </button>
