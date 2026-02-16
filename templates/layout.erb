@@ -3,8 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <% raw_path = "#{request.script_name}#{request.path_info}" %>
+  <% canonical_path = raw_path == '/' ? '/' : raw_path.sub(%r{/+$}, '') %>
+  <% canonical_url = "https://docs.trifle.io#{canonical_path}" %>
+  <% noindex_page = canonical_path.end_with?('/search') %>
   <title><%= meta&.dig('title') ? "#{meta['title']} | Trifle Docs" : 'Trifle Docs' %></title>
   <meta name="description" content="<%= meta&.dig('description') || 'Documentation for Trifle - time-series metrics library for Ruby, Elixir, and Go.' %>">
+  <link rel="canonical" href="<%= canonical_url %>">
+  <% if noindex_page %><meta name="robots" content="noindex,follow"><% end %>
 
   <!-- Favicons -->
   <link rel="apple-touch-icon" sizes="180x180" href="/favicon_dark/apple-touch-icon.png" id="apple-touch-icon">
@@ -28,7 +34,7 @@
 
   <!-- Open Graph -->
   <meta property="og:type" content="article">
-  <meta property="og:url" content="https://docs.trifle.io<%= request.path_info %>">
+  <meta property="og:url" content="<%= canonical_url %>">
   <meta property="og:title" content="<%= meta&.dig('title') ? "#{meta['title']} | Trifle Docs" : 'Trifle Docs' %>">
   <meta property="og:description" content="<%= meta&.dig('description') || 'Documentation for Trifle - time-series metrics library for Ruby, Elixir, and Go.' %>">
   <meta property="og:image" content="https://trifle.io/landing.jpg">

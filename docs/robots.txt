@@ -1,2 +1,4 @@
 User-agent: *
 Allow: /
+
+Sitemap: https://docs.trifle.io/sitemap.xml
