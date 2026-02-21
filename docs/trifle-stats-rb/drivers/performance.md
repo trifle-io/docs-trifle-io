@@ -10,9 +10,7 @@ One note about performance of the drivers. While these are small operations agai
 
 `Redis` driver is performing single `inc`/`set` operation for each key/value pair for every specified period. That means to store hash with 10 key/value pairs, it will make 10 calls to database multiplied by tracked periods. It adds up quickly.
 
-`Mongo`, `Postgres` and `Sqlite` on the other side supports single `inc`/`set` operation on multiple key/value pairs at a time. This allows it to make single call to database even if you are tracking 50 values for multiple periods. `Mongo` executes all periods as a bulk action, while `Postgres` an `Sqlite` executes all periods as a single transaction. This makese them behave somewhat similar.
-
-> `Sqlite` has hard-limit of maximum 23 keys it can track. For anything over that it raises `parser stack overflow (SQLite3::SQLException)`.
+`Mongo`, `Postgres` and `Sqlite` on the other side supports single `inc`/`set` operation on multiple key/value pairs at a time. This allows it to make single call to database even if you are tracking 50 values for multiple periods. `Mongo` executes all periods as a bulk action, while `Postgres` an `Sqlite` executes all periods as a single transaction. `Sqlite` automatically batches writes into chunks of 10 nested `json_set` calls to avoid parser stack overflow, so it can handle payloads of any width.
 
 Keep that in mind when working with data. Each driver fits better for different usecase.
 

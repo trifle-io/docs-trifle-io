@@ -40,6 +40,12 @@ trifle metrics get --driver sqlite --db ./stats.db --key event::signup --granula
 
 ---
 
+# Skills
+
+Agent skills that teach AI coding agents (Claude Code, Codex, Cursor, and others) how to use Trifle effectively. Install a skill and your agent knows how to structure metrics payloads, trace execution flow, and run CLI analytics — following best practices out of the box. Available at [github.com/trifle-io/skills](https://github.com/trifle-io/skills). [Read more](/trifle-skills/).
+
+---
+
 # Plugins
 
 These are gems and plugins you can plug into your app to start building.
