@@ -7,14 +7,20 @@ nav_order: 1
 # Installation
 
 :::tabs
-@tab Download
-- Download a release from GitHub (macOS/Linux).
-- Place `trifle` somewhere on your PATH.
-
-@tab Build locally
+@tab Homebrew
 ```sh
-cd cli
-go build -o trifle .
+brew install trifle-io/trifle/trifle
 ```
-Requires Go `1.24+`.
+
+@tab Shell
+```sh
+curl -sSL https://get.trifle.io | sh
+```
+Detects your OS and architecture, downloads the latest binary to `/usr/local/bin`.
+
+@tab Go
+```sh
+go install github.com/trifle-io/trifle-cli@latest
+```
+Requires Go `1.24+`. Installs to `$GOPATH/bin`.
 :::
