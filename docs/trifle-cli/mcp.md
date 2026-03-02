@@ -1,7 +1,7 @@
 ---
 title: MCP Server
 description: Run Trifle CLI in MCP mode for AI agents.
-nav_order: 4
+nav_order: 5
 ---
 
 # MCP Server
@@ -29,6 +29,7 @@ TRIFLE_URL=https://<your-host> TRIFLE_TOKEN=<TOKEN> trifle mcp
 :::callout warn "Token required"
 - MCP mode does **not** prompt for a token.
 - Pass `--token` or set `TRIFLE_TOKEN`.
+- User API tokens (`TRIFLE_USER_TOKEN`) are for bootstrap commands only (`trifle auth` / `trifle source`).
 :::
 
 :::callout warn "URL scheme matters"

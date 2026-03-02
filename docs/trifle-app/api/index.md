@@ -20,6 +20,9 @@ Base URL depends on your deployment.
 
 All API requests (except health) use bearer tokens.
 
+- **Bootstrap user tokens** authenticate `/api/v1/bootstrap/*` endpoints (signup/login/source setup flow).
+- **Source tokens** authenticate metrics/dashboards/monitors/transponders endpoints.
+
 ### Request
 
 :::tabs
@@ -124,6 +127,7 @@ echo $body;
 - **Project tokens** can be read or write.
 - **Database tokens** are read-only.
 - Write permissions are enforced for metrics ingestion only.
+- **User API tokens** are bootstrap/control-plane tokens. Use them to create organizations/sources and mint source tokens.
 
 :::callout note "Self-hosted defaults"
 - If you self-host and keep `features.projects.enabled: false`, you won’t have project tokens.
@@ -183,6 +187,7 @@ Machine-readable spec is available at:
 ## Endpoints
 
 - [/health](/trifle-app/api/health)
+- [/bootstrap](/trifle-app/api/bootstrap)
 - [/source](/trifle-app/api/source)
 - [/metrics](/trifle-app/api/metrics)
 - [/transponders](/trifle-app/api/transponders)

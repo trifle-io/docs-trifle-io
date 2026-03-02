@@ -1,7 +1,7 @@
 ---
 title: Usage
 description: Common CLI workflows for metrics and transponders.
-nav_order: 3
+nav_order: 4
 ---
 
 # Usage
@@ -44,6 +44,33 @@ trifle metrics get \
   --granularity 1h
 ```
 :::
+
+## Bootstrap (signup/login + source setup)
+
+Use bootstrap commands to authenticate as a user, create or configure sources, mint a source token, and persist config for regular `metrics` commands.
+
+```sh
+# 1) Authenticate
+trifle auth login \
+  --url https://app.trifle.io \
+  --email user@example.com \
+  --password '<password>'
+
+# 2) Create a project source (or use `source create database`)
+trifle source create project --name "Agent Project"
+
+# 3) List available sources and pick a source ID
+trifle source list
+
+# 4) Create and save a source token
+trifle source token create \
+  --source-type project \
+  --source-id <PROJECT_ID> \
+  --name "CLI write" \
+  --save --activate
+```
+
+After this, the active config source has `driver: api` and a source token, so regular commands work without passing `--token`.
 
 ## Common behaviors
 

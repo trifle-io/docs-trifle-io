@@ -9,10 +9,16 @@ svg: m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2
 
 The Trifle CLI lets you query and push metrics over the Trifle App API or local drivers (`sqlite`, `postgres`, `mysql`, `redis`, `mongo`). It also ships an MCP server mode for AI agents.
 
+For agent bootstrap flows, use:
+
+- `trifle auth ...` for signup/login and user API token management
+- `trifle source ...` for source creation/setup and source token generation
+
 ## Quick links
 
 - [Installation](/trifle-cli/installation)
 - [Configuration](/trifle-cli/configuration)
+- [Getting Started](/trifle-cli/getting-started)
 - [Usage](/trifle-cli/usage)
 - [MCP server](/trifle-cli/mcp)
 - [Changelog](/trifle-cli/changelog)

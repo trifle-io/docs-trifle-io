@@ -39,3 +39,11 @@ driver.SystemTracking = true
 - **JoinedFull**: `key` column stores `prefix::key::granularity::unix`.
 - **JoinedPartial**: `key` and `at` columns.
 - **JoinedSeparated**: `key`, `granularity`, `at` columns.
+
+## Timestamp format
+
+For `JoinedPartial` and `JoinedSeparated`, SQLite stores `at` as RFC3339 UTC text.
+
+- Example stored value: `2026-02-25T00:00:00Z`
+- This keeps SQLite compatible across Go, Ruby, and Elixir drivers.
+- Legacy SQLite rows stored as `YYYY-MM-DD HH:MM:SS` should be migrated to RFC3339 UTC before cross-driver reuse.

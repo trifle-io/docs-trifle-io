@@ -6,7 +6,13 @@ nav_order: 100
 
 # Changelog
 
-### **2.3.0** - *Jan 23, 2025*
+### **2.4.1** - *February 25, 2026*
+  - Fix: Nocturnal timezone flooring.
+
+### **2.4.0** - *February 25, 2026*
+  - Fix: Better SQLite cross-platform compatibility
+
+### **2.3.0** - *January 23, 2026*
   Another bulk of changes released all at once.
   - Feat: Buffering.
   - Feat: System Tracking.

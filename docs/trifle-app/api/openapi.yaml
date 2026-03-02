@@ -14,6 +14,7 @@ security:
 
 tags:
   - name: Health
+  - name: Bootstrap
   - name: Source
   - name: Metrics
   - name: Transponders
@@ -33,6 +34,236 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthResponse"
+
+  /bootstrap/signup:
+    post:
+      tags: [Bootstrap]
+      summary: Create user account and issue user API token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BootstrapSignupRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BootstrapAuthResponse"
+        "403":
+          description: Registration disabled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /bootstrap/login:
+    post:
+      tags: [Bootstrap]
+      summary: Log in and issue user API token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BootstrapLoginRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BootstrapAuthResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /bootstrap/me:
+    get:
+      tags: [Bootstrap]
+      summary: Fetch current user bootstrap context
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BootstrapMeResponse"
+
+  /bootstrap/organizations:
+    post:
+      tags: [Bootstrap]
+      summary: Create organization for current user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BootstrapCreateOrganizationRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BootstrapCreateOrganizationResponse"
+        "409":
+          description: User already belongs to organization
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /bootstrap/sources:
+    get:
+      tags: [Bootstrap]
+      summary: List projects and databases for current membership
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BootstrapListSourcesResponse"
+
+  /bootstrap/databases:
+    post:
+      tags: [Bootstrap]
+      summary: Create database source
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BootstrapCreateDatabaseRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BootstrapCreateSourceResponse"
+        "409":
+          description: Organization required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /bootstrap/databases/{id}/setup:
+    post:
+      tags: [Bootstrap]
+      summary: Run setup for database source
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BootstrapDatabaseSetupResponse"
+        "404":
+          description: Source not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Setup failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /bootstrap/projects:
+    post:
+      tags: [Bootstrap]
+      summary: Create project source
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BootstrapCreateProjectRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BootstrapCreateSourceResponse"
+        "403":
+          description: Projects disabled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /bootstrap/source-tokens:
+    post:
+      tags: [Bootstrap]
+      summary: Create source token for project or database source
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BootstrapCreateSourceTokenRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BootstrapCreateSourceTokenResponse"
+        "400":
+          description: Invalid source type
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Source not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /source:
     get:
@@ -457,6 +688,276 @@ components:
         errors:
           type: object
           additionalProperties: true
+
+    BootstrapUserSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+          nullable: true
+
+    BootstrapOrganizationSummary:
+      type: object
+      nullable: true
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+          nullable: true
+
+    BootstrapMembershipSummary:
+      type: object
+      nullable: true
+      properties:
+        id:
+          type: string
+        role:
+          type: string
+        organization_id:
+          type: string
+
+    BootstrapSourceSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [database, project]
+        display_name:
+          type: string
+        default_timeframe:
+          type: string
+          nullable: true
+        default_granularity:
+          type: string
+          nullable: true
+        available_granularities:
+          type: array
+          items:
+            type: string
+        time_zone:
+          type: string
+        setup_status:
+          type: string
+          nullable: true
+
+    BootstrapSignupRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        name:
+          type: string
+        organization_name:
+          type: string
+        token_name:
+          type: string
+
+    BootstrapLoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        token_name:
+          type: string
+
+    BootstrapAuthResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            user:
+              $ref: "#/components/schemas/BootstrapUserSummary"
+            token:
+              type: object
+              properties:
+                value:
+                  type: string
+            organization:
+              $ref: "#/components/schemas/BootstrapOrganizationSummary"
+            membership:
+              $ref: "#/components/schemas/BootstrapMembershipSummary"
+
+    BootstrapMeResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            user:
+              $ref: "#/components/schemas/BootstrapUserSummary"
+            organization:
+              $ref: "#/components/schemas/BootstrapOrganizationSummary"
+            membership:
+              $ref: "#/components/schemas/BootstrapMembershipSummary"
+
+    BootstrapCreateOrganizationRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+
+    BootstrapCreateOrganizationResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            organization:
+              $ref: "#/components/schemas/BootstrapOrganizationSummary"
+            membership:
+              $ref: "#/components/schemas/BootstrapMembershipSummary"
+
+    BootstrapListSourcesResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            projects:
+              type: array
+              items:
+                $ref: "#/components/schemas/BootstrapSourceSummary"
+            databases:
+              type: array
+              items:
+                $ref: "#/components/schemas/BootstrapSourceSummary"
+            membership:
+              $ref: "#/components/schemas/BootstrapMembershipSummary"
+
+    BootstrapCreateDatabaseRequest:
+      type: object
+      required: [display_name, driver]
+      properties:
+        display_name:
+          type: string
+        driver:
+          type: string
+        host:
+          type: string
+        port:
+          type: integer
+        username:
+          type: string
+        password:
+          type: string
+        database_name:
+          type: string
+        file_path:
+          type: string
+        auth_database:
+          type: string
+        default_timeframe:
+          type: string
+        default_granularity:
+          type: string
+        granularities:
+          type: array
+          items:
+            type: string
+        time_zone:
+          type: string
+
+    BootstrapCreateProjectRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        project_cluster_id:
+          type: string
+        time_zone:
+          type: string
+        beginning_of_week:
+          type: integer
+        granularities:
+          type: array
+          items:
+            type: string
+        expire_after:
+          type: integer
+        default_timeframe:
+          type: string
+        default_granularity:
+          type: string
+
+    BootstrapCreateSourceResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            source:
+              $ref: "#/components/schemas/BootstrapSourceSummary"
+
+    BootstrapDatabaseSetupResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            source:
+              $ref: "#/components/schemas/BootstrapSourceSummary"
+            setup:
+              type: object
+              properties:
+                status:
+                  type: string
+                message:
+                  type: string
+                error:
+                  type: string
+                  nullable: true
+
+    BootstrapCreateSourceTokenRequest:
+      type: object
+      required: [source_type, source_id]
+      properties:
+        source_type:
+          type: string
+          enum: [database, project]
+        source_id:
+          type: string
+        name:
+          type: string
+        read:
+          type: boolean
+        write:
+          type: boolean
+
+    BootstrapCreateSourceTokenResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            token:
+              type: object
+              properties:
+                value:
+                  type: string
+                read:
+                  type: boolean
+                write:
+                  type: boolean
+            source:
+              $ref: "#/components/schemas/BootstrapSourceSummary"
 
     SourceResponse:
       type: object

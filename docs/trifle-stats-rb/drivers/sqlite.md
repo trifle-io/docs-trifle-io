@@ -42,6 +42,14 @@ Trifle::Stats.configure do |config|
 end
 ```
 
+## Timestamp Format
+
+For `joined_identifier: :partial` and separated mode (`joined_identifier: nil`), SQLite stores `at` as RFC3339 UTC text.
+
+- Example stored value: `2026-02-25T00:00:00Z`
+- This keeps SQLite compatible across Ruby, Elixir, and Go drivers.
+- Legacy SQLite rows stored as `YYYY-MM-DD HH:MM:SS` should be migrated to RFC3339 UTC before cross-driver reuse.
+
 ## Driver
 
 Driver defaults to `stats.db`, but you can provide custom database name above.

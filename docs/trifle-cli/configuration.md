@@ -22,10 +22,19 @@ Example:
 ```yaml
 source: postgres
 
+auth:
+  url: https://app.trifle.io
+  user_token: trf_uat_xxx
+  email: user@example.com
+  organization_id: org-uuid
+  user_id: user-uuid
+
 api:
   driver: api
   url: https://app.trifle.io
-  token: your-token
+  token: source-token
+  source_type: project
+  source_id: project-uuid
   timeout: 30s
 
 sqlite:
@@ -107,7 +116,7 @@ Each named source must set `driver` and the matching settings (`api`, `sqlite`, 
 
 | Driver | Required settings | Optional settings |
 |--------|-------------------|-------------------|
-| `api` | `url`, `token` | `timeout` |
+| `api` | `url`, `token` | `timeout`, `source_type`, `source_id` |
 | `sqlite` | `db` | `table`, `joined`, `separator`, `timezone`, `week_start`, `granularities`, `buffer_*` |
 | `postgres` | `dsn` or (`host`, `port`, `user`, `password`, `database`) | `table`, `joined`, `separator`, `timezone`, `week_start`, `granularities`, `buffer_*` |
 | `mysql` | `dsn` or (`host`, `port`, `user`, `password`, `database`) | `table`, `joined`, `separator`, `timezone`, `week_start`, `granularities`, `buffer_*` |
@@ -121,6 +130,7 @@ Each named source must set `driver` and the matching settings (`api`, `sqlite`, 
 - `TRIFLE_DRIVER` (optional): `api`, `sqlite`, `postgres`, `mysql`, `redis`, `mongo` (default: `api`).
 - `TRIFLE_URL` (api): Base URL for Trifle App (required when using the `api` driver).
 - `TRIFLE_TOKEN` (api): API token (required for non-interactive or MCP mode when using the `api` driver).
+- `TRIFLE_USER_TOKEN` (bootstrap): user API token for `trifle auth` / `trifle source` commands.
 - `TRIFLE_DB` (sqlite): SQLite database path (or database-name fallback for non-sqlite drivers).
 - `TRIFLE_DSN` (postgres/mysql/redis/mongo): full DSN/URI.
 - `TRIFLE_HOST` (postgres/mysql/redis/mongo): host.
@@ -150,6 +160,7 @@ Each named source must set `driver` and the matching settings (`api`, `sqlite`, 
 --source | String | optional |  | Source name from the config file.
 --url | String | optional |  | Trifle base URL (fallback: `TRIFLE_URL`).
 --token | String | optional |  | API token (fallback: `TRIFLE_TOKEN`).
+--user-token | String | optional |  | User API token (fallback: `TRIFLE_USER_TOKEN` / `auth.user_token`).
 --timeout | Duration | optional | `30s` | HTTP timeout.
 --driver | String | optional | `api` | Driver: `api`, `sqlite`, `postgres`, `mysql`, `redis`, `mongo`.
 --db | String | optional |  | SQLite DB path or database-name fallback.
