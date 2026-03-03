@@ -59,6 +59,12 @@ trifle auth login \
 # 2) Create a project source (or use `source create database`)
 trifle source create project --name "Agent Project"
 
+# Optional: create SQLite database source from a local file upload
+trifle source create database \
+  --display-name "SQLite Upload" \
+  --driver sqlite \
+  --sqlite-file ./metrics.sqlite
+
 # 3) List available sources and pick a source ID
 trifle source list
 
@@ -71,6 +77,9 @@ trifle source token create \
 ```
 
 After this, the active config source has `driver: api` and a source token, so regular commands work without passing `--token`.
+
+`--sqlite-file` uploads a local SQLite file.  
+Use `--file-path` only for manual server-side paths.
 
 ## Common behaviors
 

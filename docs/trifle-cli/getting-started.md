@@ -70,7 +70,7 @@ DB_JSON="$($CLI source create database \
   --user-token "$USER_TOKEN" \
   --display-name "E2E SQLite ${STAMP}" \
   --driver sqlite \
-  --file-path "$DB_FILE")"
+  --sqlite-file "$DB_FILE")"
 echo "$DB_JSON"
 DB_ID="$(printf '%s' "$DB_JSON" | jq -r '.data.source.id')"
 
@@ -150,6 +150,9 @@ $CLI metrics get \
 
 echo "Done. Config file: $CONFIG"
 ```
+
+`--sqlite-file` uploads a local SQLite file through the bootstrap API.  
+Use `--file-path` only when you want Trifle to reference an existing server-side path instead of uploading.
 
 ## Store sample data (project source)
 

@@ -30,6 +30,8 @@ These settings apply to the Helm chart. SaaS users don’t need to configure any
 | `app.registration.enabled` | Boolean | `true` | Allow new user signups. |
 | `app.timezone` | String | `"UTC"` | Default time zone for UI and exports. |
 | `app.logLevel` | String | `"info"` | Log verbosity. |
+| `app.sqliteUpload.maxBytes` | Integer | `104857600` | Max SQLite upload size in bytes (100MB). |
+| `app.sqliteUpload.rootPath` | String | `"/home/app/uploads/sqlite"` | Root path for uploaded SQLite files. |
 | `healthCheck.enabled` | Boolean | `true` | Enable readiness/liveness probes. |
 | `persistence.enabled` | Boolean | `true` | Persist uploads on a PVC. |
 
@@ -236,10 +238,17 @@ certManager:
 - `app.logLevel` (string, default: `info`) Maps to `LOGGER_LEVEL`.
 - `app.mongodbUrl` (string, optional) Maps to `MONGODB_URL`. If empty, Mongo defaults to `mongodb://localhost:27017/trifle` (useful with the sidecar).
 
+### SQLite uploads
+
+- `app.sqliteUpload.maxBytes` (int, default: `104857600`) Maps to `TRIFLE_SQLITE_UPLOAD_MAX_BYTES`.
+- `app.sqliteUpload.rootPath` (string, default: `/home/app/uploads/sqlite`) Maps to `TRIFLE_SQLITE_UPLOAD_ROOT`.
+- Use a path on persistent storage when `persistence.enabled: true`.
+
 ### Environment overrides
 
 - `app.env` (map) Key-value env vars injected into the app container and jobs.
   - Defaults: `MIX_ENV=prod`, `PHX_SERVER=true`, `LOG_TO_STDOUT=auto`.
+  - You can still override `TRIFLE_SQLITE_UPLOAD_MAX_BYTES` and `TRIFLE_SQLITE_UPLOAD_ROOT` here if needed.
 
 ### Registration + deployment mode
 

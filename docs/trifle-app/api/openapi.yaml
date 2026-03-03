@@ -149,6 +149,9 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/BootstrapCreateDatabaseRequest"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/BootstrapCreateDatabaseMultipartRequest"
       responses:
         "201":
           description: Created
@@ -861,6 +864,7 @@ components:
           type: string
         file_path:
           type: string
+          description: SQLite file path on the server (manual path mode).
         auth_database:
           type: string
         default_timeframe:
@@ -871,6 +875,43 @@ components:
           type: array
           items:
             type: string
+        time_zone:
+          type: string
+
+    BootstrapCreateDatabaseMultipartRequest:
+      type: object
+      required: [display_name, driver]
+      properties:
+        display_name:
+          type: string
+        driver:
+          type: string
+        host:
+          type: string
+        port:
+          type: integer
+        username:
+          type: string
+        password:
+          type: string
+        database_name:
+          type: string
+        file_path:
+          type: string
+          description: Optional fallback SQLite path on server. Ignored when sqlite_file is provided.
+        sqlite_file:
+          type: string
+          format: binary
+          description: SQLite file to upload.
+        auth_database:
+          type: string
+        default_timeframe:
+          type: string
+        default_granularity:
+          type: string
+        granularities:
+          type: string
+          description: Comma-separated granularities (for example `1m,1h,1d`).
         time_zone:
           type: string
 

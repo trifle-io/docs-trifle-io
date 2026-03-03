@@ -49,7 +49,9 @@ name | String | required |  | Organization name.
 :::signature POST /bootstrap/databases
 display_name | String | required |  | Source name.
 driver | String | required |  | `sqlite`, `postgres`, `mysql`, `redis`, `mongo`.
-... | Object | optional |  | Database driver fields (`host`, `port`, `database_name`, etc.).
+sqlite_file | File | optional |  | SQLite upload via `multipart/form-data`.
+file_path | String | optional |  | Manual server path fallback for SQLite.
+... | Object | optional |  | Driver fields (`host`, `port`, `database_name`, etc.).
 :::
 
 :::signature POST /bootstrap/databases/:id/setup
@@ -88,3 +90,21 @@ curl -s https://app.trifle.io/api/v1/bootstrap/source-tokens \
 ```
 
 The returned `data.token.value` is the source token used for `/api/v1/metrics`, `/api/v1/source`, etc.
+
+## Example (SQLite upload)
+
+Use multipart when uploading a SQLite file directly:
+
+```sh
+curl -s https://app.trifle.io/api/v1/bootstrap/databases \
+  -H "authorization: Bearer <USER_API_TOKEN>" \
+  -F "display_name=SQLite Upload" \
+  -F "driver=sqlite" \
+  -F "sqlite_file=@./metrics.sqlite"
+```
+
+The uploaded file is stored by Trifle under:
+
+`organization_<organization_id>/sqlite/...`
+
+Upload size is enforced by `TRIFLE_SQLITE_UPLOAD_MAX_BYTES` (Helm: `app.sqliteUpload.maxBytes`).
