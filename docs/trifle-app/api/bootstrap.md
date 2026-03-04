@@ -103,8 +103,8 @@ curl -s https://app.trifle.io/api/v1/bootstrap/databases \
   -F "sqlite_file=@./metrics.sqlite"
 ```
 
-The uploaded file is stored by Trifle under:
-
-`organization_<organization_id>/sqlite/...`
+Storage location depends on deployment config:
+- `app.sqliteStorage.backend: local` stores files under `app.sqliteUpload.rootPath` (for example `organization_<organization_id>/sqlite/...`).
+- `app.sqliteStorage.backend: s3` stores files in the configured S3-compatible bucket/prefix and caches locally on app nodes for reads.
 
 Upload size is enforced by `TRIFLE_SQLITE_UPLOAD_MAX_BYTES` (Helm: `app.sqliteUpload.maxBytes`).

@@ -151,3 +151,24 @@ There is a `values-production.yaml` you can use as a starting point. It enables 
 helm upgrade --install trifle .devops/kubernetes/helm/trifle \
   -n trifle --create-namespace -f .devops/kubernetes/helm/trifle/values-production.yaml
 ```
+
+## Optional: S3-backed SQLite storage
+
+If you run multiple app nodes and need shared SQLite access, configure SQLite uploads to use S3-compatible object storage with local cache:
+
+```yaml
+app:
+  sqliteStorage:
+    backend: "s3"
+    cacheRoot: "/var/cache/trifle/sqlite"
+    objectStore:
+      endpoint: "https://s3.eu-central-1.wasabisys.com"
+      bucket: "trifle-sqlite-files"
+      region: "eu-central-1"
+      forcePathStyle: true
+      prefix: "sqlite-files"
+      accessKeyId: "<S3_ACCESS_KEY_ID>"
+      secretAccessKey: "<S3_SECRET_ACCESS_KEY>"
+```
+
+The chart stores `accessKeyId`/`secretAccessKey` in the generated Kubernetes Secret and injects them into the deployment as env vars.

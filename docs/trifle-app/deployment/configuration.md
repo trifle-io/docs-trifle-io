@@ -32,6 +32,9 @@ These settings apply to the Helm chart. SaaS users don’t need to configure any
 | `app.logLevel` | String | `"info"` | Log verbosity. |
 | `app.sqliteUpload.maxBytes` | Integer | `104857600` | Max SQLite upload size in bytes (100MB). |
 | `app.sqliteUpload.rootPath` | String | `"/home/app/uploads/sqlite"` | Root path for uploaded SQLite files. |
+| `app.sqliteStorage.backend` | String | `"local"` | SQLite storage backend: `local` or `s3`. |
+| `app.sqliteStorage.cacheRoot` | String | `"/home/app/cache/sqlite"` | Local cache root for SQLite reads (used in `s3` mode). |
+| `app.sqliteStorage.objectStore.bucket` | String | `""` | S3 bucket for SQLite objects (`s3` mode). |
 | `healthCheck.enabled` | Boolean | `true` | Enable readiness/liveness probes. |
 | `persistence.enabled` | Boolean | `true` | Persist uploads on a PVC. |
 
@@ -244,11 +247,27 @@ certManager:
 - `app.sqliteUpload.rootPath` (string, default: `/home/app/uploads/sqlite`) Maps to `TRIFLE_SQLITE_UPLOAD_ROOT`.
 - Use a path on persistent storage when `persistence.enabled: true`.
 
+### SQLite object storage + cache
+
+- `app.sqliteStorage.backend` (string, default: `local`) Maps to `TRIFLE_SQLITE_STORAGE_BACKEND` (`local` or `s3`).
+- `app.sqliteStorage.cacheRoot` (string, default: `/home/app/cache/sqlite`) Maps to `TRIFLE_SQLITE_CACHE_ROOT`.
+- `app.sqliteStorage.objectStore.endpoint` (string) Maps to `TRIFLE_SQLITE_OBJECT_STORE_ENDPOINT`.
+- `app.sqliteStorage.objectStore.bucket` (string) Maps to `TRIFLE_SQLITE_OBJECT_STORE_BUCKET`.
+- `app.sqliteStorage.objectStore.region` (string, default: `us-east-1`) Maps to `TRIFLE_SQLITE_OBJECT_STORE_REGION`.
+- `app.sqliteStorage.objectStore.forcePathStyle` (bool, default: `true`) Maps to `TRIFLE_SQLITE_OBJECT_STORE_FORCE_PATH_STYLE`.
+- `app.sqliteStorage.objectStore.prefix` (string, default: `sqlite-files`) Maps to `TRIFLE_SQLITE_OBJECT_STORE_PREFIX`.
+- `app.sqliteStorage.objectStore.accessKeyId` (string) Maps to `TRIFLE_SQLITE_OBJECT_STORE_ACCESS_KEY_ID` (via chart secret).
+- `app.sqliteStorage.objectStore.secretAccessKey` (string) Maps to `TRIFLE_SQLITE_OBJECT_STORE_SECRET_ACCESS_KEY` (via chart secret).
+
+Behavior by backend:
+- `local`: uploaded SQLite files are stored under `app.sqliteUpload.rootPath`.
+- `s3`: uploaded files are stored in object storage; app pods read through the local cache at `app.sqliteStorage.cacheRoot`.
+
 ### Environment overrides
 
 - `app.env` (map) Key-value env vars injected into the app container and jobs.
   - Defaults: `MIX_ENV=prod`, `PHX_SERVER=true`, `LOG_TO_STDOUT=auto`.
-  - You can still override `TRIFLE_SQLITE_UPLOAD_MAX_BYTES` and `TRIFLE_SQLITE_UPLOAD_ROOT` here if needed.
+  - You can still override `TRIFLE_SQLITE_UPLOAD_MAX_BYTES`, `TRIFLE_SQLITE_UPLOAD_ROOT`, and any `TRIFLE_SQLITE_OBJECT_*` env here if needed.
 
 ### Registration + deployment mode
 
