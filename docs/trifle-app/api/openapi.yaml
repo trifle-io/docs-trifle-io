@@ -38,7 +38,7 @@ paths:
   /bootstrap/signup:
     post:
       tags: [Bootstrap]
-      summary: Create user account and issue user API token
+      summary: Create user account and issue organization API token
       security: []
       requestBody:
         required: true
@@ -69,7 +69,7 @@ paths:
   /bootstrap/login:
     post:
       tags: [Bootstrap]
-      summary: Log in and issue user API token
+      summary: Log in and issue organization API token
       security: []
       requestBody:
         required: true
@@ -232,31 +232,35 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-  /bootstrap/source-tokens:
+  /bootstrap/tokens:
+    get:
+      tags: [Bootstrap]
+      summary: List organization tokens
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BootstrapTokenListResponse"
     post:
       tags: [Bootstrap]
-      summary: Create source token for project or database source
+      summary: Create organization token
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/BootstrapCreateSourceTokenRequest"
+              $ref: "#/components/schemas/BootstrapCreateTokenRequest"
       responses:
         "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BootstrapCreateSourceTokenResponse"
-        "400":
-          description: Invalid source type
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "404":
-          description: Source not found
+                $ref: "#/components/schemas/BootstrapCreateTokenResponse"
+        "403":
+          description: Forbidden
           content:
             application/json:
               schema:
@@ -268,7 +272,61 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /bootstrap/tokens/{id}:
+    put:
+      tags: [Bootstrap]
+      summary: Update organization token
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BootstrapCreateTokenRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BootstrapCreateTokenResponse"
+        "404":
+          description: Token not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      tags: [Bootstrap]
+      summary: Delete organization token
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+
   /source:
+    parameters:
+      - $ref: "#/components/parameters/SourceIdHeader"
     get:
       tags: [Source]
       summary: Fetch source configuration
@@ -281,6 +339,8 @@ paths:
                 $ref: "#/components/schemas/SourceResponse"
 
   /metrics:
+    parameters:
+      - $ref: "#/components/parameters/SourceIdHeader"
     get:
       tags: [Metrics]
       summary: Fetch series data
@@ -348,6 +408,8 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
 
   /metrics/query:
+    parameters:
+      - $ref: "#/components/parameters/SourceIdHeader"
     post:
       tags: [Metrics]
       summary: Query metrics (aggregate, timeline, category)
@@ -378,6 +440,8 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
 
   /transponders:
+    parameters:
+      - $ref: "#/components/parameters/SourceIdHeader"
     get:
       tags: [Transponders]
       summary: List transponders
@@ -414,6 +478,8 @@ paths:
                     $ref: "#/components/schemas/Transponder"
 
   /transponders/{id}:
+    parameters:
+      - $ref: "#/components/parameters/SourceIdHeader"
     put:
       tags: [Transponders]
       summary: Update transponder
@@ -460,6 +526,8 @@ paths:
                     $ref: "#/components/schemas/Transponder"
 
   /dashboards:
+    parameters:
+      - $ref: "#/components/parameters/SourceIdHeader"
     get:
       tags: [Dashboards]
       summary: List dashboards
@@ -496,6 +564,8 @@ paths:
                     $ref: "#/components/schemas/Dashboard"
 
   /dashboards/{id}:
+    parameters:
+      - $ref: "#/components/parameters/SourceIdHeader"
     get:
       tags: [Dashboards]
       summary: Fetch dashboard
@@ -561,6 +631,8 @@ paths:
                     $ref: "#/components/schemas/Dashboard"
 
   /monitors:
+    parameters:
+      - $ref: "#/components/parameters/SourceIdHeader"
     get:
       tags: [Monitors]
       summary: List monitors
@@ -597,6 +669,8 @@ paths:
                     $ref: "#/components/schemas/Monitor"
 
   /monitors/{id}:
+    parameters:
+      - $ref: "#/components/parameters/SourceIdHeader"
     get:
       tags: [Monitors]
       summary: Fetch monitor
@@ -667,6 +741,15 @@ components:
       type: http
       scheme: bearer
       bearerFormat: Token
+
+  parameters:
+    SourceIdHeader:
+      in: header
+      name: X-Trifle-Source-Id
+      required: true
+      schema:
+        type: string
+      description: Source UUID used to scope source-bound API calls.
 
   schemas:
     HealthResponse:
@@ -966,39 +1049,102 @@ components:
                   type: string
                   nullable: true
 
-    BootstrapCreateSourceTokenRequest:
+    BootstrapToken:
       type: object
-      required: [source_type, source_id]
       properties:
+        id:
+          type: string
+        name:
+          type: string
+        value:
+          type: string
+        organization_id:
+          type: string
+          nullable: true
+        user_id:
+          type: string
+        permissions:
+          type: object
+          additionalProperties: true
+        created_by:
+          type: string
+          nullable: true
+        created_from:
+          type: string
+          nullable: true
+        last_used_at:
+          type: string
+          format: date-time
+          nullable: true
+        last_used_from:
+          type: string
+          nullable: true
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        inserted_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    BootstrapCreateTokenRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        wildcard_read:
+          type: boolean
+        wildcard_write:
+          type: boolean
         source_type:
           type: string
           enum: [database, project]
         source_id:
           type: string
-        name:
-          type: string
         read:
           type: boolean
         write:
           type: boolean
+        permissions:
+          type: object
+          additionalProperties: true
+        grants:
+          type: array
+          items:
+            type: object
+            properties:
+              source_type:
+                type: string
+                enum: [database, project]
+              source_id:
+                type: string
+              read:
+                type: boolean
+              write:
+                type: boolean
 
-    BootstrapCreateSourceTokenResponse:
+    BootstrapCreateTokenResponse:
       type: object
       properties:
         data:
           type: object
           properties:
             token:
-              type: object
-              properties:
-                value:
-                  type: string
-                read:
-                  type: boolean
-                write:
-                  type: boolean
-            source:
-              $ref: "#/components/schemas/BootstrapSourceSummary"
+              $ref: "#/components/schemas/BootstrapToken"
+
+    BootstrapTokenListResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            tokens:
+              type: array
+              items:
+                $ref: "#/components/schemas/BootstrapToken"
 
     SourceResponse:
       type: object
@@ -1128,9 +1274,6 @@ components:
           type: string
         key:
           type: string
-        type:
-          type: string
-          example: Trifle.Stats.Transponder.Expression
         config:
           type: object
           additionalProperties: true
@@ -1150,8 +1293,6 @@ components:
           type: string
         key:
           type: string
-        type:
-          type: string
         config:
           type: object
           additionalProperties: true
@@ -1161,7 +1302,7 @@ components:
             type: string
         expression:
           type: string
-        response_path:
+        response:
           type: string
         enabled:
           type: boolean

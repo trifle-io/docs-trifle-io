@@ -24,7 +24,7 @@ source: postgres
 
 auth:
   url: https://app.trifle.io
-  user_token: trf_uat_xxx
+  user_token: trf_oat_xxx
   email: user@example.com
   organization_id: org-uuid
   user_id: user-uuid
@@ -130,7 +130,8 @@ Each named source must set `driver` and the matching settings (`api`, `sqlite`, 
 - `TRIFLE_DRIVER` (optional): `api`, `sqlite`, `postgres`, `mysql`, `redis`, `mongo` (default: `api`).
 - `TRIFLE_URL` (api): Base URL for Trifle App (required when using the `api` driver).
 - `TRIFLE_TOKEN` (api): API token (required for non-interactive or MCP mode when using the `api` driver).
-- `TRIFLE_USER_TOKEN` (bootstrap): user API token for `trifle auth` / `trifle source` commands.
+- `TRIFLE_SOURCE_ID` (api): source UUID header value for source-bound API commands.
+- `TRIFLE_USER_TOKEN` (bootstrap): organization API token for `trifle auth` / `trifle source` / `trifle token` commands.
 - `TRIFLE_DB` (sqlite): SQLite database path (or database-name fallback for non-sqlite drivers).
 - `TRIFLE_DSN` (postgres/mysql/redis/mongo): full DSN/URI.
 - `TRIFLE_HOST` (postgres/mysql/redis/mongo): host.
@@ -160,7 +161,7 @@ Each named source must set `driver` and the matching settings (`api`, `sqlite`, 
 --source | String | optional |  | Source name from the config file.
 --url | String | optional |  | Trifle base URL (fallback: `TRIFLE_URL`).
 --token | String | optional |  | API token (fallback: `TRIFLE_TOKEN`).
---user-token | String | optional |  | User API token (fallback: `TRIFLE_USER_TOKEN` / `auth.user_token`).
+--user-token | String | optional |  | Bootstrap organization token (fallback: `TRIFLE_USER_TOKEN` / `auth.user_token`).
 --timeout | Duration | optional | `30s` | HTTP timeout.
 --driver | String | optional | `api` | Driver: `api`, `sqlite`, `postgres`, `mysql`, `redis`, `mongo`.
 --db | String | optional |  | SQLite DB path or database-name fallback.

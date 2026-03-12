@@ -11,8 +11,9 @@ The Trifle CLI lets you query and push metrics over the Trifle App API or local 
 
 For agent bootstrap flows, use:
 
-- `trifle auth ...` for signup/login and user API token management
-- `trifle source ...` for source creation/setup and source token generation
+- `trifle auth ...` for signup/login bootstrap
+- `trifle source ...` for source creation/setup
+- `trifle token ...` for organization token management
 
 ## Quick links
 

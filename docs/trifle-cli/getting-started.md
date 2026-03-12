@@ -11,7 +11,7 @@ This guide walks through the CLI bootstrap flow end-to-end:
 1. Sign up and log in
 2. Create a SQLite database source
 3. Create a project source
-4. Generate one source token for each
+4. Reuse the same organization token for source-bound calls
 5. Fetch metrics from both sources
 6. Push and read sample project metrics
 
@@ -99,50 +99,23 @@ fi
 echo "$PROJECT_JSON"
 PROJECT_ID="$(printf '%s' "$PROJECT_JSON" | jq -r '.data.source.id')"
 
-echo "== Create database source token =="
-$CLI source token create \
-  --config "$CONFIG" \
-  --url "$BASE_URL" \
-  --user-token "$USER_TOKEN" \
-  --source-type database \
-  --source-id "$DB_ID" \
-  --name "E2E DB Token" \
-  --source-name api-db \
-  --save=true \
-  --activate=false
-
-# Keep active source explicit in config for follow-up commands.
-$CLI source use --config "$CONFIG" --name api-db
-
-echo "== Create project source token =="
-$CLI source token create \
-  --config "$CONFIG" \
-  --url "$BASE_URL" \
-  --user-token "$USER_TOKEN" \
-  --source-type project \
-  --source-id "$PROJECT_ID" \
-  --name "E2E Project Token" \
-  --source-name api-project \
-  --save=true \
-  --activate=false \
-  --read=true \
-  --write=true
-
 echo "== List sources =="
 $CLI source list --config "$CONFIG" --url "$BASE_URL" --user-token "$USER_TOKEN"
 
 echo "== Fetch metrics (expected empty) =="
 $CLI metrics get \
-  --config "$CONFIG" \
-  --source api-db \
+  --url "$BASE_URL" \
+  --token "$USER_TOKEN" \
+  --source-id "$DB_ID" \
   --key event::signup \
   --from 2026-01-01T00:00:00Z \
   --to 2026-01-02T00:00:00Z \
   --granularity 1d
 
 $CLI metrics get \
-  --config "$CONFIG" \
-  --source api-project \
+  --url "$BASE_URL" \
+  --token "$USER_TOKEN" \
+  --source-id "$PROJECT_ID" \
   --key event::signup \
   --from 2026-01-01T00:00:00Z \
   --to 2026-01-02T00:00:00Z \
@@ -156,21 +129,25 @@ Use `--file-path` only when you want Trifle to reference an existing server-side
 
 ## Store sample data (project source)
 
-Database source tokens are read-only. Use the project source token for writes.
+Use the same organization token and scope each call with `--source-id`.
 
 ```sh
-CONFIG=/tmp/trifle-cli-e2e-<stamp>.yaml
+BASE_URL=https://app.trifle.io
+TOKEN=<ORG_TOKEN>
+PROJECT_ID=<PROJECT_SOURCE_ID>
 
 trifle metrics push \
-  --config "$CONFIG" \
-  --source api-project \
+  --url "$BASE_URL" \
+  --token "$TOKEN" \
+  --source-id "$PROJECT_ID" \
   --key event::signup \
   --at 2026-03-01T12:00:00Z \
   --values '{"count":1,"duration":0.42}'
 
 trifle metrics push \
-  --config "$CONFIG" \
-  --source api-project \
+  --url "$BASE_URL" \
+  --token "$TOKEN" \
+  --source-id "$PROJECT_ID" \
   --key checkout::completed \
   --at 2026-03-01T12:05:00Z \
   --values '{"count":1,"amount":{"usd":39}}'
@@ -179,14 +156,17 @@ trifle metrics push \
 ## Fetch sample data
 
 ```sh
-CONFIG=/tmp/trifle-cli-e2e-<stamp>.yaml
+BASE_URL=https://app.trifle.io
+TOKEN=<ORG_TOKEN>
+PROJECT_ID=<PROJECT_SOURCE_ID>
 FROM=2026-03-01T00:00:00Z
 TO=2026-03-02T00:00:00Z
 
 # Raw time-series points
 trifle metrics get \
-  --config "$CONFIG" \
-  --source api-project \
+  --url "$BASE_URL" \
+  --token "$TOKEN" \
+  --source-id "$PROJECT_ID" \
   --key event::signup \
   --from "$FROM" \
   --to "$TO" \
@@ -194,8 +174,9 @@ trifle metrics get \
 
 # Aggregate over a numeric path
 trifle metrics aggregate \
-  --config "$CONFIG" \
-  --source api-project \
+  --url "$BASE_URL" \
+  --token "$TOKEN" \
+  --source-id "$PROJECT_ID" \
   --key checkout::completed \
   --value-path amount.usd \
   --aggregator sum \
@@ -205,8 +186,9 @@ trifle metrics aggregate \
 
 # Timeline projection for charting
 trifle metrics timeline \
-  --config "$CONFIG" \
-  --source api-project \
+  --url "$BASE_URL" \
+  --token "$TOKEN" \
+  --source-id "$PROJECT_ID" \
   --key event::signup \
   --value-path count \
   --from "$FROM" \

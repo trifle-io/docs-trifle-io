@@ -42,5 +42,5 @@ Building charts is easy; aligning teams around data is not. Trifle App gives non
 - **Dashboards vs monitors**: dashboards are saved views; monitors schedule reports or fire alerts.
 
 :::callout note "Self-hosted defaults"
-- If you are self-hosting and don’t enable projects, the UI hides **Projects** and the API only supports database tokens.
+- If you are self-hosting and don’t enable projects, the UI hides **Projects** and the API only supports database sources.
 :::

@@ -73,6 +73,14 @@ irb(main):013:0> Trifle::Stats.values(key: 'event::average::test_2', from: Time.
 
 And from this point, all you need to do is to divide `duration` by `count` to get the average value.
 
-## Transponders
+## Expression transponder
 
-Alternatively you can calculate average by using [Average Transponder](../transponders/average) that does this for you automatically!
+Alternatively you can calculate average with the [expression transponder](../transponders).
+
+```ruby
+series.transpond.expression(
+  paths: ['duration', 'count'],
+  expression: 'a / b',
+  response: 'average'
+)
+```

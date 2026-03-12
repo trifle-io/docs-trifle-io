@@ -31,13 +31,15 @@ end
 
 > Note: `path` is a list of keys joined by dot. Ie `orders.shipped.count` would represent value at `{orders: { shipped: { count: ... } } }`.
 
-If your value comes from transponder like Standard Deviation, you may wanna multiply value by a constant that calculate specific percentile.
+If your value comes from an expression-based standard deviation calculation, you may wanna multiply value by a constant that calculate specific percentile.
 
 ```ruby
 series = Trifle::Stats.series(...)
-=> #<Trifle::Stats::Series:0x0000ffffa14256e8 @series={:at=>[2024-03-22 19:38:00 +0000, 2024-03-22 19:39:00 +0000], :values=>[{events: {count: 42, sum: 2184}}, {events: {count: 33, sum: 1553}}]}>
-series.transpond.standard_deviation(path: 'events')
-=> #<Trifle::Stats::Series:0x0000ffffa14256e8 @series={:at=>[2024-03-22 19:38:00 +0000, 2024-03-22 19:39:00 +0000], :values=>[{events: {count: 42, sum: 2184, sd: 123}}, {events: {count: 33, sum: 1553, sd: 456}}]}>
+series.transpond.expression(
+  paths: ['events.sum', 'events.count', 'events.square'],
+  expression: 'sqrt((b * c - a * a) / (b * (b - 1)))',
+  response: 'events.sd'
+)
 
 p95 = series.format.timeline(path: 'events.sd') do |at, value|
   {x: at.to_i, y: value * 1.98}
@@ -49,7 +51,5 @@ p99 = formatter.format(path: 'events.sd') do |at, value|
 end
 => [[{ x: 1711136280, y: 317.34 }, { x: 1711136340, y: 1176.48 }]
 ```
-
-> Note: The above example of standard deviation transponder is not valid as its missing necessary keys inside of the `events` hash. The goal was to illustrate how to use formatter to further perform calculation before ploting.
 
 And thats it. Now you prepared series for plotting your percentiles.

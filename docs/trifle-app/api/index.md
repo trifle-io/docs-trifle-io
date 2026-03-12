@@ -20,8 +20,8 @@ Base URL depends on your deployment.
 
 All API requests (except health) use bearer tokens.
 
-- **Bootstrap user tokens** authenticate `/api/v1/bootstrap/*` endpoints (signup/login/source setup flow).
-- **Source tokens** authenticate metrics/dashboards/monitors/transponders endpoints.
+- **Organization API tokens** authenticate both `/api/v1/bootstrap/*` and regular `/api/v1/*` endpoints.
+- For source-bound endpoints, include `X-Trifle-Source-Id: <SOURCE_UUID>`.
 
 ### Request
 
@@ -29,6 +29,7 @@ All API requests (except health) use bearer tokens.
 @tab CURL
 ```sh
 curl -H "Authorization: Bearer <TOKEN>" \
+  -H "X-Trifle-Source-Id: <SOURCE_UUID>" \
   https://app.trifle.io/api/v1/source
 ```
 
@@ -48,6 +49,7 @@ uri = URI("#{base}/api/v1/source")
 
 req = Net::HTTP::Get.new(uri)
 req["Authorization"] = "Bearer #{token}"
+req["X-Trifle-Source-Id"] = ENV.fetch("TRIFLE_SOURCE_ID")
 
 res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
   http.request(req)
@@ -64,7 +66,8 @@ token = System.fetch_env!("TRIFLE_TOKEN")
 url = "#{base}/api/v1/source"
 
 headers = [
-  {'authorization', to_charlist("Bearer " <> token)}
+  {'authorization', to_charlist("Bearer " <> token)},
+  {'x-trifle-source-id', to_charlist(System.fetch_env!("TRIFLE_SOURCE_ID"))}
 ]
 
 :inets.start()
@@ -82,7 +85,10 @@ const base = process.env.TRIFLE_APP_URL ?? "https://app.trifle.io";
 const token = process.env.TRIFLE_TOKEN;
 
 const res = await fetch(`${base}/api/v1/source`, {
-  headers: { Authorization: `Bearer ${token}` },
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "X-Trifle-Source-Id": process.env.TRIFLE_SOURCE_ID,
+  },
 });
 
 console.log(await res.json());
@@ -98,7 +104,10 @@ token = os.environ["TRIFLE_TOKEN"]
 
 resp = requests.get(
   f"{base}/api/v1/source",
-  headers={"Authorization": f"Bearer {token}"},
+  headers={
+    "Authorization": f"Bearer {token}",
+    "X-Trifle-Source-Id": os.environ["TRIFLE_SOURCE_ID"],
+  },
 )
 
 print(resp.status_code)
@@ -112,7 +121,10 @@ $base = getenv("TRIFLE_APP_URL") ?: "https://app.trifle.io";
 $token = getenv("TRIFLE_TOKEN");
 
 $ch = curl_init("$base/api/v1/source");
-curl_setopt($ch, CURLOPT_HTTPHEADER, ["Authorization: Bearer $token"]);
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+  "Authorization: Bearer $token",
+  "X-Trifle-Source-Id: " . getenv("TRIFLE_SOURCE_ID"),
+]);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
 $body = curl_exec($ch);
@@ -124,13 +136,11 @@ echo $body;
 ```
 :::
 
-- **Project tokens** can be read or write.
-- **Database tokens** are read-only.
-- Write permissions are enforced for metrics ingestion only.
-- **User API tokens** are bootstrap/control-plane tokens. Use them to create organizations/sources and mint source tokens.
+- Wildcard and per-source `read` / `write` permissions are enforced by token policy.
+- Write permissions are required for metrics ingestion (`POST /metrics`).
 
 :::callout note "Self-hosted defaults"
-- If you self-host and keep `features.projects.enabled: false`, you won’t have project tokens.
+- If you self-host and keep `features.projects.enabled: false`, project sources are disabled.
 - In that mode, the API is read-only (database sources only).
 :::
 
@@ -182,7 +192,7 @@ Machine-readable spec is available at:
 ## Troubleshooting
 
 - **Check API health**: `GET /api/v1/health`.
-- **Check token context**: `GET /api/v1/source` shows source type, granularity rules, and token scope.
+- **Check token context**: `GET /api/v1/source` (with `X-Trifle-Source-Id`) shows source defaults and effective scope.
 
 ## Endpoints
 

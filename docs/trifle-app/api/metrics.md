@@ -14,13 +14,14 @@ Replace `<TRIFLE_APP_URL>` with `https://app.trifle.io` (SaaS) or your self-host
 
 ## Auth
 
-- **GET /metrics** and **POST /metrics/query** require **read** tokens.
-- **POST /metrics** requires a **write** token (project token).
+- **GET /metrics** and **POST /metrics/query** require token permission `read=true`.
+- **POST /metrics** requires token permission `write=true`.
 
 `Authorization: Bearer <TOKEN>`
+`X-Trifle-Source-Id: <SOURCE_UUID>`
 
-:::callout note "Database tokens are read-only"
-- Database tokens can read metrics but cannot ingest them.
+:::callout note "Source context"
+- `X-Trifle-Source-Id` is required on all metrics calls.
 - If self-hosted with projects disabled, `POST /metrics` is not available.
 :::
 
@@ -209,7 +210,7 @@ echo $body;
 
 ## POST /metrics
 
-Ingest metrics into Trifle (project tokens only).
+Ingest metrics into Trifle (token must have write permission for the selected project source).
 
 :::signature POST /api/v1/metrics
 key | String | required |  | Metric key (e.g. `event::signup`).

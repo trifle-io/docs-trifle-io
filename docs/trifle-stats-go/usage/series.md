@@ -49,7 +49,11 @@ _ = value
 You can chain helpers to build derived metrics:
 
 ```go
-series = series.TransformRatio("success", "count", "success_rate")
+series, _ = series.TransformExpression(
+    []string{"success", "count"},
+    "(a / b) * 100",
+    "success_rate",
+)
 timeline := series.FormatTimeline("success_rate", 1, nil)
 _ = timeline
 ```

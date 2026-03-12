@@ -45,18 +45,19 @@ Expected outcome: you can access the UI with an admin account.
 
 ## 2. Create a source + token
 
-There are two source types, but only one can ingest via the API:
+There are two source types:
 
-- **Project source** (user-level): supports read/write tokens. This is the only source that can ingest data via `/api/v1/metrics`.
-- **Database source** (organization-level): read-only tokens, best for shared dashboards.
+- **Project source**: supports reads and writes when token permission includes `write=true`.
+- **Database source**: supports reads only.
 
-If you want **Database source** metrics, integrate **Trifle::Stats** (Ruby), **Trifle.Stats** (Elixir), or another Trifle Stats plugin into your app so it writes metrics into your database directly. Trifle App reads from that database; it does not accept writes for database tokens.
+If you want **Database source** metrics, integrate **Trifle::Stats** (Ruby), **Trifle.Stats** (Elixir), or another Trifle Stats plugin into your app so it writes metrics into your database directly.
 
-Go to **Projects** (for API ingestion) or **Databases** (for read-only dashboards) and create a token. Copy it.
+Go to **Organization → Tokens** and create a token (or reuse the bootstrap token).  
+For API calls, always pass `X-Trifle-Source-Id`.
 
 Expected outcome: you have a token and know whether it can write.
 
-## 3. Send your first metric (project tokens only)
+## 3. Send your first metric
 
 Replace `<TRIFLE_APP_URL>` with `https://app.trifle.io` or your self-hosted URL.
 
@@ -64,7 +65,8 @@ Replace `<TRIFLE_APP_URL>` with `https://app.trifle.io` or your self-hosted URL.
 @tab CURL Basic event
 ```sh
 curl -X POST "<TRIFLE_APP_URL>/api/v1/metrics" \
-  -H "Authorization: Bearer <PROJECT_WRITE_TOKEN>" \
+  -H "Authorization: Bearer <TOKEN>" \
+  -H "X-Trifle-Source-Id: <PROJECT_ID>" \
   -H "Content-Type: application/json" \
   -d '{
     "key": "event::signup",
@@ -76,7 +78,8 @@ curl -X POST "<TRIFLE_APP_URL>/api/v1/metrics" \
 @tab CURL Nested values
 ```sh
 curl -X POST "<TRIFLE_APP_URL>/api/v1/metrics" \
-  -H "Authorization: Bearer <PROJECT_WRITE_TOKEN>" \
+  -H "Authorization: Bearer <TOKEN>" \
+  -H "X-Trifle-Source-Id: <PROJECT_ID>" \
   -H "Content-Type: application/json" \
   -d '{
     "key": "checkout.completed",
@@ -93,7 +96,8 @@ curl -X POST "<TRIFLE_APP_URL>/api/v1/metrics" \
 @tab CURL Latency + percentiles
 ```sh
 curl -X POST "<TRIFLE_APP_URL>/api/v1/metrics" \
-  -H "Authorization: Bearer <PROJECT_WRITE_TOKEN>" \
+  -H "Authorization: Bearer <TOKEN>" \
+  -H "X-Trifle-Source-Id: <PROJECT_ID>" \
   -H "Content-Type: application/json" \
   -d '{
     "key": "service.latency",
@@ -105,7 +109,8 @@ curl -X POST "<TRIFLE_APP_URL>/api/v1/metrics" \
 @tab Trifle CLI
 ```sh
 export TRIFLE_URL="<TRIFLE_APP_URL>"
-export TRIFLE_TOKEN="<PROJECT_WRITE_TOKEN>"
+export TRIFLE_TOKEN="<TOKEN>"
+export TRIFLE_SOURCE_ID="<PROJECT_ID>"
 
 trifle metrics push \
   --key event::signup \
@@ -128,13 +133,15 @@ Visit `/explore` in the UI to see raw metrics aggregating over time. It’s the 
 @tab GET /metrics
 ```sh
 curl "<TRIFLE_APP_URL>/api/v1/metrics?key=event::signup&from=2026-01-24T00:00:00Z&to=2026-01-25T00:00:00Z&granularity=1h" \
-  -H "Authorization: Bearer <READ_TOKEN>"
+  -H "Authorization: Bearer <TOKEN>" \
+  -H "X-Trifle-Source-Id: <SOURCE_ID>"
 ```
 
 @tab POST /metrics/query (aggregate)
 ```sh
 curl -X POST "<TRIFLE_APP_URL>/api/v1/metrics/query" \
-  -H "Authorization: Bearer <READ_TOKEN>" \
+  -H "Authorization: Bearer <TOKEN>" \
+  -H "X-Trifle-Source-Id: <SOURCE_ID>" \
   -H "Content-Type: application/json" \
   -d '{
     "key": "event::signup",
@@ -150,7 +157,8 @@ curl -X POST "<TRIFLE_APP_URL>/api/v1/metrics/query" \
 @tab Trifle CLI
 ```sh
 export TRIFLE_URL="<TRIFLE_APP_URL>"
-export TRIFLE_TOKEN="<READ_TOKEN>"
+export TRIFLE_TOKEN="<TOKEN>"
+export TRIFLE_SOURCE_ID="<SOURCE_ID>"
 
 trifle metrics get \
   --key event::signup \
@@ -182,9 +190,9 @@ Useful for local development or when you need a quick data set.
 mix seed_metrics --source=database:<DATABASE_ID> --count=200 --hours=72
 ```
 
-@tab Populate API (project token)
+@tab Populate API (project source)
 ```sh
-mix populate_metrics --token=<PROJECT_WRITE_TOKEN> --count=100 --hours=24
+mix populate_metrics --token=<TOKEN> --source-id=<PROJECT_ID> --count=100 --hours=24
 ```
 :::
 

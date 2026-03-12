@@ -12,7 +12,8 @@ nav_order: 4
 @tab SaaS
 ```sh
 export TRIFLE_URL="https://app.trifle.io"
-export TRIFLE_TOKEN="<READ_TOKEN>"
+export TRIFLE_TOKEN="<ORG_TOKEN>"
+export TRIFLE_SOURCE_ID="<SOURCE_ID>"
 
 trifle metrics keys --from 2026-01-24T00:00:00Z --to 2026-01-25T00:00:00Z
 ```
@@ -20,7 +21,8 @@ trifle metrics keys --from 2026-01-24T00:00:00Z --to 2026-01-25T00:00:00Z
 @tab Self-hosted
 ```sh
 export TRIFLE_URL="https://trifle.example.com"
-export TRIFLE_TOKEN="<READ_TOKEN>"
+export TRIFLE_TOKEN="<ORG_TOKEN>"
+export TRIFLE_SOURCE_ID="<SOURCE_ID>"
 
 trifle metrics get --key event::signup --from 2026-01-24T00:00:00Z --to 2026-01-25T00:00:00Z --granularity 1h
 ```
@@ -37,7 +39,8 @@ trifle metrics get --driver sqlite --db ./stats.db --key event::signup --granula
 ```sh
 trifle metrics get \
   --url https://app.trifle.io \
-  --token <READ_TOKEN> \
+  --token <ORG_TOKEN> \
+  --source-id <SOURCE_ID> \
   --key event::signup \
   --from 2026-01-24T00:00:00Z \
   --to 2026-01-25T00:00:00Z \
@@ -47,7 +50,7 @@ trifle metrics get \
 
 ## Bootstrap (signup/login + source setup)
 
-Use bootstrap commands to authenticate as a user, create or configure sources, mint a source token, and persist config for regular `metrics` commands.
+Use bootstrap commands to authenticate, create or configure sources, then use the same token with `--source-id` (or `TRIFLE_SOURCE_ID`) for regular `metrics` commands.
 
 ```sh
 # 1) Authenticate
@@ -68,15 +71,17 @@ trifle source create database \
 # 3) List available sources and pick a source ID
 trifle source list
 
-# 4) Create and save a source token
-trifle source token create \
-  --source-type project \
+# 4) Use source-bound commands directly
+trifle metrics get \
+  --token <ORG_TOKEN> \
   --source-id <PROJECT_ID> \
-  --name "CLI write" \
-  --save --activate
+  --key event::signup \
+  --from 2026-01-24T00:00:00Z \
+  --to 2026-01-25T00:00:00Z \
+  --granularity 1h
 ```
 
-After this, the active config source has `driver: api` and a source token, so regular commands work without passing `--token`.
+`TRIFLE_SOURCE_ID` is required for source-bound API commands.
 
 `--sqlite-file` uploads a local SQLite file.  
 Use `--file-path` only for manual server-side paths.

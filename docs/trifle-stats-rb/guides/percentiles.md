@@ -77,6 +77,14 @@ p99 = average + sd * 2.58
 
 And voila. Now you have average, 95th percentile as well as 99th percentile. Which are the holy grail of performance monitoring.
 
-## Transponders
+## Expression transponder
 
-Alternatively you can calculate percentiles by using [Standard Deviation Transponder](../transponders/standard_deviation) and then calculating appropriate percentile in [Timeline Formatter](../formatters/timeline) and avoid doing all the manual calculation yourself!
+You can derive standard deviation with the [expression transponder](../transponders) and then calculate percentiles in the [Timeline Formatter](../formatters/timeline).
+
+```ruby
+series.transpond.expression(
+  paths: ['events.sum', 'events.count', 'events.square'],
+  expression: 'sqrt((b * c - a * a) / (b * (b - 1)))',
+  response: 'events.sd'
+)
+```
