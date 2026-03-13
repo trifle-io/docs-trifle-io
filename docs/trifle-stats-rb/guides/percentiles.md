@@ -1,14 +1,18 @@
 ---
 title: Percentiles
-description: Learn how to calculate average with percentiles.
+description: Learn how to approximate percentiles from average and standard deviation.
 nav_order: 2
 ---
 
 # Percentiles
 
-Average or mean can easily be biased by skewed distribution. Therefore knowing just whats the average may not always be enough. If you want to avoid displaying distribution, you may want to use 95th and/or 99th percnetiles instead.
+Average or mean can easily be biased by skewed distribution. Therefore knowing just whats the average may not always be enough. If you want to avoid displaying distribution, you may want to use 95th and/or 99th percentiles instead.
 
-To be able to calculate percentiles you will need to calculate standard deviation and normal distribution. 
+To approximate percentiles from summary data, you need standard deviation and a normal-distribution assumption.
+
+:::callout warn "Approximation only"
+This is a **normal approximation**, not an exact percentile calculation. It works best when your data is close to a normal distribution. For skewed data such as latency, duration, or revenue, `average + z * sd` can be materially off.
+:::
 
 Usually standard deviation is caluclated on top of your data, but in this case we're not preserving all instances of events, just the summary of them. To get around it, we need to preserve three values:
 
@@ -68,23 +72,40 @@ Thats somewhat simple, but not so straight forward. There are also [other method
 
 ## 95th and 99th Percentile
 
-Once you have standard deviation `sd`, it is easy to calculate [percentiles](https://en.wikipedia.org/wiki/68–95–99.7_rule).
+Once you have average and standard deviation `sd`, you can approximate upper percentiles using the corresponding one-sided z-scores.
 
 ```ruby
-p95 = average + sd * 1.98
-p99 = average + sd * 2.58
+p95 = average + sd * 1.645
+p99 = average + sd * 2.326
 ```
 
-And voila. Now you have average, 95th percentile as well as 99th percentile. Which are the holy grail of performance monitoring.
+These are the standard normal z-scores for the 95th and 99th percentiles:
+
+- `P95 ≈ average + 1.645 * sd`
+- `P99 ≈ average + 2.326 * sd`
+
+And voila. Now you have average, 95th percentile as well as 99th percentile approximations.
 
 ## Expression transponder
 
-You can derive standard deviation with the [expression transponder](../transponders) and then calculate percentiles in the [Timeline Formatter](../formatters/timeline).
+You can derive standard deviation with the [expression transponder](../transponders), then derive percentile approximations the same way.
 
 ```ruby
 series.transpond.expression(
   paths: ['events.sum', 'events.count', 'events.square'],
   expression: 'sqrt((b * c - a * a) / (b * (b - 1)))',
   response: 'events.sd'
+)
+
+series.transpond.expression(
+  paths: ['events.sum', 'events.count', 'events.sd'],
+  expression: '(a / b) + c * 1.645',
+  response: 'events.p95'
+)
+
+series.transpond.expression(
+  paths: ['events.sum', 'events.count', 'events.sd'],
+  expression: '(a / b) + c * 2.326',
+  response: 'events.p99'
 )
 ```

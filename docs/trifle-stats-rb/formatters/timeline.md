@@ -31,7 +31,11 @@ end
 
 > Note: `path` is a list of keys joined by dot. Ie `orders.shipped.count` would represent value at `{orders: { shipped: { count: ... } } }`.
 
-If your value comes from an expression-based standard deviation calculation, you may wanna multiply value by a constant that calculate specific percentile.
+If you want to plot percentile approximations, first derive them from average and standard deviation, then format those derived paths.
+
+:::callout warn "Approximation only"
+`P95 = average + 1.645 * sd` and `P99 = average + 2.326 * sd` are **normal approximations**. They are not exact percentiles and can be inaccurate for skewed data such as latency.
+:::
 
 ```ruby
 series = Trifle::Stats.series(...)
@@ -41,15 +45,27 @@ series.transpond.expression(
   response: 'events.sd'
 )
 
-p95 = series.format.timeline(path: 'events.sd') do |at, value|
-  {x: at.to_i, y: value * 1.98}
+series.transpond.expression(
+  paths: ['events.sum', 'events.count', 'events.sd'],
+  expression: '(a / b) + c * 1.645',
+  response: 'events.p95'
+)
+
+series.transpond.expression(
+  paths: ['events.sum', 'events.count', 'events.sd'],
+  expression: '(a / b) + c * 2.326',
+  response: 'events.p99'
+)
+
+p95 = series.format.timeline(path: 'events.p95') do |at, value|
+  {x: at.to_i, y: value}
 end
 => [[{ x: 1711136280, y: 243.54 }, { x: 1711136340, y: 902.88 }]]
 
-p99 = formatter.format(path: 'events.sd') do |at, value|
-  {x: at.to_i, y: value * 2.58}
+p99 = series.format.timeline(path: 'events.p99') do |at, value|
+  {x: at.to_i, y: value}
 end
 => [[{ x: 1711136280, y: 317.34 }, { x: 1711136340, y: 1176.48 }]
 ```
 
-And thats it. Now you prepared series for plotting your percentiles.
+And thats it. Now you prepared series for plotting your percentile approximations.
