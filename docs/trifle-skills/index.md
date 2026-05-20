@@ -23,7 +23,45 @@ Skills are structured instruction files that AI coding agents load when working 
 
 ## Install
 
-### Claude Code
+### npx (recommended)
+
+Install all Trifle skills with npm/npx:
+
+```sh
+npx -y @trifle/skills install codex
+```
+
+Project-local agents use the current directory by default:
+
+```sh
+npx -y @trifle/skills install claude
+npx -y @trifle/skills install cursor
+npx -y @trifle/skills install windsurf
+npx -y @trifle/skills install cline
+```
+
+Install a single skill with `--skill`:
+
+```sh
+npx -y @trifle/skills install codex --skill trifle-stats
+```
+
+Use `--dir` to install into a different project root. For Codex, `--dir` overrides `$CODEX_HOME`.
+
+```sh
+npx -y @trifle/skills install claude --dir /path/to/project
+npx -y @trifle/skills install codex --dir /path/to/codex-home
+```
+
+The installer refuses to overwrite changed files. Re-run with `--force` when you want to replace an existing install:
+
+```sh
+npx -y @trifle/skills install codex --force
+```
+
+After installing, restart Codex to pick up new skills.
+
+### Claude Code marketplace
 
 ```sh
 /plugin marketplace add trifle-io/skills
@@ -32,32 +70,54 @@ Skills are structured instruction files that AI coding agents load when working 
 /plugin install trifle-cli@trifle-io/skills
 ```
 
-Or copy skill directories into your project:
+### Manual install
 
-```sh
-cp -r trifle-stats .claude/skills/
-cp -r trifle-traces .claude/skills/
-cp -r trifle-cli .claude/skills/
-```
+If you prefer not to use npx, copy the skill files from a checkout of [github.com/trifle-io/skills](https://github.com/trifle-io/skills).
 
-### OpenAI Codex
-
-Install skills into your Codex skills directory:
+#### OpenAI Codex
 
 ```sh
 CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
 mkdir -p "$CODEX_HOME/skills"
-cp -R trifle-stats "$CODEX_HOME/skills/trifle-stats"
-cp -R trifle-traces "$CODEX_HOME/skills/trifle-traces"
-cp -R trifle-cli "$CODEX_HOME/skills/trifle-cli"
+cp -R trifle-stats/skills/trifle-stats "$CODEX_HOME/skills/trifle-stats"
+cp -R trifle-traces/skills/trifle-traces "$CODEX_HOME/skills/trifle-traces"
+cp -R trifle-cli/skills/trifle-cli "$CODEX_HOME/skills/trifle-cli"
 ```
 
-### Cursor
+#### Claude Code
 
 ```sh
-cp trifle-stats/SKILL.md .cursor/rules/trifle-stats.mdc
-cp trifle-traces/SKILL.md .cursor/rules/trifle-traces.mdc
-cp trifle-cli/SKILL.md .cursor/rules/trifle-cli.mdc
+mkdir -p .claude/skills
+cp -r trifle-stats/skills/trifle-stats .claude/skills/
+cp -r trifle-traces/skills/trifle-traces .claude/skills/
+cp -r trifle-cli/skills/trifle-cli .claude/skills/
+```
+
+#### Cursor
+
+```sh
+mkdir -p .cursor/rules
+cp trifle-stats/skills/trifle-stats/SKILL.md .cursor/rules/trifle-stats.mdc
+cp trifle-traces/skills/trifle-traces/SKILL.md .cursor/rules/trifle-traces.mdc
+cp trifle-cli/skills/trifle-cli/SKILL.md .cursor/rules/trifle-cli.mdc
+```
+
+#### Windsurf
+
+```sh
+mkdir -p .windsurf/rules
+cp trifle-stats/skills/trifle-stats/SKILL.md .windsurf/rules/trifle-stats.md
+cp trifle-traces/skills/trifle-traces/SKILL.md .windsurf/rules/trifle-traces.md
+cp trifle-cli/skills/trifle-cli/SKILL.md .windsurf/rules/trifle-cli.md
+```
+
+#### Cline
+
+```sh
+mkdir -p .cline/skills
+cp -r trifle-stats/skills/trifle-stats .cline/skills/
+cp -r trifle-traces/skills/trifle-traces .cline/skills/
+cp -r trifle-cli/skills/trifle-cli .cline/skills/
 ```
 
 ### Any other agent
