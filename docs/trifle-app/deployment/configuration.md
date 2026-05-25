@@ -268,6 +268,7 @@ Behavior by backend:
 - `app.env` (map) Key-value env vars injected into the app container and jobs.
   - Defaults: `MIX_ENV=prod`, `PHX_SERVER=true`, `LOG_TO_STDOUT=auto`.
   - You can still override `TRIFLE_SQLITE_UPLOAD_MAX_BYTES`, `TRIFLE_SQLITE_UPLOAD_ROOT`, and any `TRIFLE_SQLITE_OBJECT_*` env here if needed.
+  - Set `TRIFLE_CLOUD_EGRESS_IPS` here to show static egress IPs in database connection forms for self-hosted or custom cloud deployments. See [Secure Connections](/trifle-app/databases/secure-connections).
 
 ### Registration + deployment mode
 

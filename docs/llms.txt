@@ -13,7 +13,8 @@
 Purpose: dashboards + monitors for Trifle Stats data, with an API for metrics and transponders.
 Auth: API token (Bearer) + base URL (`TRIFLE_URL`).
 SaaS vs self-hosted: SaaS includes Projects; self-hosted defaults to Database-only sources.
-Key docs: /trifle-app/ /trifle-app/api/ /trifle-app/cli /trifle-app/mcp /trifle-app/deployment/
+Database connectivity: direct, IP allowlist, SSH tunnel, or Private Connector.
+Key docs: /trifle-app/ /trifle-app/api/ /trifle-app/databases/ /trifle-app/databases/secure-connections /trifle-app/cli /trifle-app/mcp /trifle-app/deployment/
 
 Example (CLI):
 ```sh
@@ -124,6 +125,7 @@ Trifle::Traces.tracer.wrapup
 
 ## Reference links
 - Trifle App API: /trifle-app/api/
+- Trifle App database connections: /trifle-app/databases/secure-connections
 - Trifle App CLI: /trifle-app/cli
 - Trifle App MCP: /trifle-app/mcp
 - Trifle::Stats (Ruby) usage: /trifle-stats-rb/usage

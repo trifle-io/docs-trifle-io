@@ -18,6 +18,7 @@ Trifle App ships as a public Docker image, so you can run it anywhere that speak
 - A single application container (Phoenix app) plus its dependencies (Postgres).
 - The Helm chart can run Postgres for you or connect to an external database.
 - The chart runs migrations and bootstraps the initial admin user.
+- Database sources can use direct networking, IP allowlists, SSH tunnels, or [Private Connectors](/trifle-app/databases/secure-connections), depending on where Trifle App runs relative to the database.
 
 :::callout note "Short version"
 - Helm is the paved road. Docker is the dirt path that still gets you there.

@@ -31,6 +31,7 @@ Building charts is easy; aligning teams around data is not. Trifle App gives non
 
 - The Metrics API (read + write for project sources)
 - Dashboards, monitors, and report delivery
+- Secure database connection options for Cloud and self-hosted topologies
 - Integrations with Slack, Discord, Google SSO, and more
 - Self-hosted deployment with Helm or a SaaS option
 - Developer tooling: [CLI](/trifle-cli/) and [MCP server](/trifle-cli/mcp)
@@ -39,6 +40,7 @@ Building charts is easy; aligning teams around data is not. Trifle App gives non
 
 - **Sources**: project sources can read/write; database sources are read-only.
 - **Ingestion**: project metrics go through `/api/v1/metrics`; database metrics come from Trifle Stats writing to your DB.
+- **Database connectivity**: choose direct access, IP allowlist, SSH tunnel, or [Private Connector](/trifle-app/databases/secure-connections).
 - **Dashboards vs monitors**: dashboards are saved views; monitors schedule reports or fire alerts.
 
 :::callout note "Self-hosted defaults"

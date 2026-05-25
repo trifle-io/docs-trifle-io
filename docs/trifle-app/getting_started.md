@@ -52,6 +52,8 @@ There are two source types:
 
 If you want **Database source** metrics, integrate **Trifle::Stats** (Ruby), **Trifle.Stats** (Elixir), or another Trifle Stats plugin into your app so it writes metrics into your database directly.
 
+If the database is private, choose a connection method before saving the source: direct access, IP allowlist, SSH tunnel, or Private Connector. See [Secure Connections](/trifle-app/databases/secure-connections).
+
 Go to **Organization → Tokens** and create a token (or reuse the bootstrap token).  
 For API calls, always pass `X-Trifle-Source-Id`.
 
