@@ -22,7 +22,7 @@ Trifle App supports several ways to reach database sources. Pick the smallest co
 | Direct | Self-hosted Trifle App near the database | No, if already on the same private network | Trifle App connects to the database host directly. |
 | Direct + IP allowlist | Trifle Cloud to a database with a controlled public endpoint | Yes, from Trifle Cloud egress IPs | Add Trifle egress IPs to the database firewall or security group. |
 | SSH tunnel | Private database behind a bastion host | Yes, SSH to the bastion | Trifle App opens an SSH tunnel, then connects to the private database through it. |
-| Private Connector | Networks that do not allow inbound traffic from Trifle | No | A Docker container inside your network polls Trifle over outbound HTTPS and handles private connectivity. |
+| Private Connector | Networks that do not allow inbound traffic from Trifle | No | A container inside your network polls Trifle over outbound HTTPS and handles private connectivity. |
 
 ## Direct connection
 
@@ -85,10 +85,10 @@ Recommended bastion setup:
 
 ## Private Connector
 
-Private Connector is the outbound-only option. It is a small Docker image that runs inside your network and connects back to Trifle over HTTPS. You do not open inbound firewall rules from Trifle Cloud to your network.
+Private Connector is the outbound-only option. It is a small container image that runs inside your network and connects back to Trifle over HTTPS. You do not open inbound firewall rules from Trifle Cloud to your network.
 
 :::callout note "Availability"
-The connector image registers with Trifle, reports health, and handles connector jobs over outbound HTTPS. Connector-backed database querying requires a Trifle App release with Private Connector database routing enabled.
+The connector registers with Trifle, reports health, checks database reachability, and serves connector-backed database queries over outbound HTTPS.
 :::
 
 Use Private Connector when:
@@ -104,9 +104,12 @@ Use Private Connector when:
 2. Click **New connector**.
 3. Give it a descriptive name, such as `Production VPC` or `EU Redis Cluster`.
 4. Copy the token immediately. It is only shown once.
-5. Run the generated Docker command inside the network that can reach the database.
+5. Run the generated install command inside the network that can reach the database.
 
-The command looks like this:
+The generated command includes the connector ID and one-time token. Choose the deployment shape that matches your environment:
+
+::::tabs
+@tab Docker
 
 ```sh
 docker run -d --name trifle-connector \
@@ -117,6 +120,75 @@ docker run -d --name trifle-connector \
   -e TRIFLE_CONNECTOR_ALLOWED_HOSTS='db.internal:5432' \
   trifle/connector:latest
 ```
+
+@tab Kubernetes
+
+```sh
+cat > trifle-connector.yaml <<'YAML'
+apiVersion: v1
+kind: Secret
+metadata:
+  name: trifle-connector
+type: Opaque
+stringData:
+  TRIFLE_CONNECTOR_TOKEN: '<one-time-token>'
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trifle-connector
+  labels:
+    app.kubernetes.io/name: trifle-connector
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: trifle-connector
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: trifle-connector
+    spec:
+      containers:
+        - name: connector
+          image: trifle/connector:latest
+          imagePullPolicy: Always
+          env:
+            - name: TRIFLE_CLOUD_URL
+              value: 'https://app.trifle.io'
+            - name: TRIFLE_CONNECTOR_ID
+              value: '<connector-id>'
+            - name: TRIFLE_CONNECTOR_NAME
+              value: 'Production VPC'
+            - name: TRIFLE_CONNECTOR_ALLOWED_HOSTS
+              value: 'db.internal:5432'
+            - name: TRIFLE_CONNECTOR_HEALTH_ADDR
+              value: '0.0.0.0:8080'
+            - name: TRIFLE_CONNECTOR_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: trifle-connector
+                  key: TRIFLE_CONNECTOR_TOKEN
+          ports:
+            - name: http
+              containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 30
+YAML
+
+kubectl apply -f trifle-connector.yaml
+```
+::::
 
 Then edit the database source:
 
@@ -132,7 +204,7 @@ Then edit the database source:
 | `TRIFLE_CLOUD_URL` | No | `https://app.trifle.io` | Trifle App base URL. Use your own host for self-hosted control planes. |
 | `TRIFLE_CONNECTOR_ID` | No | container hostname | Stable connector identifier. The generated command sets this. |
 | `TRIFLE_CONNECTOR_NAME` | No | | Human-readable connector name. |
-| `TRIFLE_CONNECTOR_ALLOWED_HOSTS` | Yes for network checks | | Comma-separated allowlist such as `db.internal:5432,redis.internal:6379,10.20.0.0/16`. |
+| `TRIFLE_CONNECTOR_ALLOWED_HOSTS` | Yes | | Comma-separated allowlist such as `db.internal:5432,redis.internal:6379,10.20.0.0/16`. Connector-backed database checks and queries are blocked unless the target is allowed. |
 | `TRIFLE_CONNECTOR_CAPABILITIES` | No | `postgres,mysql,mongo,redis` | Capabilities reported to Trifle. |
 | `TRIFLE_CONNECTOR_HEALTH_ADDR` | No | `127.0.0.1:8080` | Local health server bind address. |
 | `TRIFLE_CONNECTOR_POLL_INTERVAL` | No | `5s` | Control-plane polling interval. Numeric values are seconds. |
