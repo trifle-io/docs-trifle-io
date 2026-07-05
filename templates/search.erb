@@ -1,33 +1,33 @@
-<section class="mb-10">
-  <h1 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">Search Docs</h1>
+<section class="search-head">
+  <h1>Search Docs</h1>
   <% if query && !query.strip.empty? %>
-    <p class="mt-2 text-slate-600 dark:text-slate-400">
+    <p class="search-meta">
       <%= results.length %> result<%= results.length == 1 ? '' : 's' %> for "<%= query %>"
       <% if scope && !scope.strip.empty? %>
-        in <span class="font-semibold text-teal-700 dark:text-teal-400"><%= scope %></span>
+        in <span class="search-scope"><%= scope %></span>
       <% end %>
     </p>
   <% end %>
 </section>
 
 <% if results.any? %>
-  <section class="space-y-5">
+  <section class="search-results">
     <% results.each do |result| %>
       <% result_url = [request.script_name, result[:url]].join('/').gsub(%r{/+}, '/') %>
       <% result_url = "/#{result_url}" unless result_url.start_with?('/') %>
-      <article class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-6 shadow-sm">
-        <h2 class="text-2xl font-semibold text-slate-900 dark:text-white">
-          <a href="<%= result_url %>" class="hover:text-teal-600 dark:hover:text-teal-400 transition"><%= result[:title] %></a>
+      <article class="search-card">
+        <h2>
+          <a href="<%= result_url %>"><%= result[:title] %></a>
         </h2>
         <% if result[:excerpt] && !result[:excerpt].strip.empty? %>
-          <p class="mt-3 text-slate-600 dark:text-slate-400"><%= result[:excerpt] %></p>
+          <p class="search-excerpt"><%= result[:excerpt] %></p>
         <% end %>
-        <div class="mt-4 text-sm text-slate-500 dark:text-slate-400">/<%= result[:url] %></div>
+        <div class="search-url">/<%= result[:url] %></div>
       </article>
     <% end %>
   </section>
 <% elsif query && !query.strip.empty? %>
-  <p class="text-slate-600 dark:text-slate-400">No documentation pages matched this query.</p>
+  <p>No documentation pages matched this query.</p>
 <% else %>
-  <p class="text-slate-600 dark:text-slate-400">Enter a term in the navbar search field to find content.</p>
+  <p>Enter a term in the navbar search field to find content.</p>
 <% end %>

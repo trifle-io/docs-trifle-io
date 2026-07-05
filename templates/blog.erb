@@ -1,9 +1,9 @@
-<div class="mb-8 text-sm text-slate-500 dark:text-slate-400">
+<div class="blog-byline microlabel">
   <% if meta.dig('author') %>
     <span>By <%= meta.dig('author') %></span>
   <% end %>
   <% if meta.dig('date') %>
-    <span class="mx-2">•</span>
+    <span class="sep">&bull;</span>
     <time datetime="<%= meta.dig('date') %>"><%= meta.dig('date') %></time>
   <% end %>
 </div>

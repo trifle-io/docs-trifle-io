@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -45,8 +45,6 @@
   <meta name="twitter:description" content="<%= meta&.dig('description') || 'Documentation for Trifle - time-series metrics library for Ruby, Elixir, and Go.' %>">
   <meta name="twitter:image" content="https://trifle.io/landing.jpg">
 
-  <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <script>
     document.addEventListener('keydown', function(e) {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -55,516 +53,588 @@
       }
     });
   </script>
-  <script>
-    tailwind.config = {
-      darkMode: 'media',
-      theme: {
-        extend: {
-          colors: {
-            teal: {
-              50: '#f0fdfa',
-              100: '#ccfbf1',
-              200: '#99f6e4',
-              300: '#5eead4',
-              400: '#2dd4bf',
-              500: '#14b8a6',
-              600: '#0d9488',
-              700: '#0f766e',
-              800: '#115e59',
-              900: '#134e4a',
-              950: '#042f2e'
-            }
-          }
-        }
-      }
-    }
-  </script>
+
+  <meta name="color-scheme" content="light dark">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/zine.css">
   <style>
     <%= Rouge::Themes::Base16.new.render %>
 
-    body {
-      font-family: 'Inter', sans-serif;
+    /* ============================================================
+       Rouge overrides — highlighted code blocks live inside the
+       zine .prose pre cutout. The container (border, hard shadow,
+       paper background, padding) comes from .prose pre in zine.css;
+       token colors are remapped onto the --syn-* variables so both
+       light and dark paper stay readable.
+       ============================================================ */
+    .prose .highlight{background:transparent}
+    .prose .highlight,
+    .prose .highlight code,
+    .prose .highlight pre{color:var(--ink)}
+    .prose .highlighter-rouge{margin:0}
+
+    /* comments */
+    .prose .highlight .c,.prose .highlight .cd,.prose .highlight .cm,
+    .prose .highlight .c1,.prose .highlight .cs,.prose .highlight .cp,
+    .prose .highlight .cpf{color:var(--syn-com);font-style:italic}
+    /* keywords, constants, classes, modules */
+    .prose .highlight .k,.prose .highlight .kc,.prose .highlight .kd,
+    .prose .highlight .kn,.prose .highlight .kp,.prose .highlight .kr,
+    .prose .highlight .kt,.prose .highlight .kv,
+    .prose .highlight .nc,.prose .highlight .no,.prose .highlight .nn{color:var(--syn-const)}
+    /* methods, functions, builtins */
+    .prose .highlight .nf,.prose .highlight .fm,.prose .highlight .nx,
+    .prose .highlight .nb,.prose .highlight .bp{color:var(--syn-meth)}
+    /* strings */
+    .prose .highlight .s,.prose .highlight .sa,.prose .highlight .sb,
+    .prose .highlight .sc,.prose .highlight .sd,.prose .highlight .s2,
+    .prose .highlight .sh,.prose .highlight .si,.prose .highlight .sx,
+    .prose .highlight .s1,.prose .highlight .sr,.prose .highlight .dl{color:var(--syn-str)}
+    /* symbols, attributes, variables */
+    .prose .highlight .ss,.prose .highlight .sy,.prose .highlight .na,
+    .prose .highlight .nv,.prose .highlight .vc,.prose .highlight .vg,
+    .prose .highlight .vi,.prose .highlight .vm{color:var(--syn-sym)}
+    /* numbers */
+    .prose .highlight .m,.prose .highlight .mb,.prose .highlight .mf,
+    .prose .highlight .mh,.prose .highlight .mi,.prose .highlight .il,
+    .prose .highlight .mo,.prose .highlight .mx{color:var(--syn-num)}
+    /* operators, punctuation, plain names */
+    .prose .highlight .o,.prose .highlight .ow,.prose .highlight .p,
+    .prose .highlight .pi,.prose .highlight .n,.prose .highlight .w{color:var(--ink-70)}
+    /* diff / generic / errors */
+    .prose .highlight .gh,.prose .highlight .gu{color:var(--ink);font-weight:700}
+    .prose .highlight .gd{color:var(--syn-const)}
+    .prose .highlight .gi{color:var(--syn-str)}
+    .prose .highlight .err{color:var(--syn-const);background:transparent}
+
+    /* ============================================================
+       DOCS — layout, nav search, sidebar tree, TOC
+       ============================================================ */
+    html{scroll-padding-top:96px}
+
+    /* nav: docs variant carries the search form in the middle */
+    .docs-nav .nav-inner{max-width:88rem;flex-wrap:wrap}
+    .nav-left{display:flex;align-items:center;gap:.7rem}
+    .brand-chip{
+      font-family:var(--font-mono);font-size:10px;font-weight:700;
+      letter-spacing:.06em;text-transform:uppercase;
+      border:1.5px solid var(--border);border-radius:3px;
+      background:var(--paper-hi);color:var(--ink);
+      padding:2px 7px;transform:rotate(-2deg);
+    }
+    .docs-nav .menu-btn{display:none}
+    @media (max-width:1023px){.docs-nav .menu-btn{display:inline-flex}}
+    body.sidebar-open .menu-btn .ico-menu{display:none}
+    .menu-btn .ico-close{display:none}
+    body.sidebar-open .menu-btn .ico-close{display:block}
+
+    .nav-search{flex:1 1 auto;min-width:0;max-width:36rem}
+    @media (max-width:767px){
+      .nav-search{order:10;flex-basis:100%;max-width:none}
+    }
+    .search-box{
+      display:flex;align-items:center;
+      border:2px solid var(--border);border-radius:3px;
+      background:var(--paper-hi);
+    }
+    .search-box:focus-within{outline:3px solid var(--teal-deep);outline-offset:2px}
+    .search-box select{
+      appearance:none;-webkit-appearance:none;
+      border:none;background:transparent;
+      font-family:var(--font-mono);font-size:12px;font-weight:700;
+      color:var(--ink-70);
+      padding:.5rem .5rem .5rem .7rem;
+      max-width:9.5rem;cursor:pointer;
+    }
+    .search-box select:focus{outline:none}
+    .search-divider{width:1px;height:1.25rem;flex:none;background:var(--hairline)}
+    .search-box input{
+      flex:1;min-width:0;border:none;background:transparent;
+      font-family:var(--font-body);font-weight:500;font-size:.92rem;
+      color:var(--ink);padding:.5rem .75rem;
+    }
+    .search-box input:focus{outline:none}
+    .search-box input::placeholder{
+      font-family:var(--font-mono);font-size:12px;
+      color:var(--ink-50);letter-spacing:.03em;
+    }
+    .search-kbd{
+      display:none;align-items:center;gap:2px;
+      font-family:var(--font-mono);font-size:10px;font-weight:700;
+      border:1.5px solid var(--hairline);border-radius:3px;
+      background:var(--paper-lo);color:var(--ink-50);
+      padding:.15rem .4rem;margin-right:.45rem;
+      pointer-events:none;white-space:nowrap;
+    }
+    @media (min-width:640px){.search-kbd{display:inline-flex}}
+    .search-btn{
+      font-family:var(--font-mono);font-size:11px;font-weight:700;
+      letter-spacing:.05em;text-transform:uppercase;
+      background:var(--teal);color:var(--on-accent);
+      border:2px solid var(--border);border-radius:3px;
+      padding:.35rem .7rem;margin:.3rem;flex:none;
+      box-shadow:2px 2px 0 var(--shadow-ink);cursor:pointer;
+      transition:transform .15s ease-out, box-shadow .15s ease-out;
+    }
+    .search-btn:hover{transform:translate(2px,2px);box-shadow:0 0 0 var(--shadow-ink)}
+
+    /* three-column shell */
+    .docs-layout{
+      max-width:88rem;margin:0 auto;
+      display:flex;gap:2.5rem;
+      padding:2.2rem clamp(1.25rem,4vw,2.5rem) 5rem;
+    }
+    .docs-main{min-width:0;flex:1}
+    .docs-main .prose{max-width:none}
+
+    /* sidebar */
+    .docs-sidebar{width:18rem;flex:none}
+    .docs-sidebar-inner{
+      position:sticky;top:96px;
+      max-height:calc(100vh - 120px);overflow-y:auto;
+      padding-bottom:1rem;
+    }
+    @media (max-width:1023px){
+      .docs-sidebar{
+        position:fixed;top:0;left:0;z-index:120;
+        height:100%;width:18rem;
+        background:var(--paper);
+        border-right:2px solid var(--border);
+        box-shadow:var(--shadow-l);
+        padding:1.4rem 1.25rem;overflow-y:auto;
+        transform:translateX(-110%);
+        transition:transform .2s ease-out;
+      }
+      body.sidebar-open .docs-sidebar{transform:translateX(0)}
+      .docs-sidebar-inner{position:static;max-height:none;overflow:visible;padding-bottom:0}
+    }
+    .sidebar-backdrop{
+      display:none;position:fixed;inset:0;z-index:110;
+      background:rgba(11,18,32,.55);
+    }
+    body.sidebar-open .sidebar-backdrop{display:block}
+    @media (min-width:1024px){body.sidebar-open .sidebar-backdrop{display:none}}
+
+    /* sidebar tree */
+    .side-nav ul{list-style:none;margin:0;padding:0}
+    .side-nav > ul{display:flex;flex-direction:column;gap:1.05rem}
+    .side-link{
+      display:flex;align-items:center;gap:.55rem;
+      font-family:var(--font-mono);font-size:12px;font-weight:700;
+      letter-spacing:.06em;text-transform:uppercase;
+      color:var(--ink-70);text-decoration:none;
+      padding:.15rem 0;
+    }
+    .side-link:hover{color:var(--teal-ink)}
+    .side-link.active{color:var(--teal-ink)}
+    .side-ico{width:16px;height:16px;flex:none}
+    .side-lang{margin-left:auto;width:16px;height:16px;flex:none;opacity:.7}
+    .side-link:hover .side-lang{opacity:1}
+    .side-sub{
+      margin:.6rem 0 .2rem .5rem;
+      border-left:2px solid var(--hairline);
+      display:flex;flex-direction:column;gap:2px;
+    }
+    .side-sublink{
+      display:flex;align-items:center;gap:.35rem;
+      font-size:.875rem;font-weight:600;
+      color:var(--ink-50);text-decoration:none;
+      padding:.3rem .6rem .3rem .8rem;
+      margin-left:-2px;               /* chip sits on the rail */
+      border-left:2px solid transparent;
+      border-radius:0 2px 2px 0;
+      transition:color .12s ease-out, background-color .12s ease-out, border-color .12s ease-out;
+    }
+    .side-sublink:hover{
+      color:var(--ink);
+      background:var(--hairline-soft);
+      border-left-color:var(--teal);
+    }
+    .side-sublink.active{
+      color:var(--teal-ink);font-weight:700;
+      background:var(--teal-wash);
+      border-left-color:var(--teal);
+    }
+    /* third level: dashed rail, smaller, quieter */
+    .side-sub--deep{
+      margin:.3rem 0 .35rem .8rem;
+      border-left:2px dashed var(--hairline);
+      gap:1px;
+    }
+    .side-sub--deep .side-sublink{
+      font-size:.8rem;font-weight:500;
+      padding:.25rem .55rem .25rem .7rem;
+    }
+    .side-sub--deep .side-sublink.active{font-weight:700}
+    .side-chev{width:12px;height:12px;flex:none;margin-left:-.2rem;transition:transform .15s ease-out}
+    .side-chev.rot{transform:rotate(90deg)}
+
+    /* breadcrumbs row */
+    .crumbs{
+      display:flex;align-items:center;justify-content:space-between;gap:1rem;
+      margin-bottom:1.6rem;padding-bottom:.9rem;
+      border-bottom:2px dashed var(--hairline);
+    }
+    .crumb-trail{
+      display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;
+      font-family:var(--font-mono);font-size:11px;font-weight:700;
+      letter-spacing:.12em;text-transform:uppercase;
+      color:var(--ink-50);
+    }
+    .crumb-trail a{color:inherit;text-decoration:none}
+    .crumb-trail a:hover{color:var(--teal-ink)}
+    .crumb-trail .sep{color:var(--ink-30)}
+    .crumb-actions{display:none;align-items:center;gap:.5rem;flex:none}
+    @media (min-width:640px){.crumb-actions{display:flex}}
+    .crumb-sep{color:var(--ink-30)}
+    .crumb-btn{
+      display:inline-flex;align-items:center;gap:.35rem;
+      font-family:var(--font-mono);font-size:10.5px;font-weight:700;
+      letter-spacing:.05em;text-transform:uppercase;
+      color:var(--ink);text-decoration:none;
+      border:1.5px solid var(--border);border-radius:3px;
+      background:var(--paper-hi);
+      padding:.3rem .6rem;
+      box-shadow:2px 2px 0 var(--shadow-ink);cursor:pointer;
+      transition:transform .15s ease-out, box-shadow .15s ease-out;
+    }
+    .crumb-btn:hover{transform:translate(2px,2px);box-shadow:0 0 0 var(--shadow-ink)}
+    .crumb-btn svg{width:13px;height:13px;flex:none}
+    .crumb-btn .check-ico{color:var(--teal-ink)}
+
+    /* TOC */
+    .docs-toc{display:none}
+    @media (min-width:1280px){.docs-toc{display:block;width:14rem;flex:none}}
+    .docs-toc-inner{position:sticky;top:96px}
+    nav#on-this-page ul{list-style:none;padding-left:0;margin:0;font-size:.85rem}
+    nav#on-this-page > ul{margin-top:1rem;border-left:2px solid var(--hairline);padding-left:.85rem}
+    nav#on-this-page ul ul{padding-left:.85rem}
+    nav#on-this-page li{margin-top:.5rem}
+    nav#on-this-page a{color:var(--ink-50);font-weight:600;text-decoration:none}
+    nav#on-this-page a:hover{color:var(--teal-ink)}
+
+    /* prose-embedded interactive elements — undo .prose a treatment */
+    .prose a.btn{font-weight:800;border:2px solid var(--border)}
+    .prose a.btn:hover{background:var(--teal);color:var(--on-accent)}
+    .prose a.btn--ghost{color:var(--ink)}
+    .prose a.btn--ghost:hover{background:var(--paper-hi);color:var(--ink)}
+
+    /* ============================================================
+       DOCS COMPONENTS — class names emitted by markdown_shortcodes
+       ============================================================ */
+    /* callouts — flat wash labels */
+    .callout{
+      border:2px solid var(--border);border-radius:3px;
+      background:var(--paper-hi);
+      padding:1rem 1.2rem;margin:1.4rem 0;
+      color:var(--ink-70);
+    }
+    .callout > :last-child{margin-bottom:0}
+    .callout-title,
+    .prose .callout-title{
+      font-family:var(--font-mono);font-size:11px;font-weight:700;
+      letter-spacing:.1em;text-transform:uppercase;
+      color:var(--ink);margin:0 0 .5rem;
+    }
+    .callout-note{background:var(--teal-wash)}
+    .callout-note .callout-title{color:var(--teal-ink)}
+    .callout-warn{background:var(--amber-wash)}
+    .callout-warn .callout-title{color:var(--amber-ink)}
+
+    /* doc cards — paper cutouts */
+    .doc-card{
+      background:var(--paper-hi);
+      border:2px solid var(--border);border-radius:3px;
+      box-shadow:var(--shadow-s);
+      padding:1.1rem 1.3rem;margin:1.4rem 0;
+    }
+    .doc-card-header{
+      display:flex;align-items:flex-start;justify-content:space-between;
+      gap:1rem;flex-wrap:wrap;
+    }
+    .doc-card-title,
+    .prose .doc-card-title{
+      font-family:var(--font-display);font-weight:400;
+      font-size:1.1rem;line-height:1.2;letter-spacing:-.01em;
+      color:var(--ink);margin:0;
+    }
+    .doc-card-meta{
+      font-family:var(--font-mono);font-size:11px;font-weight:700;
+      letter-spacing:.05em;color:var(--ink-50);margin-top:.3rem;
+    }
+    .doc-card-body{color:var(--ink-70);margin-top:.6rem}
+    .doc-card-body > :last-child{margin-bottom:0}
+    .doc-card-link{flex:none}
+    .prose .doc-card-link a,
+    .doc-card-link a{
+      display:inline-flex;align-items:center;
+      font-family:var(--font-mono);font-size:10.5px;font-weight:700;
+      letter-spacing:.05em;text-transform:uppercase;text-decoration:none;
+      color:var(--ink);
+      border:1.5px solid var(--border);border-radius:3px;
+      background:var(--paper-hi);
+      padding:.3rem .6rem;
+      box-shadow:2px 2px 0 var(--shadow-ink);
+      transition:transform .15s ease-out, box-shadow .15s ease-out;
+    }
+    .prose .doc-card-link a:hover,
+    .doc-card-link a:hover{
+      transform:translate(2px,2px);box-shadow:0 0 0 var(--shadow-ink);
+      background:var(--paper-hi);color:var(--ink);
     }
 
-    .prose pre {
-      border-radius: 0.75rem;
-      background: #0f172a;
-      border: 1px solid #1e293b;
-      padding: 1rem;
-      overflow-x: auto;
+    /* tab groups — ink-bordered, press-down tabs */
+    .tab-group{
+      border:2px solid var(--border);border-radius:3px;
+      background:var(--paper-hi);
+      overflow:hidden;margin:1.4rem 0;
     }
-
-    .prose code {
-      font-family: 'JetBrains Mono', monospace;
+    .tab-select{
+      padding:.75rem;background:var(--paper-lo);
+      border-bottom:2px solid var(--border);
+      position:relative;
     }
-
-    [x-cloak] {
-      display: none !important;
+    .tab-select select{
+      width:100%;appearance:none;-webkit-appearance:none;
+      background:var(--paper-hi);
+      border:2px solid var(--border);border-radius:3px;
+      padding:.5rem 2.5rem .5rem .75rem;
+      font-family:var(--font-mono);font-size:13px;font-weight:700;
+      color:var(--ink);cursor:pointer;
     }
-
-    .gradient-text {
-      background: linear-gradient(90deg, #0d9488, #0891b2, #06b6d4, #0d9488);
-      background-size: 200% auto;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: gradient-shift 3s linear infinite;
+    .tab-select svg{
+      position:absolute;right:1.5rem;top:50%;
+      transform:translateY(-50%);
+      width:1rem;height:1rem;color:var(--ink-50);
+      pointer-events:none;
     }
-
-    @media (prefers-color-scheme: dark) {
-      .gradient-text {
-        background: linear-gradient(90deg, #14b8a6, #0ea5e9, #22d3ee, #14b8a6);
-        background-size: 200% auto;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+    .tab-nav{display:none}
+    .tab-panel{padding:1.1rem 1.2rem}
+    .tab-panel > :last-child{margin-bottom:0}
+    /* JS-driven visibility: before JS runs, all panels stay visible */
+    .tab-group.tabs-ready > .tab-panel{display:none}
+    .tab-group.tabs-ready > .tab-panel.tab-panel-active{display:block}
+    @media (min-width:640px){
+      .tab-select{display:none}
+      .tab-nav{
+        display:block;background:var(--paper-lo);
+        border-bottom:2px solid var(--border);
+        padding:.65rem .75rem;
+      }
+      .tab-nav-links{display:flex;flex-wrap:wrap;gap:.5rem}
+      .tab-link{
+        font-family:var(--font-mono);font-size:11.5px;font-weight:700;
+        letter-spacing:.05em;text-transform:uppercase;
+        background:var(--paper-hi);color:var(--ink-70);
+        border:2px solid var(--border);border-radius:3px;
+        padding:.4rem .8rem;
+        box-shadow:2px 2px 0 var(--shadow-ink);cursor:pointer;
+        transition:transform .15s ease-out, box-shadow .15s ease-out;
+      }
+      .tab-link:hover{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--shadow-ink)}
+      .tab-link-active,
+      .tab-link.tab-link-active:hover{
+        background:var(--teal);color:var(--on-accent);
+        transform:translate(2px,2px);box-shadow:0 0 0 var(--shadow-ink);
       }
     }
 
-    @keyframes gradient-shift {
-      0% { background-position: 0% center; }
-      100% { background-position: 200% center; }
+    /* method cards / signatures */
+    .method-card{
+      background:var(--paper-hi);
+      border:2px solid var(--border);border-radius:3px;
+      padding:1.1rem 1.3rem;margin:1.4rem 0;
+    }
+    .method-card-title{
+      font-family:var(--font-mono);font-size:11px;font-weight:700;
+      letter-spacing:.1em;text-transform:uppercase;
+      color:var(--ink-50);margin-bottom:.5rem;
+    }
+    .method-card-signature{margin-bottom:.75rem}
+    .method-card-signature code{
+      display:block;white-space:pre-wrap;
+      font-family:var(--font-mono);font-size:.85rem;
+      background:var(--paper-lo);color:var(--ink);
+      border:2px solid var(--border);border-radius:3px;
+      padding:.6rem .75rem;
     }
 
-    nav#on-this-page ul {
-      margin-top: 1rem;
-      list-style: none;
-      padding-left: 0;
-      font-size: 0.875rem;
+    .arg-list{margin:0;padding:0}
+    .arg-row{padding:.75rem 0 0;margin-top:.75rem;border-top:1px solid var(--hairline)}
+    .arg-row dt{
+      margin:0;font-weight:700;color:var(--ink);
+      display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;
+    }
+    .arg-row dd{margin:.4rem 0 0;color:var(--ink-70);font-size:.9rem}
+    .arg-row dd p{margin:0}
+
+    /* badges — small flat mono chips */
+    .badge{
+      display:inline-flex;align-items:center;
+      font-family:var(--font-mono);font-size:10.5px;font-weight:700;
+      letter-spacing:.04em;
+      border:1.5px solid var(--border);border-radius:3px;
+      background:var(--paper-lo);color:var(--ink);
+      padding:.1rem .45rem;
+    }
+    .badge-type{background:var(--paper-lo)}
+    .badge-required{background:var(--teal-wash)}
+    .badge-optional{background:var(--amber-wash)}
+    .badge-default{background:var(--violet-wash)}
+
+    /* search results — zine cutout cards */
+    .search-head h1{margin-bottom:.6rem}
+    .search-meta,
+    .prose .search-meta{color:var(--ink-70);margin:0}
+    .search-scope{font-family:var(--font-mono);font-weight:700;color:var(--teal-ink)}
+    .search-results{margin-top:2rem}
+    .search-card{
+      background:var(--paper-hi);
+      border:2px solid var(--border);border-radius:3px;
+      box-shadow:var(--shadow-s);
+      padding:1.25rem 1.4rem;margin-bottom:1.5rem;
+      transform:rotate(-.4deg);
+    }
+    .search-card:nth-child(even){transform:rotate(.35deg)}
+    .search-card h2{
+      font-family:var(--font-display);font-weight:400;
+      font-size:1.35rem;line-height:1.2;letter-spacing:-.01em;
+      margin:0;
+    }
+    .prose .search-card h2 a,
+    .search-card h2 a{color:var(--teal-ink);text-decoration:none;border-bottom:none}
+    .prose .search-card h2 a:hover,
+    .search-card h2 a:hover{background:var(--teal-hi);color:var(--on-accent)}
+    .search-excerpt,
+    .prose .search-excerpt{color:var(--ink-70);margin:.7rem 0 0}
+    .search-url{
+      font-family:var(--font-mono);font-size:11px;font-weight:700;
+      letter-spacing:.05em;color:var(--ink-50);margin-top:.9rem;
     }
 
-    nav#on-this-page ul li {
-      margin-top: 0.5rem;
-      color: rgb(100 116 139);
+    /* blog byline */
+    .blog-byline{margin-bottom:2rem}
+    .blog-byline .sep{margin:0 .5rem}
+
+    /* 404 */
+    .nf-hero{
+      display:flex;flex-direction:column;align-items:center;
+      text-align:center;padding:clamp(3rem,8vw,6rem) 0;
     }
-
-    nav#on-this-page ul li a {
-      text-decoration: none;
+    .nf-code,
+    .prose .nf-code{
+      font-family:var(--font-display);font-weight:400;
+      font-size:clamp(6rem,14vw,9rem);line-height:1;
+      letter-spacing:-.03em;color:var(--ink);
+      text-shadow:6px 6px 0 color-mix(in srgb, var(--teal) 40%, transparent);
+      margin:0 0 1.6rem;
     }
-
-    nav#on-this-page ul li a:hover {
-      color: rgb(15 118 110);
+    .nf-title,
+    .prose .nf-title{
+      font-family:var(--font-display);font-weight:400;
+      font-size:clamp(1.4rem,3vw,1.9rem);line-height:1.15;
+      letter-spacing:-.01em;color:var(--ink);
+      margin:0 0 .9rem;
     }
-
-    .callout {
-      border-radius: 0.75rem;
-      border: 1px solid rgb(203 213 225);
-      background: rgb(248 250 252);
-      padding: 1rem;
-      margin: 1.25rem 0;
-      color: rgb(30 41 59);
+    .nf-sub,
+    .prose .nf-sub{color:var(--ink-70);max-width:30rem;margin:0 0 1.4rem}
+    .nf-note{
+      background:var(--teal-wash);
+      border:2px solid var(--border);border-radius:3px;
+      padding:1rem 1.4rem;max-width:34rem;
+      transform:rotate(-.5deg);
+      margin-bottom:2.6rem;
     }
-
-    .callout > :last-child {
-      margin-bottom: 0;
-    }
-
-    .callout-title {
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: rgb(15 118 110);
-      margin-bottom: 0.5rem;
-    }
-
-    .callout-note {
-      border-color: rgb(153 246 228);
-      background: rgb(240 253 250);
-    }
-
-    .callout-warn {
-      border-color: rgb(253 224 71);
-      background: rgb(254 252 232);
-    }
-
-    .doc-card {
-      border-radius: 0.75rem;
-      border: 1px solid rgb(226 232 240);
-      background: white;
-      padding: 1rem;
-      margin: 1rem 0;
-    }
-
-    .doc-card-title {
-      font-size: 1.125rem;
-      font-weight: 600;
-      margin: 0;
-    }
-
-    .doc-card-body {
-      color: rgb(71 85 105);
-    }
-
-    .doc-card-meta,
-    .doc-card-link {
-      font-size: 0.75rem;
-      color: rgb(100 116 139);
-      margin-top: 0.25rem;
-    }
-
-    .doc-card a {
-      color: rgb(13 148 136);
-      text-decoration: none;
-    }
-
-    .doc-card a:hover {
-      color: rgb(15 118 110);
-    }
-
-    .tab-group {
-      border: 1px solid rgb(226 232 240);
-      border-radius: 0.75rem;
-      overflow: hidden;
-      margin: 1rem 0;
-    }
-
-    .tab-select {
-      padding: 0.75rem;
-      background: rgb(248 250 252);
-      border-bottom: 1px solid rgb(226 232 240);
-      position: relative;
-    }
-
-    .tab-select select {
-      width: 100%;
-      appearance: none;
-      -webkit-appearance: none;
-      background: white;
-      border: 1px solid rgb(203 213 225);
-      border-radius: 0.5rem;
-      padding: 0.5rem 2.5rem 0.5rem 0.75rem;
-      font-size: 0.875rem;
-      color: rgb(15 23 42);
-      cursor: pointer;
-    }
-
-    .tab-select svg {
-      position: absolute;
-      right: 1.5rem;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 1rem;
-      height: 1rem;
-      color: rgb(100 116 139);
-    }
-
-    .tab-nav {
-      display: none;
-    }
-
-    .tab-panel {
-      padding: 1rem;
-    }
-
-    .method-card {
-      border-radius: 0.75rem;
-      border: 1px solid rgb(226 232 240);
-      background: rgb(255 255 255 / 0.85);
-      padding: 1rem;
-      margin: 1.25rem 0;
-    }
-
-    .method-card-title {
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: rgb(71 85 105);
-      margin-bottom: 0.5rem;
-    }
-
-    .method-card-signature {
-      margin-bottom: 0.75rem;
-    }
-
-    .method-card-signature code {
-      display: block;
-      white-space: pre-wrap;
-      border-radius: 0.5rem;
-      border: 1px solid rgb(203 213 225);
-      background: rgb(248 250 252);
-      color: rgb(15 23 42);
-      padding: 0.625rem 0.75rem;
-      font-size: 0.875rem;
-      font-family: 'JetBrains Mono', monospace;
-    }
-
-    .arg-list {
-      margin: 0;
-      padding: 0;
-    }
-
-    .arg-row {
-      padding: 0.75rem 0 0;
-      margin-top: 0.75rem;
-      border-top: 1px solid rgb(226 232 240);
-    }
-
-    .arg-row dt {
-      margin: 0;
-      font-weight: 600;
-      color: rgb(15 23 42);
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 0.375rem;
-    }
-
-    .arg-row dd {
-      margin: 0.375rem 0 0;
-      color: rgb(71 85 105);
-      font-size: 0.875rem;
-    }
-
-    .arg-row dd p {
-      margin: 0;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      border-radius: 9999px;
-      padding: 0.125rem 0.5rem;
-      font-size: 0.6875rem;
-      font-weight: 600;
-      letter-spacing: 0.01em;
-      border: 1px solid transparent;
-    }
-
-    .badge-type {
-      background: rgb(241 245 249);
-      border-color: rgb(203 213 225);
-      color: rgb(15 23 42);
-    }
-
-    .badge-required {
-      background: rgb(220 252 231);
-      border-color: rgb(134 239 172);
-      color: rgb(22 101 52);
-    }
-
-    .badge-optional {
-      background: rgb(254 249 195);
-      border-color: rgb(253 224 71);
-      color: rgb(133 77 14);
-    }
-
-    .badge-default {
-      background: rgb(224 231 255);
-      border-color: rgb(165 180 252);
-      color: rgb(55 48 163);
-    }
-
-    @media (min-width: 640px) {
-      .tab-select {
-        display: none;
-      }
-
-      .tab-nav {
-        display: block;
-        border-bottom: 1px solid rgb(226 232 240);
-        padding: 0.75rem 1rem 0;
-        background: rgb(248 250 252);
-      }
-
-      .tab-nav-links {
-        display: flex;
-        gap: 1rem;
-      }
-
-      .tab-link {
-        border: 0;
-        background: transparent;
-        padding: 0 0 0.5rem;
-        font-size: 0.875rem;
-        color: rgb(100 116 139);
-        cursor: pointer;
-      }
-
-      .tab-link-active {
-        color: rgb(13 148 136);
-        border-bottom: 2px solid rgb(13 148 136);
-      }
-    }
-
-    @media (prefers-color-scheme: dark) {
-      .callout {
-        border-color: rgb(51 65 85);
-        background: rgb(15 23 42 / 0.78);
-        color: rgb(203 213 225);
-      }
-
-      .callout-note {
-        border-color: rgb(20 83 45);
-        background: rgb(6 78 59 / 0.35);
-      }
-
-      .callout-warn {
-        border-color: rgb(146 64 14);
-        background: rgb(120 53 15 / 0.3);
-      }
-
-      .callout-title {
-        color: rgb(94 234 212);
-      }
-
-      .doc-card {
-        border-color: rgb(51 65 85);
-        background: rgb(15 23 42 / 0.72);
-      }
-
-      .doc-card-title {
-        color: rgb(248 250 252);
-      }
-
-      .doc-card-body,
-      .doc-card-meta,
-      .doc-card-link {
-        color: rgb(148 163 184);
-      }
-
-      .doc-card a {
-        color: rgb(45 212 191);
-      }
-
-      .doc-card a:hover {
-        color: rgb(94 234 212);
-      }
-
-      .tab-group {
-        border-color: rgb(51 65 85);
-        background: rgb(15 23 42 / 0.6);
-      }
-
-      .tab-select {
-        background: rgb(15 23 42 / 0.7);
-        border-bottom-color: rgb(51 65 85);
-      }
-
-      .tab-select select {
-        background: rgb(15 23 42);
-        color: rgb(226 232 240);
-        border-color: rgb(71 85 105);
-      }
-
-      .tab-select svg {
-        color: rgb(148 163 184);
-      }
-
-      .tab-panel {
-        color: rgb(203 213 225);
-      }
-
-      .tab-nav {
-        border-bottom-color: rgb(51 65 85);
-        background: rgb(15 23 42 / 0.7);
-      }
-
-      .tab-link {
-        color: rgb(148 163 184);
-      }
-
-      .tab-link-active {
-        color: rgb(45 212 191);
-        border-bottom-color: rgb(45 212 191);
-      }
-
-      .method-card {
-        border-color: rgb(51 65 85);
-        background: rgb(15 23 42 / 0.72);
-      }
-
-      .method-card-title {
-        color: rgb(148 163 184);
-      }
-
-      .method-card-signature code {
-        border-color: rgb(51 65 85);
-        background: rgb(2 6 23);
-        color: rgb(226 232 240);
-      }
-
-      .arg-row {
-        border-top-color: rgb(51 65 85);
-      }
-
-      .arg-row dt {
-        color: rgb(226 232 240);
-      }
-
-      .arg-row dd {
-        color: rgb(148 163 184);
-      }
-
-      .badge-type {
-        background: rgb(30 41 59);
-        border-color: rgb(71 85 105);
-        color: rgb(226 232 240);
-      }
-
-      .badge-required {
-        background: rgb(20 83 45 / 0.5);
-        border-color: rgb(22 101 52);
-        color: rgb(187 247 208);
-      }
-
-      .badge-optional {
-        background: rgb(120 53 15 / 0.45);
-        border-color: rgb(146 64 14);
-        color: rgb(254 240 138);
-      }
-
-      .badge-default {
-        background: rgb(49 46 129 / 0.45);
-        border-color: rgb(67 56 202);
-        color: rgb(199 210 254);
-      }
-    }
+    .nf-note p{font-size:.92rem;color:var(--ink);margin:0}
+    .nf-note-strong{font-weight:800}
+    .nf-ctas{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:1rem}
   </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased transition-colors" x-data="{ sidebarOpen: false }">
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
   <% current_path = request.path_info.to_s.empty? ? '/' : request.path_info %>
   <% search_action = [request.script_name, 'search'].join('/').gsub(%r{/+}, '/') %>
   <% search_action = "/#{search_action}" unless search_action.start_with?('/') %>
 
-  <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800" aria-label="Main navigation">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-4">
-      <div class="flex items-center gap-2">
-        <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden p-1.5 -ml-1.5 rounded-md text-slate-600 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition" aria-label="Toggle navigation menu">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path x-show="!sidebarOpen" stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-            <path x-cloak x-show="sidebarOpen" stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+  <!-- shared SVG symbols -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="trifle-logo" viewBox="0 0 72 84" fill="currentColor" style="fill-rule:evenodd;clip-rule:evenodd;">
+        <g>
+          <g transform="matrix(1,0,0,1,0.442181,0.243718)">
+            <path d="M31.5,2.441C32.41,0.973 33.062,0.441 34.328,0.133C35.938,-0.258 37.812,0.203 40.109,1.551C42.781,3.121 44.746,4.824 46.457,7.059C48.188,9.324 48.191,9.328 49.949,9.789C51.508,10.203 55.07,11.488 56.129,12.023C57.98,12.957 59.535,14.426 60.996,16.617C61.805,17.828 61.949,17.945 63.098,18.285C66.676,19.355 68.371,20.211 69.688,21.609C71.105,23.117 71.52,24.871 71.086,27.527C70.887,28.754 69.461,35.641 68.605,39.504C67.988,42.305 67.125,46.43 66.637,48.918C66.496,49.637 65.625,54.031 64.698,58.684C63.773,63.336 62.844,68.066 62.633,69.188C61.766,73.816 61.184,75.285 59.305,77.625C57.098,80.367 53.527,82.055 48.273,82.836C45.016,83.32 43.504,83.402 37.293,83.445C29.031,83.5 25.117,83.285 21.359,82.578C17.242,81.801 14.508,80.531 12.48,78.457C11.734,77.691 11.434,77.301 10.84,76.352C9.531,74.262 9.191,73.16 8.128,67.578C7.801,65.844 7.367,63.633 7.16,62.66C6.957,61.691 6.012,56.98 5.059,52.195C2.784,40.777 2.594,39.84 1.444,34.504C0.905,32.008 0.375,29.453 0.262,28.832C-0.293,25.77 0.008,24.168 1.418,22.66C2.879,21.09 5.582,19.801 8.984,19.051C9.707,18.891 10.469,18.684 10.672,18.594C11.09,18.41 11.07,18.434 11.984,17.023C13.133,15.25 14.125,14.156 15.531,13.113C17.25,11.84 19.172,10.898 22.293,9.797C25.559,8.645 26.203,8.363 27.125,7.688C28.543,6.645 29.918,4.992 31.5,2.441ZM34.734,6.745C35.085,6.25 35.374,5.622 35.582,4.758C35.642,4.51 36.817,4.538 37.579,5.188C38.595,6.055 38.775,6.146 40.189,7.537C41.072,8.406 41.063,8.663 42.614,10.601C43.985,12.316 44.749,12.811 45.393,13.308C46.28,13.999 47.615,14.101 49.764,14.691C51.299,15.113 53.209,15.944 53.881,16.279C54.552,16.615 55.159,17.202 55.686,17.714C56.073,18.085 56.538,18.716 56.968,19.56C58.136,21.853 58.887,22.126 61.519,22.946C63.828,23.665 65.197,23.828 65.792,24.277C65.952,24.398 63.632,24.709 61.726,25.201C59.468,25.787 54.561,26.193 51.514,26.517C44.788,27.232 39.696,27.33 32.606,27.244C26.172,27.166 24.206,27.315 19.572,27.054C18.458,26.992 9.227,26.125 7.371,25.535C6.559,25.273 5.683,25.054 5.683,25.054C5.683,25.054 8.711,24.248 11.304,23.517C13.336,22.943 14.174,22.668 14.788,22.096C15.344,21.579 16.143,21.105 16.928,19.617C17.814,17.933 17.884,17.679 18.685,16.874C19.814,15.737 20.523,15.249 23.5,14.374C28.055,13.031 29.767,11.527 31.388,10.039C32.485,9.031 33.836,8.014 34.734,6.745ZM36.966,32.393C40.358,32.42 55.253,31.273 58.916,30.863C62.753,30.434 65.952,29.492 65.902,29.784C65.866,30.001 65.332,33.197 64.996,34.904C64.438,37.72 63.254,42.159 63.254,42.159C63.254,42.159 62.357,42.276 60.488,41.743C58.488,41.173 54.915,35.081 52.086,35.097C49.199,35.113 45.938,38.551 43.796,38.648C41.816,38.738 38.558,33.922 36.472,33.895C34.387,33.867 29.347,38.691 24.985,43.37C20.948,47.7 18.168,50.684 15.659,50.376C14.338,50.213 13.783,49.631 9.421,48.619C8.96,48.512 7.428,39.915 7.123,38.458C6.619,36.024 4.879,29.776 4.898,29.752C4.898,29.752 14.403,31.881 19.164,32.039C23.695,32.188 33.764,32.368 36.966,32.393ZM51.768,39.812C53.68,39.816 56.64,45.333 58.792,45.922C61.955,46.788 62.39,46.771 62.39,46.771C62.39,46.771 62.127,48.142 61.66,50.519L60.646,54.754C60.646,54.754 59.789,54.705 59.182,54.3C57.837,53.401 54.638,52.125 53.532,51.498C51.618,50.413 48.266,49.504 46.242,49.345C43.402,49.123 41.191,49.616 37.837,50.69C34.954,51.614 33.852,52.399 31.434,52.954C28.804,53.557 25.944,52.846 25.309,52.662C22.189,51.755 24.074,50.945 28.314,46.258C30.729,43.589 34.162,39.638 36.024,39.584C37.63,39.538 41.474,43.47 43.607,43.444C45.731,43.417 49.622,39.808 51.768,39.812ZM23.993,56.884C26.927,57.485 29.623,57.595 32.211,57.26C34.625,56.948 37.69,55.258 41.236,54.095C43.228,53.441 47.171,53.611 48.72,54.064C51.122,54.767 53.572,56.026 56.297,57.621C58.173,58.72 59.945,59.259 59.945,59.259L59.126,63.698C59.126,63.698 57.441,63.054 56.319,62.559C53.256,61.208 50.066,61.336 47.892,61.89C43.691,62.962 41.873,63.71 38.188,64.952C34.321,66.255 32.594,66.921 29.925,67.705C28.272,68.19 26.087,68.692 23.407,68.997C19.602,69.43 18.697,69.379 17.055,69.166C14.794,68.872 12.426,67.466 12.426,67.466C12.426,67.466 9.719,53.428 9.957,53.456C13.092,53.82 13.177,54.293 15.642,54.841C17.86,55.335 20.597,56.188 23.993,56.884ZM51.557,66.165C57.88,66.668 58.404,68.352 58.404,68.352C58.404,68.352 58.512,70.388 56.584,73.763C56.142,74.537 54.963,75.751 54.271,76.216C53.26,76.891 51.77,77.506 50.285,77.885C45.918,78.998 37.197,79.369 27.236,78.779C24.16,78.599 20.977,77.844 18.607,76.869C14.811,75.306 13.653,72.496 13.653,72.496C13.653,72.496 16.258,73.228 17.004,73.295C18.403,73.421 19.037,73.52 20.954,73.52C23.326,73.52 26.06,73.097 28.169,72.648C31.017,72.041 33.737,71.276 35.728,70.431C37.806,69.549 42.729,67.943 45.969,66.928C47.182,66.548 49.871,66.031 51.557,66.165Z"/>
+          </g>
+          <g transform="matrix(2.779089,0,-0,-7.279669,-18.643586,306.024137)">
+            <ellipse cx="12.041" cy="36.556" rx="0.898" ry="0.342"/>
+          </g>
+        </g>
+      </symbol>
+      <symbol id="ico-arrow" viewBox="0 0 24 24">
+        <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/>
+      </symbol>
+      <symbol id="ico-star" viewBox="0 0 20 20">
+        <path fill="currentColor" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+      </symbol>
+      <symbol id="ico-github" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+      </symbol>
+      <symbol id="ico-chart" viewBox="0 0 24 24">
+        <path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z"/>
+      </symbol>
+      <symbol id="ico-bell" viewBox="0 0 24 24">
+        <path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25"/>
+      </symbol>
+      <symbol id="ico-term" viewBox="0 0 24 24">
+        <path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25Z"/>
+      </symbol>
+      <symbol id="ico-db" viewBox="0 0 24 24">
+        <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
+      </symbol>
+      <symbol id="ico-cap" viewBox="0 0 24 24">
+        <path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5"/>
+      </symbol>
+      <symbol id="ico-phone" viewBox="0 0 24 24">
+        <path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z"/>
+      </symbol>
+      <symbol id="ico-scissors" viewBox="0 0 24 24">
+        <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <circle cx="6" cy="6" r="2.6"/>
+          <circle cx="6" cy="18" r="2.6"/>
+          <path d="M8.2 7.6 20 18M8.2 16.4 20 6"/>
+        </g>
+      </symbol>
+      <symbol id="ico-reg" viewBox="0 0 26 26">
+        <g fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="13" cy="13" r="7"/>
+          <path d="M13 0v26M0 13h26"/>
+        </g>
+      </symbol>
+    </defs>
+  </svg>
+
+  <!-- Navigation -->
+  <nav class="nav docs-nav" aria-label="Main navigation">
+    <div class="nav-inner">
+      <div class="nav-left">
+        <button class="menu-btn" id="sidebar-btn" aria-expanded="false" aria-controls="docs-sidebar" aria-label="Toggle navigation menu">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path class="ico-menu" stroke-linecap="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/>
+            <path class="ico-close" stroke-linecap="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
           </svg>
         </button>
-        <a href="/" class="flex items-center gap-2" aria-label="Trifle Docs Home">
-        <svg
-          viewBox="0 0 72 84"
-          class="h-8 w-8 text-teal-500"
-          xmlns="http://www.w3.org/2000/svg"
-          style="fill-rule:evenodd;clip-rule:evenodd;"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <g>
-            <g transform="matrix(1,0,0,1,0.442181,0.243718)">
-              <path d="M31.5,2.441C32.41,0.973 33.062,0.441 34.328,0.133C35.938,-0.258 37.812,0.203 40.109,1.551C42.781,3.121 44.746,4.824 46.457,7.059C48.188,9.324 48.191,9.328 49.949,9.789C51.508,10.203 55.07,11.488 56.129,12.023C57.98,12.957 59.535,14.426 60.996,16.617C61.805,17.828 61.949,17.945 63.098,18.285C66.676,19.355 68.371,20.211 69.688,21.609C71.105,23.117 71.52,24.871 71.086,27.527C70.887,28.754 69.461,35.641 68.605,39.504C67.988,42.305 67.125,46.43 66.637,48.918C66.496,49.637 65.625,54.031 64.698,58.684C63.773,63.336 62.844,68.066 62.633,69.188C61.766,73.816 61.184,75.285 59.305,77.625C57.098,80.367 53.527,82.055 48.273,82.836C45.016,83.32 43.504,83.402 37.293,83.445C29.031,83.5 25.117,83.285 21.359,82.578C17.242,81.801 14.508,80.531 12.48,78.457C11.734,77.691 11.434,77.301 10.84,76.352C9.531,74.262 9.191,73.16 8.128,67.578C7.801,65.844 7.367,63.633 7.16,62.66C6.957,61.691 6.012,56.98 5.059,52.195C2.784,40.777 2.594,39.84 1.444,34.504C0.905,32.008 0.375,29.453 0.262,28.832C-0.293,25.77 0.008,24.168 1.418,22.66C2.879,21.09 5.582,19.801 8.984,19.051C9.707,18.891 10.469,18.684 10.672,18.594C11.09,18.41 11.07,18.434 11.984,17.023C13.133,15.25 14.125,14.156 15.531,13.113C17.25,11.84 19.172,10.898 22.293,9.797C25.559,8.645 26.203,8.363 27.125,7.688C28.543,6.645 29.918,4.992 31.5,2.441ZM34.734,6.745C35.085,6.25 35.374,5.622 35.582,4.758C35.642,4.51 36.817,4.538 37.579,5.188C38.595,6.055 38.775,6.146 40.189,7.537C41.072,8.406 41.063,8.663 42.614,10.601C43.985,12.316 44.749,12.811 45.393,13.308C46.28,13.999 47.615,14.101 49.764,14.691C51.299,15.113 53.209,15.944 53.881,16.279C54.552,16.615 55.159,17.202 55.686,17.714C56.073,18.085 56.538,18.716 56.968,19.56C58.136,21.853 58.887,22.126 61.519,22.946C63.828,23.665 65.197,23.828 65.792,24.277C65.952,24.398 63.632,24.709 61.726,25.201C59.468,25.787 54.561,26.193 51.514,26.517C44.788,27.232 39.696,27.33 32.606,27.244C26.172,27.166 24.206,27.315 19.572,27.054C18.458,26.992 9.227,26.125 7.371,25.535C6.559,25.273 5.683,25.054 5.683,25.054C5.683,25.054 8.711,24.248 11.304,23.517C13.336,22.943 14.174,22.668 14.788,22.096C15.344,21.579 16.143,21.105 16.928,19.617C17.814,17.933 17.884,17.679 18.685,16.874C19.814,15.737 20.523,15.249 23.5,14.374C28.055,13.031 29.767,11.527 31.388,10.039C32.485,9.031 33.836,8.014 34.734,6.745ZM36.966,32.393C40.358,32.42 55.253,31.273 58.916,30.863C62.753,30.434 65.952,29.492 65.902,29.784C65.866,30.001 65.332,33.197 64.996,34.904C64.438,37.72 63.254,42.159 63.254,42.159C63.254,42.159 62.357,42.276 60.488,41.743C58.488,41.173 54.915,35.081 52.086,35.097C49.199,35.113 45.938,38.551 43.796,38.648C41.816,38.738 38.558,33.922 36.472,33.895C34.387,33.867 29.347,38.691 24.985,43.37C20.948,47.7 18.168,50.684 15.659,50.376C14.338,50.213 13.783,49.631 9.421,48.619C8.96,48.512 7.428,39.915 7.123,38.458C6.619,36.024 4.879,29.776 4.898,29.752C4.898,29.752 14.403,31.881 19.164,32.039C23.695,32.188 33.764,32.368 36.966,32.393ZM51.768,39.812C53.68,39.816 56.64,45.333 58.792,45.922C61.955,46.788 62.39,46.771 62.39,46.771C62.39,46.771 62.127,48.142 61.66,50.519L60.646,54.754C60.646,54.754 59.789,54.705 59.182,54.3C57.837,53.401 54.638,52.125 53.532,51.498C51.618,50.413 48.266,49.504 46.242,49.345C43.402,49.123 41.191,49.616 37.837,50.69C34.954,51.614 33.852,52.399 31.434,52.954C28.804,53.557 25.944,52.846 25.309,52.662C22.189,51.755 24.074,50.945 28.314,46.258C30.729,43.589 34.162,39.638 36.024,39.584C37.63,39.538 41.474,43.47 43.607,43.444C45.731,43.417 49.622,39.808 51.768,39.812ZM23.993,56.884C26.927,57.485 29.623,57.595 32.211,57.26C34.625,56.948 37.69,55.258 41.236,54.095C43.228,53.441 47.171,53.611 48.72,54.064C51.122,54.767 53.572,56.026 56.297,57.621C58.173,58.72 59.945,59.259 59.945,59.259L59.126,63.698C59.126,63.698 57.441,63.054 56.319,62.559C53.256,61.208 50.066,61.336 47.892,61.89C43.691,62.962 41.873,63.71 38.188,64.952C34.321,66.255 32.594,66.921 29.925,67.705C28.272,68.19 26.087,68.692 23.407,68.997C19.602,69.43 18.697,69.379 17.055,69.166C14.794,68.872 12.426,67.466 12.426,67.466C12.426,67.466 9.719,53.428 9.957,53.456C13.092,53.82 13.177,54.293 15.642,54.841C17.86,55.335 20.597,56.188 23.993,56.884ZM51.557,66.165C57.88,66.668 58.404,68.352 58.404,68.352C58.404,68.352 58.512,70.388 56.584,73.763C56.142,74.537 54.963,75.751 54.271,76.216C53.26,76.891 51.77,77.506 50.285,77.885C45.918,78.998 37.197,79.369 27.236,78.779C24.16,78.599 20.977,77.844 18.607,76.869C14.811,75.306 13.653,72.496 13.653,72.496C13.653,72.496 16.258,73.228 17.004,73.295C18.403,73.421 19.037,73.52 20.954,73.52C23.326,73.52 26.06,73.097 28.169,72.648C31.017,72.041 33.737,71.276 35.728,70.431C37.806,69.549 42.729,67.943 45.969,66.928C47.182,66.548 49.871,66.031 51.557,66.165Z"/>
-            </g>
-            <g transform="matrix(2.779089,0,-0,-7.279669,-18.643586,306.024137)">
-              <ellipse cx="12.041" cy="36.556" rx="0.898" ry="0.342"/>
-            </g>
-          </g>
-        </svg>
-        <span class="font-semibold text-lg">Trifle</span>
-      </a>
+        <a href="/" class="nav-brand" aria-label="Trifle Docs Home">
+          <svg aria-hidden="true"><use href="#trifle-logo"/></svg>
+          <span>Trifle</span>
+          <span class="brand-chip">Docs</span>
+        </a>
       </div>
 
-      <form action="<%= search_action %>" method="get" class="order-last md:order-none w-full md:w-auto md:min-w-[28rem] lg:min-w-[34rem]" role="search" aria-label="Search documentation">
-        <div class="flex items-center rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden transition-colors focus-within:border-teal-500 focus-within:ring-1 focus-within:ring-teal-500">
-          <label for="scope" class="sr-only">Scope</label>
-          <select id="scope" name="scope" class="border-0 bg-transparent text-sm text-slate-600 dark:text-slate-300 pl-3 py-2 focus:ring-0">
+      <form action="<%= search_action %>" method="get" class="nav-search" role="search" aria-label="Search documentation">
+        <div class="search-box">
+          <label for="scope" class="hidden">Scope</label>
+          <select id="scope" name="scope">
             <option value="">All docs</option>
             <% sitemap.sort_by { |(_key, option)| option.dig('_meta', 'nav_order') || 0 }.each do |(key, option)| %>
               <% next if key == '_meta' %>
@@ -573,278 +643,326 @@
               <option value="<%= scope_value %>" <%= params['scope'] == scope_value ? 'selected' : '' %>><%= option.dig('_meta', 'title') %></option>
             <% end %>
           </select>
-          <div class="h-5 w-px bg-slate-200 dark:bg-slate-700"></div>
-          <label for="query" class="sr-only">Search query</label>
+          <div class="search-divider" aria-hidden="true"></div>
+          <label for="query" class="hidden">Search query</label>
           <input
             id="query"
             type="text"
             name="query"
             value="<%= params['query'] %>"
             placeholder="Search docs..."
-            class="w-full border-0 bg-transparent px-3 py-2 text-sm placeholder-slate-400 focus:ring-0"
-            @keydown.escape="$el.blur()"
           >
-          <kbd class="hidden sm:inline-flex items-center gap-0.5 rounded border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 text-[10px] font-medium text-slate-400 dark:text-slate-500 mr-1 pointer-events-none" aria-hidden="true">
-            <span x-text="navigator.platform.indexOf('Mac') > -1 ? '⌘' : 'Ctrl'"></span><span>K</span>
+          <kbd class="search-kbd" aria-hidden="true">
+            <span id="kbd-mod">⌘</span><span>K</span>
           </kbd>
-          <button type="submit" class="px-3 py-2 text-sm font-semibold text-teal-700 dark:text-teal-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+          <button type="submit" class="search-btn">
             Search
           </button>
         </div>
       </form>
 
-      <div class="hidden md:flex items-center gap-6 text-sm text-slate-500 dark:text-slate-400">
-        <a href="https://trifle.io/blog" class="hover:text-teal-600 dark:hover:text-teal-400 transition">Blog</a>
-        <a href="https://app.trifle.io" class="hover:text-teal-600 dark:hover:text-teal-400 transition">App</a>
-        <a href="https://github.com/trifle-io" class="hover:text-teal-600 dark:hover:text-teal-400 transition">GitHub</a>
+      <div class="nav-links">
+        <a href="https://trifle.io/blog">Blog</a>
+        <a href="https://app.trifle.io">App</a>
+        <a href="https://github.com/trifle-io">GitHub</a>
       </div>
     </div>
   </nav>
 
   <!-- Mobile sidebar backdrop -->
-  <div
-    x-show="sidebarOpen"
-    x-transition:enter="transition-opacity duration-200"
-    x-transition:enter-start="opacity-0"
-    x-transition:enter-end="opacity-100"
-    x-transition:leave="transition-opacity duration-150"
-    x-transition:leave-start="opacity-100"
-    x-transition:leave-end="opacity-0"
-    @click="sidebarOpen = false"
-    class="fixed inset-0 z-30 bg-slate-900/50 backdrop-blur-sm lg:hidden"
-    x-cloak
-  ></div>
+  <div class="sidebar-backdrop" id="sidebar-backdrop" aria-hidden="true"></div>
 
-  <div class="pt-40 md:pt-28 pb-20 px-6">
-    <div class="max-w-[88rem] mx-auto flex gap-10">
-      <aside
-        class="fixed top-0 left-0 z-40 h-full w-72 bg-slate-50 dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 pt-36 md:pt-20 pb-6 px-6 overflow-y-auto -translate-x-full transition-transform duration-200 lg:relative lg:h-auto lg:z-auto lg:border-0 lg:bg-transparent lg:dark:bg-transparent lg:pt-0 lg:pb-0 lg:px-0 lg:overflow-visible lg:translate-x-0 lg:transition-none shrink-0"
-        :class="sidebarOpen && '!translate-x-0 shadow-xl'"
-      >
-        <div class="lg:sticky lg:top-28">
-          <nav aria-label="Documentation navigation" @click="if ($event.target.closest('a')) sidebarOpen = false">
-            <ul class="space-y-5 text-sm">
+  <div class="docs-layout">
+    <aside class="docs-sidebar" id="docs-sidebar">
+      <div class="docs-sidebar-inner">
+        <nav class="side-nav" aria-label="Documentation navigation">
+          <ul>
+            <li>
+              <a href="/" class="side-link<%= current_path == '/' ? ' active' : '' %>">
+                <svg xmlns="http://www.w3.org/2000/svg" class="side-ico" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-1.5.545m0 6.205l3 1m1.5.5l-1.5-.5M6.75 7.364V3h-3v18m3-13.636l10.5-3.819" />
+                </svg>
+                <span>Home</span>
+              </a>
+            </li>
+
+            <% sitemap.sort_by { |(_key, option)| option.dig('_meta', 'nav_order') || 0 }.each do |(section_key, section)| %>
+              <% next if section_key == '_meta' %>
+              <% section_url = section.dig('_meta', 'url') %>
+              <% next unless section_url %>
+              <% section_active = current_path.start_with?(section_url) %>
+              <% section_icon = section.dig('_meta', 'svg') %>
+              <% section_lang = section.dig('_meta', 'lang') %>
+
               <li>
-                <a href="/" class="group flex items-center gap-2 font-semibold <%= current_path == '/' ? 'text-teal-600 dark:text-teal-400' : 'text-slate-700 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-400' %>">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-1.5.545m0 6.205l3 1m1.5.5l-1.5-.5M6.75 7.364V3h-3v18m3-13.636l10.5-3.819" />
-                  </svg>
-                  <span>Home</span>
+                <a href="<%= section_url %>" class="side-link<%= section_active ? ' active' : '' %>">
+                  <% if section_icon && !section_icon.to_s.strip.empty? %>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="side-ico" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="<%= section_icon %>" />
+                    </svg>
+                  <% end %>
+                  <span><%= section.dig('_meta', 'title') %></span>
+                  <% if section_lang && !section_lang.to_s.strip.empty? %>
+                    <svg viewBox="0 0 128 128" class="side-lang" fill="currentColor" aria-hidden="true">
+                      <%= section_lang %>
+                    </svg>
+                  <% end %>
                 </a>
-              </li>
 
-              <% sitemap.sort_by { |(_key, option)| option.dig('_meta', 'nav_order') || 0 }.each do |(section_key, section)| %>
-                <% next if section_key == '_meta' %>
-                <% section_url = section.dig('_meta', 'url') %>
-                <% next unless section_url %>
-                <% section_active = current_path.start_with?(section_url) %>
-                <% section_icon = section.dig('_meta', 'svg') %>
-                <% section_lang = section.dig('_meta', 'lang') %>
+                <% if section_active %>
+                  <ul class="side-sub">
+                    <% section.sort_by { |(_key, child)| child.dig('_meta', 'nav_order') || 0 }.each do |(child_key, child)| %>
+                      <% next if child_key == '_meta' %>
+                      <% child_url = child.dig('_meta', 'url') %>
+                      <% next unless child_url %>
+                      <% child_active = current_path == child_url || current_path.start_with?("#{child_url}/") %>
 
-                <li>
-                  <a href="<%= section_url %>" class="group flex items-center gap-2 font-semibold <%= section_active ? 'text-teal-600 dark:text-teal-400' : 'text-slate-700 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-400' %>">
-                    <% if section_icon && !section_icon.to_s.strip.empty? %>
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="<%= section_icon %>" />
-                      </svg>
-                    <% end %>
-                    <span><%= section.dig('_meta', 'title') %></span>
-                    <% if section_lang && !section_lang.to_s.strip.empty? %>
-                      <svg viewBox="0 0 128 128" class="ml-auto h-4 w-4 shrink-0 opacity-70 group-hover:opacity-100" fill="currentColor" aria-hidden="true">
-                        <%= section_lang %>
-                      </svg>
-                    <% end %>
-                  </a>
-
-                  <% if section_active %>
-                    <ul class="mt-2 ml-3 border-l border-slate-200 dark:border-slate-800 pl-4 space-y-2">
-                      <% section.sort_by { |(_key, child)| child.dig('_meta', 'nav_order') || 0 }.each do |(child_key, child)| %>
-                        <% next if child_key == '_meta' %>
-                        <% child_url = child.dig('_meta', 'url') %>
-                        <% next unless child_url %>
-                        <% child_active = current_path == child_url || current_path.start_with?("#{child_url}/") %>
-
-                        <% child_has_children = child.any? { |k, v| k != '_meta' && v.is_a?(Hash) && v.dig('_meta', 'url') } %>
-                        <li>
-                          <a href="<%= child_url %>" class="flex items-center gap-1 <%= child_active ? 'text-teal-600 dark:text-teal-400 font-medium' : 'text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400' %>">
-                            <% if child_has_children %>
-                              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 shrink-0 transition-transform <%= child_active ? 'rotate-90' : '' %>" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
-                              </svg>
-                            <% end %>
-                            <span><%= child.dig('_meta', 'title') %></span>
-                          </a>
-
-                          <% if child_active %>
-                            <ul class="mt-1 ml-3 border-l border-slate-200 dark:border-slate-800 pl-3 space-y-1">
-                              <% child.sort_by { |(_key, grandchild)| grandchild.dig('_meta', 'nav_order') || 0 }.each do |(grandchild_key, grandchild)| %>
-                                <% next if grandchild_key == '_meta' %>
-                                <% grandchild_url = grandchild.dig('_meta', 'url') %>
-                                <% next unless grandchild_url %>
-                                <% grandchild_active = current_path == grandchild_url %>
-                                <li>
-                                  <a href="<%= grandchild_url %>" class="text-sm <%= grandchild_active ? 'text-teal-600 dark:text-teal-400 font-medium' : 'text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400' %>"><%= grandchild.dig('_meta', 'title') %></a>
-                                </li>
-                              <% end %>
-                            </ul>
+                      <% child_has_children = child.any? { |k, v| k != '_meta' && v.is_a?(Hash) && v.dig('_meta', 'url') } %>
+                      <li>
+                        <a href="<%= child_url %>" class="side-sublink<%= child_active ? ' active' : '' %>">
+                          <% if child_has_children %>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="side-chev<%= child_active ? ' rot' : '' %>" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                              <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                            </svg>
                           <% end %>
-                        </li>
-                      <% end %>
-                    </ul>
-                  <% end %>
-                </li>
-              <% end %>
-            </ul>
-          </nav>
-        </div>
-      </aside>
+                          <span><%= child.dig('_meta', 'title') %></span>
+                        </a>
 
-      <main class="min-w-0 flex-1">
-        <% if meta&.dig('breadcrumbs') %>
-          <div class="mb-6 text-sm text-slate-500 dark:text-slate-400 flex items-center justify-between gap-4">
-            <div class="flex flex-wrap items-center gap-2">
-              <% meta['breadcrumbs'].count.times do |i| %>
-                <% breadcrumb_page = sitemap.dig(*meta['breadcrumbs'].take(i + 1)) %>
-                <% if breadcrumb_page&.dig('_meta', 'url') %>
-                  <a href="<%= breadcrumb_page.dig('_meta', 'url') %>" class="hover:text-teal-600 dark:hover:text-teal-400"><%= breadcrumb_page.dig('_meta', 'title') %></a>
-                  <% if i + 1 != meta['breadcrumbs'].count %>
-                    <span>/</span>
-                  <% end %>
+                        <% if child_active %>
+                          <ul class="side-sub side-sub--deep">
+                            <% child.sort_by { |(_key, grandchild)| grandchild.dig('_meta', 'nav_order') || 0 }.each do |(grandchild_key, grandchild)| %>
+                              <% next if grandchild_key == '_meta' %>
+                              <% grandchild_url = grandchild.dig('_meta', 'url') %>
+                              <% next unless grandchild_url %>
+                              <% grandchild_active = current_path == grandchild_url %>
+                              <li>
+                                <a href="<%= grandchild_url %>" class="side-sublink<%= grandchild_active ? ' active' : '' %>"><%= grandchild.dig('_meta', 'title') %></a>
+                              </li>
+                            <% end %>
+                          </ul>
+                        <% end %>
+                      </li>
+                    <% end %>
+                  </ul>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        </nav>
+      </div>
+    </aside>
+
+    <main class="docs-main" id="main-content">
+      <% if meta&.dig('breadcrumbs') %>
+        <div class="crumbs">
+          <div class="crumb-trail">
+            <% meta['breadcrumbs'].count.times do |i| %>
+              <% breadcrumb_page = sitemap.dig(*meta['breadcrumbs'].take(i + 1)) %>
+              <% if breadcrumb_page&.dig('_meta', 'url') %>
+                <a href="<%= breadcrumb_page.dig('_meta', 'url') %>"><%= breadcrumb_page.dig('_meta', 'title') %></a>
+                <% if i + 1 != meta['breadcrumbs'].count %>
+                  <span class="sep">/</span>
                 <% end %>
               <% end %>
-            </div>
-            <% if meta.dig('type') != 'collection' %>
-              <div class="hidden sm:flex items-center gap-1 text-xs shrink-0" x-data="{ copied: false }">
-                <button
-                  @click="
-                    fetch(window.location.pathname + '?format=md', { headers: { 'Accept': 'text/markdown' } })
-                      .then(r => r.text())
-                      .then(t => { navigator.clipboard.writeText(t); copied = true; setTimeout(() => copied = false, 2000) })
-                  "
-                  class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md hover:text-teal-600 dark:hover:text-teal-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-                >
-                  <svg x-show="!copied" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9.75a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184" /></svg>
-                  <svg x-show="copied" x-cloak class="w-3.5 h-3.5 text-teal-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
-                  <span x-text="copied ? 'Copied!' : 'Copy for LLM'"></span>
-                </button>
-                <span class="text-slate-300 dark:text-slate-700">|</span>
-                <a
-                  href="<%= meta['url'] %>?format=md"
-                  target="_blank"
-                  rel="noopener"
-                  class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md hover:text-teal-600 dark:hover:text-teal-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-                >
-                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>
-                  <span>View as Markdown</span>
-                </a>
-              </div>
             <% end %>
           </div>
-        <% end %>
+          <% if meta.dig('type') != 'collection' %>
+            <div class="crumb-actions">
+              <button type="button" class="crumb-btn" id="copy-md-btn">
+                <svg class="copy-ico" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9.75a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184" /></svg>
+                <svg class="check-ico hidden" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                <span id="copy-md-label">Copy for LLM</span>
+              </button>
+              <span class="crumb-sep">|</span>
+              <a
+                href="<%= meta['url'] %>?format=md"
+                target="_blank"
+                rel="noopener"
+                class="crumb-btn"
+              >
+                <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>
+                <span>View as Markdown</span>
+              </a>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
 
-        <article class="prose prose-slate dark:prose-invert max-w-none prose-a:text-teal-700 dark:prose-a:text-teal-400">
-          <%= yield %>
-        </article>
-      </main>
+      <article class="prose">
+        <%= yield %>
+      </article>
+    </main>
 
-      <aside class="hidden xl:block w-56 shrink-0">
-        <% if meta&.dig('toc') && !meta.dig('toc').to_s.strip.empty? %>
-          <div class="sticky top-28">
-            <nav id="on-this-page" aria-labelledby="on-this-page-title">
-              <h2 id="on-this-page-title" class="font-semibold text-slate-900 dark:text-white">On this page</h2>
-              <%= meta.dig('toc') %>
-            </nav>
-          </div>
-        <% end %>
-      </aside>
-    </div>
+    <aside class="docs-toc">
+      <% if meta&.dig('toc') && !meta.dig('toc').to_s.strip.empty? %>
+        <div class="docs-toc-inner">
+          <nav id="on-this-page" aria-labelledby="on-this-page-title">
+            <h2 id="on-this-page-title" class="microlabel">On this page</h2>
+            <%= meta.dig('toc') %>
+          </nav>
+        </div>
+      <% end %>
+    </aside>
   </div>
 
-  <footer class="py-16 px-6 border-t border-slate-200 dark:border-slate-800" role="contentinfo">
-    <div class="max-w-6xl mx-auto">
-      <div class="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+  <div class="cut" aria-hidden="true">
+    <svg><use href="#ico-scissors"/></svg>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="wrap">
+      <div class="footer-grid">
         <!-- Brand -->
-        <div class="col-span-2 md:col-span-1">
-          <a href="https://trifle.io" class="flex items-center gap-2 mb-4" aria-label="Trifle - Home">
-            <svg
-              viewBox="0 0 72 84"
-              class="h-6 w-6 text-teal-500"
-              xmlns="http://www.w3.org/2000/svg"
-              style="fill-rule:evenodd;clip-rule:evenodd;"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <g>
-                <g transform="matrix(1,0,0,1,0.442181,0.243718)">
-                  <path d="M31.5,2.441C32.41,0.973 33.062,0.441 34.328,0.133C35.938,-0.258 37.812,0.203 40.109,1.551C42.781,3.121 44.746,4.824 46.457,7.059C48.188,9.324 48.191,9.328 49.949,9.789C51.508,10.203 55.07,11.488 56.129,12.023C57.98,12.957 59.535,14.426 60.996,16.617C61.805,17.828 61.949,17.945 63.098,18.285C66.676,19.355 68.371,20.211 69.688,21.609C71.105,23.117 71.52,24.871 71.086,27.527C70.887,28.754 69.461,35.641 68.605,39.504C67.988,42.305 67.125,46.43 66.637,48.918C66.496,49.637 65.625,54.031 64.698,58.684C63.773,63.336 62.844,68.066 62.633,69.188C61.766,73.816 61.184,75.285 59.305,77.625C57.098,80.367 53.527,82.055 48.273,82.836C45.016,83.32 43.504,83.402 37.293,83.445C29.031,83.5 25.117,83.285 21.359,82.578C17.242,81.801 14.508,80.531 12.48,78.457C11.734,77.691 11.434,77.301 10.84,76.352C9.531,74.262 9.191,73.16 8.128,67.578C7.801,65.844 7.367,63.633 7.16,62.66C6.957,61.691 6.012,56.98 5.059,52.195C2.784,40.777 2.594,39.84 1.444,34.504C0.905,32.008 0.375,29.453 0.262,28.832C-0.293,25.77 0.008,24.168 1.418,22.66C2.879,21.09 5.582,19.801 8.984,19.051C9.707,18.891 10.469,18.684 10.672,18.594C11.09,18.41 11.07,18.434 11.984,17.023C13.133,15.25 14.125,14.156 15.531,13.113C17.25,11.84 19.172,10.898 22.293,9.797C25.559,8.645 26.203,8.363 27.125,7.688C28.543,6.645 29.918,4.992 31.5,2.441ZM34.734,6.745C35.085,6.25 35.374,5.622 35.582,4.758C35.642,4.51 36.817,4.538 37.579,5.188C38.595,6.055 38.775,6.146 40.189,7.537C41.072,8.406 41.063,8.663 42.614,10.601C43.985,12.316 44.749,12.811 45.393,13.308C46.28,13.999 47.615,14.101 49.764,14.691C51.299,15.113 53.209,15.944 53.881,16.279C54.552,16.615 55.159,17.202 55.686,17.714C56.073,18.085 56.538,18.716 56.968,19.56C58.136,21.853 58.887,22.126 61.519,22.946C63.828,23.665 65.197,23.828 65.792,24.277C65.952,24.398 63.632,24.709 61.726,25.201C59.468,25.787 54.561,26.193 51.514,26.517C44.788,27.232 39.696,27.33 32.606,27.244C26.172,27.166 24.206,27.315 19.572,27.054C18.458,26.992 9.227,26.125 7.371,25.535C6.559,25.273 5.683,25.054 5.683,25.054C5.683,25.054 8.711,24.248 11.304,23.517C13.336,22.943 14.174,22.668 14.788,22.096C15.344,21.579 16.143,21.105 16.928,19.617C17.814,17.933 17.884,17.679 18.685,16.874C19.814,15.737 20.523,15.249 23.5,14.374C28.055,13.031 29.767,11.527 31.388,10.039C32.485,9.031 33.836,8.014 34.734,6.745ZM36.966,32.393C40.358,32.42 55.253,31.273 58.916,30.863C62.753,30.434 65.952,29.492 65.902,29.784C65.866,30.001 65.332,33.197 64.996,34.904C64.438,37.72 63.254,42.159 63.254,42.159C63.254,42.159 62.357,42.276 60.488,41.743C58.488,41.173 54.915,35.081 52.086,35.097C49.199,35.113 45.938,38.551 43.796,38.648C41.816,38.738 38.558,33.922 36.472,33.895C34.387,33.867 29.347,38.691 24.985,43.37C20.948,47.7 18.168,50.684 15.659,50.376C14.338,50.213 13.783,49.631 9.421,48.619C8.96,48.512 7.428,39.915 7.123,38.458C6.619,36.024 4.879,29.776 4.898,29.752C4.898,29.752 14.403,31.881 19.164,32.039C23.695,32.188 33.764,32.368 36.966,32.393ZM51.768,39.812C53.68,39.816 56.64,45.333 58.792,45.922C61.955,46.788 62.39,46.771 62.39,46.771C62.39,46.771 62.127,48.142 61.66,50.519L60.646,54.754C60.646,54.754 59.789,54.705 59.182,54.3C57.837,53.401 54.638,52.125 53.532,51.498C51.618,50.413 48.266,49.504 46.242,49.345C43.402,49.123 41.191,49.616 37.837,50.69C34.954,51.614 33.852,52.399 31.434,52.954C28.804,53.557 25.944,52.846 25.309,52.662C22.189,51.755 24.074,50.945 28.314,46.258C30.729,43.589 34.162,39.638 36.024,39.584C37.63,39.538 41.474,43.47 43.607,43.444C45.731,43.417 49.622,39.808 51.768,39.812ZM23.993,56.884C26.927,57.485 29.623,57.595 32.211,57.26C34.625,56.948 37.69,55.258 41.236,54.095C43.228,53.441 47.171,53.611 48.72,54.064C51.122,54.767 53.572,56.026 56.297,57.621C58.173,58.72 59.945,59.259 59.945,59.259L59.126,63.698C59.126,63.698 57.441,63.054 56.319,62.559C53.256,61.208 50.066,61.336 47.892,61.89C43.691,62.962 41.873,63.71 38.188,64.952C34.321,66.255 32.594,66.921 29.925,67.705C28.272,68.19 26.087,68.692 23.407,68.997C19.602,69.43 18.697,69.379 17.055,69.166C14.794,68.872 12.426,67.466 12.426,67.466C12.426,67.466 9.719,53.428 9.957,53.456C13.092,53.82 13.177,54.293 15.642,54.841C17.86,55.335 20.597,56.188 23.993,56.884ZM51.557,66.165C57.88,66.668 58.404,68.352 58.404,68.352C58.404,68.352 58.512,70.388 56.584,73.763C56.142,74.537 54.963,75.751 54.271,76.216C53.26,76.891 51.77,77.506 50.285,77.885C45.918,78.998 37.197,79.369 27.236,78.779C24.16,78.599 20.977,77.844 18.607,76.869C14.811,75.306 13.653,72.496 13.653,72.496C13.653,72.496 16.258,73.228 17.004,73.295C18.403,73.421 19.037,73.52 20.954,73.52C23.326,73.52 26.06,73.097 28.169,72.648C31.017,72.041 33.737,71.276 35.728,70.431C37.806,69.549 42.729,67.943 45.969,66.928C47.182,66.548 49.871,66.031 51.557,66.165Z"/>
-                </g>
-                <g transform="matrix(2.779089,0,-0,-7.279669,-18.643586,306.024137)">
-                  <ellipse cx="12.041" cy="36.556" rx="0.898" ry="0.342"/>
-                </g>
-              </g>
-            </svg>
-            <span class="font-semibold">Trifle</span>
+        <div class="footer-brand">
+          <a href="https://trifle.io" aria-label="Trifle - Home">
+            <svg aria-hidden="true"><use href="#trifle-logo"/></svg>
+            <span>Trifle</span>
           </a>
-          <p class="text-sm text-slate-500 dark:text-slate-400">Time-series metrics made simple.</p>
+          <p>Time-series metrics made simple.</p>
+          <div class="barcode" aria-hidden="true"></div>
         </div>
 
         <!-- Products -->
         <div>
-          <h4 class="font-medium text-sm text-slate-900 dark:text-white mb-3">Products</h4>
-          <nav class="space-y-2 text-sm" aria-label="Products">
-            <a href="https://trifle.io/product/app" class="block text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition">Trifle App</a>
-            <a href="https://trifle.io/product/cli" class="block text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition">Trifle CLI</a>
-            <a href="https://trifle.io/product/libs" class="block text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition">Trifle Stats</a>
-            <a href="https://trifle.io/pricing" class="block text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition">Pricing</a>
+          <h4>Products</h4>
+          <nav aria-label="Products">
+            <a href="https://trifle.io/product/app">Trifle App</a>
+            <a href="https://trifle.io/product/cli">Trifle CLI</a>
+            <a href="https://trifle.io/product/libs">Trifle Stats</a>
+            <a href="https://trifle.io/pricing">Pricing</a>
           </nav>
         </div>
 
         <!-- Resources -->
         <div>
-          <h4 class="font-medium text-sm text-slate-900 dark:text-white mb-3">Resources</h4>
-          <nav class="space-y-2 text-sm" aria-label="Resources">
-            <a href="/" class="block text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition">Documentation</a>
-            <a href="https://trifle.io/blog" class="block text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition">Blog</a>
-            <a href="https://trifle.io/why-trifle" class="block text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition">Why Trifle</a>
-            <a href="https://trifle.io/about" class="block text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition">About</a>
+          <h4>Resources</h4>
+          <nav aria-label="Resources">
+            <a href="/">Documentation</a>
+            <a href="https://trifle.io/blog">Blog</a>
+            <a href="https://trifle.io/why-trifle">Why Trifle</a>
+            <a href="https://trifle.io/about">About</a>
           </nav>
         </div>
 
         <!-- Open Source -->
         <div>
-          <h4 class="font-medium text-sm text-slate-900 dark:text-white mb-3">Open Source</h4>
-          <nav class="space-y-2 text-sm" aria-label="Open source">
-            <a href="https://github.com/trifle-io" class="block text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition">GitHub</a>
-            <a href="https://github.com/trifle-io/trifle-stats" class="block text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition">trifle-stats (Ruby)</a>
-            <a href="https://github.com/trifle-io/trifle_stats" class="block text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition">trifle_stats (Elixir)</a>
-            <a href="https://github.com/trifle-io/trifle_stats_go" class="block text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition">trifle_stats_go (Go)</a>
-            <a href="https://github.com/trifle-io/trifle-traces" class="block text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition">trifle-traces</a>
-            <a href="https://github.com/trifle-io/trifle-docs" class="block text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition">trifle-docs</a>
+          <h4>Open Source</h4>
+          <nav aria-label="Open source">
+            <a href="https://github.com/trifle-io">GitHub</a>
+            <a href="https://github.com/trifle-io/trifle-stats">trifle-stats (Ruby)</a>
+            <a href="https://github.com/trifle-io/trifle_stats">trifle_stats (Elixir)</a>
+            <a href="https://github.com/trifle-io/trifle_stats_go">trifle_stats_go (Go)</a>
+            <a href="https://github.com/trifle-io/trifle-traces">trifle-traces</a>
+            <a href="https://github.com/trifle-io/trifle-docs">trifle-docs</a>
           </nav>
         </div>
 
-        <!-- Legal -->
+        <!-- Company -->
         <div>
-          <h4 class="font-medium text-sm text-slate-900 dark:text-white mb-3">Company</h4>
-          <nav class="space-y-2 text-sm" aria-label="Company">
-            <a href="https://app.trifle.io" class="block text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition">Sign In</a>
-            <a href="https://trifle.io/terms" class="block text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition">Terms</a>
-            <a href="https://trifle.io/privacy" class="block text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition">Privacy</a>
+          <h4>Company</h4>
+          <nav aria-label="Company">
+            <a href="https://app.trifle.io">Sign In</a>
+            <a href="https://trifle.io/terms">Terms</a>
+            <a href="https://trifle.io/privacy">Privacy</a>
           </nav>
         </div>
       </div>
 
-      <div class="border-t border-slate-200 dark:border-slate-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-        <div class="text-sm text-slate-500 dark:text-slate-400">
-          &copy; 2026 Trifle, Inc. All rights reserved. Built with <a href="https://github.com/trifle-io/trifle-docs" class="text-teal-600 dark:text-teal-400 hover:underline">Trifle::Docs</a>.
+      <div class="footer-bottom">
+        <div>
+          &copy; 2026 Trifle, Inc. All rights reserved. Built with <a href="https://github.com/trifle-io/trifle-docs">Trifle::Docs</a>.
         </div>
-        <div class="flex items-center gap-4">
-          <a href="https://github.com/trifle-io" class="text-slate-400 hover:text-teal-500 transition" aria-label="GitHub">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-          </a>
-        </div>
+        <a href="https://github.com/trifle-io" class="footer-gh" aria-label="GitHub">
+          <svg aria-hidden="true"><use href="#ico-github"/></svg>
+        </a>
       </div>
     </div>
   </footer>
+
+  <script>
+    (function(){
+      /* mobile sidebar toggle */
+      var btn = document.getElementById('sidebar-btn');
+      var sidebar = document.getElementById('docs-sidebar');
+      var backdrop = document.getElementById('sidebar-backdrop');
+      function setSidebar(open) {
+        document.body.classList.toggle('sidebar-open', open);
+        if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      }
+      if (btn) {
+        btn.addEventListener('click', function(){
+          setSidebar(!document.body.classList.contains('sidebar-open'));
+        });
+      }
+      if (backdrop) {
+        backdrop.addEventListener('click', function(){ setSidebar(false); });
+      }
+      if (sidebar) {
+        sidebar.addEventListener('click', function(e){
+          if (e.target.closest('a')) setSidebar(false);
+        });
+      }
+
+      /* platform-aware kbd hint */
+      var mod = document.getElementById('kbd-mod');
+      if (mod) mod.textContent = navigator.platform.indexOf('Mac') > -1 ? '⌘' : 'Ctrl';
+
+      /* escape blurs the search input */
+      var query = document.getElementById('query');
+      if (query) {
+        query.addEventListener('keydown', function(e){
+          if (e.key === 'Escape') query.blur();
+        });
+      }
+
+      /* copy page as markdown */
+      var copyBtn = document.getElementById('copy-md-btn');
+      if (copyBtn) {
+        var copyIco = copyBtn.querySelector('.copy-ico');
+        var checkIco = copyBtn.querySelector('.check-ico');
+        var label = document.getElementById('copy-md-label');
+        copyBtn.addEventListener('click', function(){
+          fetch(window.location.pathname + '?format=md', { headers: { 'Accept': 'text/markdown' } })
+            .then(function(r){ return r.text(); })
+            .then(function(t){
+              navigator.clipboard.writeText(t);
+              copyIco.classList.add('hidden');
+              checkIco.classList.remove('hidden');
+              label.textContent = 'Copied!';
+              setTimeout(function(){
+                copyIco.classList.remove('hidden');
+                checkIco.classList.add('hidden');
+                label.textContent = 'Copy for LLM';
+              }, 2000);
+            });
+        });
+      }
+
+      /* tab groups (shortcode markup carries inert Alpine attributes;
+         tabs are wired here by DOM order instead) */
+      Array.prototype.forEach.call(document.querySelectorAll('.tab-group'), function(group){
+        var panels = Array.prototype.filter.call(group.children, function(el){
+          return el.classList && el.classList.contains('tab-panel');
+        });
+        if (!panels.length) return;
+        var buttons = group.querySelectorAll(':scope > .tab-nav .tab-link');
+        var select = group.querySelector(':scope > .tab-select select');
+        function activate(idx){
+          panels.forEach(function(p, i){ p.classList.toggle('tab-panel-active', i === idx); });
+          Array.prototype.forEach.call(buttons, function(b, i){ b.classList.toggle('tab-link-active', i === idx); });
+          if (select) select.selectedIndex = idx;
+        }
+        Array.prototype.forEach.call(buttons, function(b, i){
+          b.addEventListener('click', function(){ activate(i); });
+        });
+        if (select) {
+          select.addEventListener('change', function(){ activate(select.selectedIndex); });
+        }
+        group.classList.add('tabs-ready');
+        activate(0);
+      });
+    })();
+  </script>
 </body>
 </html>
