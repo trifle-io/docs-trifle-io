@@ -26,6 +26,6 @@ $ gem install trifle-traces
 
 ## Dependencies
 
-`Trifle::Traces` is framework-agnostic. Rails, Sidekiq, and Rack integrations are optional.
+`Trifle::Traces` has zero runtime dependencies and is framework-agnostic. Rails, Sidekiq, and Rack integrations are optional.
 
-To persist traces you must implement callbacks (see [Callbacks](/trifle-traces/callbacks)).
+To persist traces, configure an index and a data driver (see [Drivers](/trifle-traces/drivers)). Database and storage clients (`mongo`, `aws-sdk-s3`, ...) are supplied by your application — add the ones your drivers need to your Gemfile.

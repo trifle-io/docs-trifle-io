@@ -11,20 +11,21 @@ langs: <linearGradient id="ruby-original-a" gradientUnits="userSpaceOnUse" x1="1
 [![Gem Version](https://badge.fury.io/rb/trifle-traces.svg)](https://rubygems.org/gems/trifle-traces)
 [![Ruby](https://github.com/trifle-io/trifle-traces/workflows/Ruby/badge.svg?branch=main)](https://github.com/trifle-io/trifle-traces)
 
-`Trifle::Traces` is a lightweight tracer that captures messages, return values, and metadata from your code blocks.
+`Trifle::Traces` is a lightweight tracer that captures messages, return values, and metadata from your code blocks and persists them through pluggable drivers.
 
 ## What it does
 
 - Wraps blocks and records their outputs.
 - Adds tags, artifacts, and state to trace lines.
-- Flushes via callbacks to your storage or notification system.
+- Persists trace metadata through an index driver and payloads through a data driver.
+- Finds and searches persisted traces by key segment, tags, and state.
 
 ## Quick example
 
 ```ruby
 Trifle::Traces.tracer = Trifle::Traces::Tracer::Hash.new(
   key: 'jobs/invoice_charge',
-  meta: { job_id: 42 }
+  meta: [42]
 )
 
 result = Trifle::Traces.trace('Charging invoice') do
@@ -38,14 +39,15 @@ Trifle::Traces.tracer.wrapup
 ## What to expect
 
 - `trace` returns the block result.
-- `tracer.data` contains lines with timestamps and state.
-- `wrapup` triggers callbacks (if configured).
+- With drivers configured, the trace persists automatically — look it up with `Trifle::Traces.find` or `Trifle::Traces.search`.
+- Without drivers, `tracer.data` keeps the lines in memory for your callbacks.
 
 ## Next steps
 
 - [Getting Started](/trifle-traces/getting_started)
 - [Configuration](/trifle-traces/configuration)
 - [Usage](/trifle-traces/usage)
+- [Drivers](/trifle-traces/drivers)
 - [Callbacks](/trifle-traces/callbacks)
 - [Middleware](/trifle-traces/middleware)
 - [Guides](/trifle-traces/guides)

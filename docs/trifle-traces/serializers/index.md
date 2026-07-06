@@ -1,7 +1,7 @@
 ---
 title: Serializers
 description: Learn how to serialize blocks in Trifle::Traces.
-nav_order: 8
+nav_order: 9
 ---
 
 # Serializers

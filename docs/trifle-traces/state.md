@@ -1,7 +1,7 @@
 ---
 title: State
 description: Learn how to trace state of a log.
-nav_order: 5
+nav_order: 6
 ---
 
 # State
@@ -29,19 +29,21 @@ Trifle::Traces.fail!
 Trifle::Traces.tracer.wrapup
 ```
 
+The tracer state is stored on the trace record, so you can [search](/trifle-traces/usage#5-read-traces-back) by it: `Trifle::Traces.search(state: :error)`.
+
 ## Ignore
 
-If a trace isn’t worth persisting, mark it as ignored.
+If a trace isn't worth persisting, mark it as ignored.
 
 ```ruby
 Trifle::Traces.ignore!
 ```
 
-In your `:wrapup` callback you can drop ignored traces:
+Drivers handle ignored traces at `wrapup`: a `:live` tracer's already-written index entry and payload are deleted, a `:deferred` tracer simply never writes. If you use callbacks for side effects, skip ignored traces yourself:
 
 ```ruby
 config.on(:wrapup) do |tracer|
   next if tracer.ignore
-  # persist tracer
+  # emit metrics, notify, ...
 end
 ```

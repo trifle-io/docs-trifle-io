@@ -39,6 +39,10 @@ class SessionsController < ApplicationController
   def trace_meta
     [params[:email]]
   end
+
+  def trace_mode
+    :deferred
+  end
 end
 ```
 
@@ -48,3 +52,4 @@ If you don’t override them:
 
 - `trace_key` → `"<controller>/<action>"`
 - `trace_meta` → `[params[:id]]`
+- `trace_mode` → `nil` (falls back to `config.default_mode`)

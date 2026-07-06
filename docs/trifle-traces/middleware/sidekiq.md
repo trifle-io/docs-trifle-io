@@ -10,12 +10,12 @@ nav_order: 1
 
 ## Configuration
 
-A tracer is only created when the job payload includes `tracer_key`.
+A tracer is only created when the job payload includes `tracer_key`. Optionally set `tracer_mode` to control the [write mode](/trifle-traces/drivers#write-modes) for all jobs of the class.
 
 ```ruby
 class DeleteItemIfOld
   include Sidekiq::Worker
-  sidekiq_options tracer_key: 'jobs/item/delete_if_old'
+  sidekiq_options tracer_key: 'jobs/item/delete_if_old', tracer_mode: :deferred
 
   def perform(item_id)
     Trifle::Traces.tag("item:#{item_id}")
@@ -38,3 +38,4 @@ Inside callbacks you can access:
 
 - `tracer.key` → the `tracer_key` value
 - `tracer.meta` → job args (e.g., `[item_id]`)
+- `tracer.mode` → the `tracer_mode` value (defaults to `config.default_mode`)

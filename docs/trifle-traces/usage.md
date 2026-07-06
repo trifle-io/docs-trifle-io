@@ -13,13 +13,15 @@ nav_order: 4
 ```ruby
 Trifle::Traces.tracer = Trifle::Traces::Tracer::Hash.new(
   key: 'jobs/invoice_charge',
-  meta: { job_id: 42 }
+  meta: [42]
 )
 ```
 
 :::callout note "Thread-local storage"
 `Trifle::Traces.tracer` lives in `Thread.current`, so each thread must set its own tracer.
 :::
+
+The tracer accepts an optional `mode:` (`:live` or `:deferred`, defaults to `config.default_mode`) controlling how it persists — see [Drivers](/trifle-traces/drivers#write-modes) — and a `reference:` if you want to supply your own instead of the driver-generated one.
 
 ## 2) Trace lines
 
@@ -66,9 +68,42 @@ Trifle::Traces.artifact('screenshot.png', '/tmp/screenshot.png')
 Trifle::Traces.tracer.wrapup
 ```
 
+## 5) Read traces back
+
+With an index driver configured, look up a single trace by reference:
+
+```ruby
+record = Trifle::Traces.find(reference)
+record.key        #=> "jobs/invoice_charge"
+record.state      #=> :success
+record.tags       #=> ["invoice:42"]
+record.parts      #=> 2
+```
+
+Or search — by key-path segment, tags and state, newest-first, with cursor pagination:
+
+```ruby
+result = Trifle::Traces.search(
+  segment: 'jobs',            # matches jobs, jobs/invoice_charge, ...
+  tags: ['invoice:42'],       # any-match
+  state: :error,
+  limit: 50,
+  cursor: nil                 # pass result[:cursor] to fetch the next page
+)
+result[:traces]  #=> [TraceRecord, ...]
+result[:cursor]  #=> opaque cursor or nil on the last page
+```
+
+Load the payload and artifacts through the data driver:
+
+```ruby
+entries = Trifle::Traces.payload(record)             # all parts, in order
+Trifle::Traces.read_artifact(record, 'screenshot.png')
+```
+
 ## Example output shape
 
-Each line in `tracer.data` looks like:
+Each entry looks like:
 
 ```ruby
 {

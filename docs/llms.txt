@@ -105,17 +105,25 @@ result = searcher.perform
 ```
 
 ### Trifle::Traces (Ruby)
-Purpose: execution tracing with callbacks.
+Purpose: execution tracing with driver-based persistence (index driver for searchable metadata, data driver for payloads).
 Install: `gem "trifle-traces"`
-Key methods: `trace`, `tag`, `artifact`, `tracer=`, `fail!`, `warn!`, `ignore!`.
+Key methods: `trace`, `tag`, `artifact`, `tracer=`, `fail!`, `warn!`, `ignore!`, `find`, `search`, `payload`.
 
 Example:
 ```ruby
+Trifle::Traces.configure do |config|
+  config.index_driver = Trifle::Traces::Driver::Index::Mongo.new(mongo_client)
+  config.data_driver = Trifle::Traces::Driver::Data::S3.new(client: s3, buckets: ["traces"])
+end
+
 Trifle::Traces.tracer = Trifle::Traces::Tracer::Hash.new(key: "jobs/invoice_charge")
 
 Trifle::Traces.trace("Charge invoice") { charge_invoice(42) }
 Trifle::Traces.tag("invoice:42")
 Trifle::Traces.tracer.wrapup
+
+record = Trifle::Traces.find(Trifle::Traces.tracer.reference)
+Trifle::Traces.search(segment: "jobs", state: :error, limit: 50)
 ```
 
 ## Conventions and data model

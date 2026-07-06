@@ -6,6 +6,15 @@ nav_order: 100
 
 # Changelog
 
+### **2.0.0** - *July 6, 2026*
+  - Feature: Driver-based persistence. Trace metadata persists through an index driver (`Mongo`, `Memory`, `Null`) and payloads through a data driver (`S3`, `File`, `Memory`, `Null`).
+  - Feature: Per-tracer write modes: `:live` (default) and `:deferred` (single write at wrapup for high-volume jobs). Configurable via `sidekiq_options tracer_mode:` or the tracer's `mode:` argument.
+  - Feature: Read API: `Trifle::Traces.find`, `.search` (segment/tags/state, newest-first, cursor pagination), `.payload` and `.read_artifact`.
+  - Feature: Retention as data (`retention` days, `expires_at`) mapped to Mongo TTL and S3 lifecycle rules; oversized messages offload to artifacts.
+  - Breaking: `:liftoff` callback return values no longer become `tracer.reference`; references come from the index driver. Callbacks are notification hooks; persistence belongs in drivers.
+  - Breaking: persistence errors surface instead of being swallowed; `bump` failures re-queue data and retry on the next flush (`config.error_handler`).
+  - Fix: serializer fallback no longer crashes when the configured serializer raises.
+
 ### **1.2.0** - *July 7, 2025*
   - Feature: Hash supports nesting of blocks.
 
