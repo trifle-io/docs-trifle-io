@@ -6,6 +6,10 @@ nav_order: 100
 
 # Changelog
 
+### **2.5.0** - *July 14, 2026*
+  - Feat: move to Expressions transponder
+  - Fix: some minor cross-language driver inconsistencies
+
 ### **2.4.1** - *February 25, 2026*
   - Fix: Nocturnal timezone flooring.
 

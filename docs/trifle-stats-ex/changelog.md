@@ -6,6 +6,15 @@ nav_order: 100
 
 # Changelog
 
+### **2.5.0** - *July 14, 2026*
+  - Fix: Ruby-compatible per-field set
+  - Fix: Count-aware system tracking
+  - Fix: Parameterized SQL
+  - Fix: Bulk/Pipeline Reads
+  - Fix: SSL Dependency
+  - Chore: ExDoc
+  - Chore: Version Major/Minor version parity between languages
+
 ### **2.0.0** - *March 2, 2026*
 
   `Trifle.Stats` 1.0.0 was published to the plugin repository in 2023. Since then, no additional versions have been released there up until now.
