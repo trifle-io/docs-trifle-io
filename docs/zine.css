@@ -274,14 +274,11 @@ h2.sec-title{
 /* registration mark */
 .regmark{position:absolute;width:26px;height:26px;color:var(--border);opacity:.4;pointer-events:none}
 
-/* barcode flourish */
+/* barcode flourish — real Code 39, reads *TRIFLE* */
 .barcode{
+  display:block;
   width:118px;height:34px;
-  background:repeating-linear-gradient(90deg,
-    var(--border) 0 2px, transparent 2px 5px,
-    var(--border) 5px 6px, transparent 6px 11px,
-    var(--border) 11px 14px, transparent 14px 17px,
-    var(--border) 17px 18px, transparent 18px 22px);
+  color:var(--border);
   opacity:.75;
 }
 
@@ -506,7 +503,7 @@ code, pre{font-family:var(--font-mono)}
   padding:clamp(3rem,6vw,4.5rem) 0 2.5rem;
 }
 .footer-grid{
-  display:grid;grid-template-columns:1.4fr repeat(4,1fr);
+  display:grid;grid-template-columns:1.4fr repeat(5,1fr);
   gap:2rem;margin-bottom:3rem;
 }
 .footer-brand a{display:inline-flex;align-items:center;gap:.55rem;text-decoration:none;margin-bottom:.9rem}
