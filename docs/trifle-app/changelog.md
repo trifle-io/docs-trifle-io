@@ -6,6 +6,9 @@ nav_order: 100
 
 # Changelog
 
+### **0.16.1** - *July 21, 2026*
+  - feat: System notifications for admins
+
 ### **0.16.0** - *July 4, 2026*
   - feat: improve metric source selection and add caching for billing entitlements.
   - feat: add telemetry around billing access checks and metric fetching.
