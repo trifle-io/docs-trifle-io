@@ -29,6 +29,8 @@ config.buffer_enabled = false
 ```
 :::
 
+The [API driver](/trifle-stats-rb/drivers/api) always bypasses this buffer. Its remote writes are synchronous and never batched or retried.
+
 Gem fallbacks to global configuration if custom configuration is not passed to method. You can do this by creating initializer, or calling it on the beginning of your ruby script.
 
 ## Global configuration

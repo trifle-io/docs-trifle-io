@@ -213,10 +213,14 @@ echo $body;
 Ingest metrics into Trifle (token must have write permission for the selected project source).
 
 :::signature POST /api/v1/metrics
+operation | String | optional | `track` | `track` increments values; `assert` sets absolute values.
 key | String | required |  | Metric key (e.g. `event::signup`).
 at | ISO8601 | required |  | Timestamp of the event.
 values | Map | required |  | Metrics payload. Leaves must be numeric.
+untracked | Boolean | optional | `false` | Store under the shared untracked system key instead of the metric key.
 :::
+
+Requests may gzip the JSON body by sending `Content-Encoding: gzip`. The server applies the project's configured timezone and granularities.
 
 ### Request
 
@@ -255,6 +259,21 @@ curl -X POST "<TRIFLE_APP_URL>/api/v1/metrics" \
       "p95": 420,
       "p99": 900
     }
+  }'
+```
+
+@tab CURL Assert snapshot
+
+```sh
+curl -X POST "<TRIFLE_APP_URL>/api/v1/metrics" \
+  -H "Authorization: Bearer <WRITE_TOKEN>" \
+  -H "X-Trifle-Source-Id: <PROJECT_UUID>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "operation": "assert",
+    "key": "state::orders",
+    "at": "2026-01-24T12:00:00Z",
+    "values": { "pending": 42, "shipped": 18 }
   }'
 ```
 
@@ -428,6 +447,10 @@ echo $body;
 
 :::callout note "Nested values are fine"
 - `values` can be a nested map, but every leaf has to be numeric.
+:::
+
+:::callout warn "Retrying writes"
+The endpoint does not currently provide an idempotency contract. A timed-out request may have committed, so retrying `track` can double-count. Clients should surface `429`, `503`, and `Retry-After` instead of retrying blindly.
 :::
 
 ---

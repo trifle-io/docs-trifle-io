@@ -54,6 +54,8 @@ Trifle.Stats.track("event::uploads", DateTime.utc_now(), %{count: 1}, config)
 - `driver_options` — driver-specific options (see below)
 - `buffer_enabled` / `buffer_duration` / `buffer_size` — buffered write controls
 
+The [API driver](/trifle-stats-ex/drivers/api) ignores these buffer settings and delivers each write synchronously to Trifle Cloud.
+
 ## Driver options
 
 You can pass a map of `driver_options:` to override driver-specific behavior:

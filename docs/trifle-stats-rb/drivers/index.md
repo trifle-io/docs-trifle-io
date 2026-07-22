@@ -8,6 +8,8 @@ nav_order: 5
 
 Driver is a wrapper class that persists and retrieves values from backend. It needs to implement:
 
+Use the [API driver](/trifle-stats-rb/drivers/api) when you want to send metrics directly to a Trifle Cloud project instead of storing them in your own database.
+
 - `inc(keys:, **values)` method increment values for keys
 - `set(keys:, **values)` method set values for keys
 - `ping(key:, **values)` method that sets values for key and updates timestamp
@@ -29,6 +31,7 @@ Not all databases support same functionality. While it is important to keep thes
 | Sqlite   | NO     | YES             | YES                | NO           |
 | Process  | NO     | NO              | NO                 | NO           |
 | Dummy    | WTF    | WTF             | WTF                | WTF          |
+| API      | NO     | NO              | NO                 | NO           |
 
 Features like [`Beam`](./usage/beam) and [`Scan`](./usage/scan) require `joined_identifiers: nil` configuration and while it is not required, you want to expire this data otherwise it will polute your database quickly.
 

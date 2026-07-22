@@ -40,6 +40,8 @@ cfg.BufferAsync = true
 
 ## Buffer lifecycle
 
+The [API driver](/trifle-stats-go/drivers/api) always bypasses the local buffer. Each call waits for its HTTP response.
+
 ```go
 // Flush pending writes immediately.
 _ = cfg.FlushBuffer()

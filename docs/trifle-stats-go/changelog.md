@@ -6,6 +6,9 @@ nav_order: 100
 
 # Changelog
 
+### **2.6.0** - *July 22, 2026*
+  - Feat: synchronous, gzip-compressed Trifle Projects API driver for Track and Assert.
+
 ### **2.5.0** - *July 14, 2026*
   - Feat: Atomic PG upserts
   - Feat: Beam?Scan status ops

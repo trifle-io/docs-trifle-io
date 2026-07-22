@@ -7,6 +7,7 @@ nav_order: 5
 
 Trifle Stats (Go) ships with the following drivers:
 
+- [API](/trifle-stats-go/drivers/api)
 - [SQLite](/trifle-stats-go/drivers/sqlite)
 - [PostgreSQL](/trifle-stats-go/drivers/postgres)
 - [MySQL](/trifle-stats-go/drivers/mysql)
@@ -22,6 +23,7 @@ Trifle Stats (Go) ships with the following drivers:
 | MySQL | Yes | Yes | Yes |
 | Redis | Yes | No | No |
 | MongoDB | Yes | Yes | Yes |
+| API | N/A | N/A | N/A |
 
 ## Timestamp Compatibility
 

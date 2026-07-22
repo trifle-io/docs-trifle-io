@@ -387,6 +387,7 @@ paths:
     post:
       tags: [Metrics]
       summary: Push metrics
+      description: Accepts plain or gzip-compressed JSON. Omitted operation defaults to track.
       requestBody:
         required: true
         content:
@@ -1199,6 +1200,10 @@ components:
       type: object
       required: [key, values, at]
       properties:
+        operation:
+          type: string
+          enum: [track, assert]
+          default: track
         key:
           type: string
           example: event::signup
@@ -1210,6 +1215,9 @@ components:
           type: object
           additionalProperties: true
           example: { count: 1 }
+        untracked:
+          type: boolean
+          default: false
 
     MetricsCreateResponse:
       type: object
