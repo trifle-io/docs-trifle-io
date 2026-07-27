@@ -533,6 +533,7 @@ code, pre{font-family:var(--font-mono)}
 }
 .footer-bottom a{color:var(--teal-ink);font-weight:700;text-decoration:none}
 .footer-bottom a:hover{text-decoration:underline}
+.footer-social{display:flex;align-items:center;gap:1.1rem}
 .footer-gh{color:var(--ink-50)}
 .footer-gh:hover{color:var(--teal-ink)}
 .footer-gh svg{width:20px;height:20px}

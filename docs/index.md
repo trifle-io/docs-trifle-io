@@ -134,3 +134,9 @@ Trifle::Logs.dump("billing", { event: "invoice_charged" })
 ```
 :::
 </div>
+
+---
+
+# Community
+
+Questions, feedback, or stuck on setup? Join the [Trifle Discord server](https://discord.gg/8rfPvNKVnf) and ask directly — it's the fastest way to get help getting on board. You can also open an issue on [GitHub](https://github.com/trifle-io).
