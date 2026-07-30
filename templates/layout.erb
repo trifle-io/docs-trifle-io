@@ -232,7 +232,7 @@
     .side-ico{width:16px;height:16px;flex:none}
     .side-lang{margin-left:auto;width:16px;height:16px;flex:none;opacity:.7}
     .side-link:hover .side-lang{opacity:1}
-    .side-sub{
+    .side-nav ul.side-sub{
       margin:.6rem 0 .2rem .5rem;
       border-left:2px solid var(--hairline);
       display:flex;flex-direction:column;gap:2px;
@@ -258,8 +258,8 @@
       border-left-color:var(--teal);
     }
     /* third level: dashed rail, smaller, quieter */
-    .side-sub--deep{
-      margin:.3rem 0 .35rem .8rem;
+    .side-nav ul.side-sub--deep{
+      margin:.3rem 0 .35rem 1rem;
       border-left:2px dashed var(--hairline);
       gap:1px;
     }
@@ -736,7 +736,7 @@
                           <span><%= child.dig('_meta', 'title') %></span>
                         </a>
 
-                        <% if child_active %>
+                        <% if child_active && child_has_children %>
                           <ul class="side-sub side-sub--deep">
                             <% child.sort_by { |(_key, grandchild)| grandchild.dig('_meta', 'nav_order') || 0 }.each do |(grandchild_key, grandchild)| %>
                               <% next if grandchild_key == '_meta' %>
