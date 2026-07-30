@@ -6,6 +6,9 @@ nav_order: 100
 
 # Changelog
 
+### **0.17.0** - *July 30, 2026*
+  - feat: redesign widget editor for better optimised layout
+
 ### **0.16.4** - *July 30, 2026*
   - fix: tooltips with overflowing annotations
   - fix: text widget with overflowing text
