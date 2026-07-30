@@ -8,6 +8,8 @@ nav_order: 100
 
 `values/5` retrieves time-series values for a given granularity.
 
+The inclusive read axis is generated with the same [Nocturnal bucketing rules](/trifle-stats-ex/drivers/nocturnal) used when values are written.
+
 :::signature Trifle.Stats.values
 key | String | required |  | Metric key.
 from | DateTime | required |  | Start timestamp.

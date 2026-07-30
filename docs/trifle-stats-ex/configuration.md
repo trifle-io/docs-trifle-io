@@ -56,6 +56,8 @@ Trifle.Stats.track("event::uploads", DateTime.utc_now(), %{count: 1}, config)
 
 The [API driver](/trifle-stats-ex/drivers/api) ignores these buffer settings and delivers each write synchronously to Trifle Cloud.
 
+See [Nocturnal](/trifle-stats-ex/drivers/nocturnal) for the elapsed/calendar unit rules, DST behavior, and the configuration required for cross-language storage.
+
 ## Driver options
 
 You can pass a map of `driver_options:` to override driver-specific behavior:

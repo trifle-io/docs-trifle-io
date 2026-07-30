@@ -10,6 +10,8 @@ Driver is a wrapper class that persists and retrieves values from backend. It ne
 
 Use the [API driver](/trifle-stats-rb/drivers/api) when you want to send metrics directly to a Trifle Cloud project instead of storing them in your own database.
 
+Read [Nocturnal](/trifle-stats-rb/drivers/nocturnal) to understand timestamp flooring, timeline generation, daylight saving transitions, and cross-language bucket compatibility.
+
 - `inc(keys:, **values)` method increment values for keys
 - `set(keys:, **values)` method set values for keys
 - `ping(key:, **values)` method that sets values for key and updates timestamp

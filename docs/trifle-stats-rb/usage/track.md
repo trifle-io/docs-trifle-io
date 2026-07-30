@@ -8,6 +8,8 @@ nav_order: 1
 
 Tracking values runs `inc` on the driver. Every time you track a value, it will increment the metrics.
 
+The sample timestamp is floored by [Nocturnal](/trifle-stats-rb/drivers/nocturnal) for every configured granularity.
+
 ## `track(key: String, at: Time, values: Hash, **options)`
 
 Use when you need to track events as they happen.

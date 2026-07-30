@@ -7,6 +7,8 @@ nav_order: 5
 
 Trifle Stats (Go) ships with the following drivers:
 
+Read [Nocturnal](/trifle-stats-go/drivers/nocturnal) to understand timestamp flooring, timeline generation, daylight saving transitions, and cross-language bucket compatibility.
+
 - [API](/trifle-stats-go/drivers/api)
 - [SQLite](/trifle-stats-go/drivers/sqlite)
 - [PostgreSQL](/trifle-stats-go/drivers/postgres)

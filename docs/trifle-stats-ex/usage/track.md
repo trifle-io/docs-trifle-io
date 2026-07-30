@@ -8,6 +8,8 @@ nav_order: 1
 
 `track/4` (or `track/5` with options) increments counters for all configured granularities.
 
+The sample timestamp is floored by [Nocturnal](/trifle-stats-ex/drivers/nocturnal) for every configured granularity.
+
 :::signature Trifle.Stats.track
 key | String | required |  | Metric key (e.g., `"event::logs"`).
 at | DateTime | required |  | Timestamp of the sample.

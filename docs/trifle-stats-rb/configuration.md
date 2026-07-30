@@ -21,6 +21,8 @@ buffer_size | Integer | optional | `256` | Max buffered operations before flush.
 buffer_aggregate | Boolean | optional | `true` | Aggregate increments by key before flush.
 :::
 
+See [Nocturnal](/trifle-stats-rb/drivers/nocturnal) for the elapsed/calendar unit rules, DST behavior, and the configuration required for cross-language storage.
+
 :::callout note "Buffering"
 Disable buffering to write directly to the driver:
 

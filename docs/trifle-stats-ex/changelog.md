@@ -6,6 +6,10 @@ nav_order: 100
 
 # Changelog
 
+### **2.7.0** - *July 30, 2026*
+  - Fix: Nocturnal timelines and bucket boundaries remain aligned across daylight saving transitions.
+  - Docs: document elapsed and calendar granularities plus Ruby, Elixir, and Go compatibility.
+
 ### **2.6.0** - *July 22, 2026*
   - Feat: synchronous, gzip-compressed Trifle Projects API driver for Track and Assert.
 

@@ -8,6 +8,8 @@ nav_order: 3
 
 Getting values runs `get` on the driver and returns a time-bucketed series.
 
+The inclusive read axis is generated with the same [Nocturnal bucketing rules](/trifle-stats-go/drivers/nocturnal) used when values are written.
+
 :::callout note "Use Series"
 If you want aggregators, formatters, or transponders, wrap the result with `SeriesFromResult`.
 :::

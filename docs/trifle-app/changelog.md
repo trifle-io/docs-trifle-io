@@ -6,6 +6,16 @@ nav_order: 100
 
 # Changelog
 
+### **0.16.4** - *July 30, 2026*
+  - fix: tooltips with overflowing annotations
+  - fix: text widget with overflowing text
+
+### **0.16.3** - *July 28, 2026*
+  - feat: widgets in expanded view use dynamic tables
+
+### **0.16.2** - *July 22, 2026*
+  - fix: better API compatibility with stats libs
+
 ### **0.16.1** - *July 21, 2026*
   - feat: System notifications for admins
 

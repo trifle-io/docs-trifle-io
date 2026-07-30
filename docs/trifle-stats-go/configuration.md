@@ -38,6 +38,8 @@ cfg.BufferAsync = true
 - `BufferAggregate` — aggregate repeated write operations before flush (default: `true`).
 - `BufferAsync` — run background flush ticker (default: `true`).
 
+See [Nocturnal](/trifle-stats-go/drivers/nocturnal) for the elapsed/calendar unit rules, DST behavior, and the configuration required for cross-language storage.
+
 ## Buffer lifecycle
 
 The [API driver](/trifle-stats-go/drivers/api) always bypasses the local buffer. Each call waits for its HTTP response.
