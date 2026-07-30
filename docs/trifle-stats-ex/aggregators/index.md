@@ -1,7 +1,7 @@
 ---
 title: Aggregators
 description: Learn how to compute totals from a series.
-nav_order: 8
+nav_order: 9
 ---
 
 # Aggregators

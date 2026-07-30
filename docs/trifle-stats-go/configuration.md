@@ -38,7 +38,7 @@ cfg.BufferAsync = true
 - `BufferAggregate` — aggregate repeated write operations before flush (default: `true`).
 - `BufferAsync` — run background flush ticker (default: `true`).
 
-See [Nocturnal](/trifle-stats-go/drivers/nocturnal) for the elapsed/calendar unit rules, DST behavior, and the configuration required for cross-language storage.
+See [Nocturnal](/trifle-stats-go/nocturnal) for the elapsed/calendar unit rules, DST behavior, and the configuration required for cross-language storage.
 
 ## Buffer lifecycle
 

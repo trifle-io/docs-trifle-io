@@ -1,7 +1,7 @@
 ---
 title: Formatters
 description: Learn how to use Formatters to prepare series for charts.
-nav_order: 9
+nav_order: 10
 ---
 
 # Formatters

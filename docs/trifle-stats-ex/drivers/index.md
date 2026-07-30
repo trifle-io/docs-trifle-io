@@ -8,7 +8,7 @@ nav_order: 5
 
 A driver persists and retrieves values. It must implement:
 
-Read [Nocturnal](/trifle-stats-ex/drivers/nocturnal) to understand timestamp flooring, timeline generation, daylight saving transitions, and cross-language bucket compatibility.
+Read [Nocturnal](/trifle-stats-ex/nocturnal) to understand timestamp flooring, timeline generation, daylight saving transitions, and cross-language bucket compatibility.
 
 - `inc(keys, values)` — increment
 - `set(keys, values)` — set

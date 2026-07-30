@@ -1,7 +1,7 @@
 ---
 title: Nocturnal
 description: How Trifle.Stats floors timestamps, builds timelines, and stays compatible across timezones and languages.
-nav_order: 10
+nav_order: 6
 ---
 
 # Nocturnal

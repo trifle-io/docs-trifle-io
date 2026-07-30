@@ -1,7 +1,7 @@
 ---
 title: Designators
 description: Learn how to classify values into buckets.
-nav_order: 6
+nav_order: 7
 ---
 
 # Designators

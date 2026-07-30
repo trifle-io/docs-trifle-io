@@ -8,7 +8,7 @@ nav_order: 4
 
 Getting values runs `get` on the driver.
 
-The inclusive read axis is generated with the same [Nocturnal bucketing rules](/trifle-stats-rb/drivers/nocturnal) used when values are written.
+The inclusive read axis is generated with the same [Nocturnal bucketing rules](/trifle-stats-rb/nocturnal) used when values are written.
 
 :::callout note "Use Series"
 You can work with values by using [Series](./series) method as well which allows you to perform additional actions on a series of data easily. Values serves as raw accessor where you want to perform further calculations and formattings yourself.
