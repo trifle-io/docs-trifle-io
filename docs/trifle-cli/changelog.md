@@ -6,6 +6,13 @@ nav_order: 100
 
 # Changelog
 
+### **0.9.0** - *August 19, 2026*
+  - Feat: Include Source ID to accept Organization Tokens
+
+### **0.8.0** - *July 14, 2026*
+  - Feat: Upload loal SQLite files to App
+  - Chore: update to latest trifle_stats_go with better Token handling
+
 ### **0.7.0** - *February 15, 2026*
   - Feat: Add Bootstrap endpoints.
   - Feat: Add Database endpoints.

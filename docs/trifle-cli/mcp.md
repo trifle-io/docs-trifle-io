@@ -17,19 +17,26 @@ The Trifle CLI ships an MCP server mode that exposes your Trifle App data to AI 
 :::tabs
 @tab SaaS
 ```sh
-TRIFLE_URL=https://app.trifle.io TRIFLE_TOKEN=<TOKEN> trifle mcp
+TRIFLE_URL=https://app.trifle.io \
+TRIFLE_TOKEN=<ORG_TOKEN> \
+TRIFLE_SOURCE_ID=<SOURCE_ID> \
+trifle mcp
 ```
 
 @tab Self-hosted
 ```sh
-TRIFLE_URL=https://<your-host> TRIFLE_TOKEN=<TOKEN> trifle mcp
+TRIFLE_URL=https://<your-host> \
+TRIFLE_TOKEN=<ORG_TOKEN> \
+TRIFLE_SOURCE_ID=<SOURCE_ID> \
+trifle mcp
 ```
 :::
 
-:::callout warn "Token required"
-- MCP mode does **not** prompt for a token.
-- Pass `--token` or set `TRIFLE_TOKEN`.
-- Bootstrap organization tokens (`TRIFLE_USER_TOKEN`) are for bootstrap commands only (`trifle auth` / `trifle source` / `trifle token`).
+:::callout warn "Token and source required"
+- API-backed MCP mode does **not** prompt for credentials.
+- Pass `--token` and `--source-id`, or set `TRIFLE_TOKEN` and `TRIFLE_SOURCE_ID`.
+- The organization token can be reused across permitted sources; the source ID selects the source for this MCP server process.
+- Local database drivers do not require either API setting.
 :::
 
 :::callout warn "URL scheme matters"
@@ -45,7 +52,8 @@ MCP uses the same configuration as the CLI:
 --config | String | optional |  | YAML config path.
 --source | String | optional |  | Source name from the config file.
 --url | String | optional |  | Trifle base URL (fallback: `TRIFLE_URL`).
---token | String | optional |  | API token (fallback: `TRIFLE_TOKEN`).
+--token | String | required for API |  | Global organization API token (fallback: `TRIFLE_TOKEN` / `auth.user_token`).
+--source-id | String | required for API |  | Source UUID sent as `X-Trifle-Source-Id` (fallback: `TRIFLE_SOURCE_ID` / profile `source_id`).
 --timeout | Duration | optional | `30s` | HTTP timeout.
 :::
 
@@ -66,7 +74,8 @@ MCP uses the same configuration as the CLI:
       "args": ["mcp"],
       "env": {
         "TRIFLE_URL": "http://localhost:3000",
-        "TRIFLE_TOKEN": "<TOKEN>"
+        "TRIFLE_TOKEN": "<ORG_TOKEN>",
+        "TRIFLE_SOURCE_ID": "<SOURCE_ID>"
       }
     }
   }
@@ -89,7 +98,8 @@ Path: use **Settings → Developer → Edit Config** to open the file.
       "args": ["mcp"],
       "env": {
         "TRIFLE_URL": "https://app.trifle.io",
-        "TRIFLE_TOKEN": "<TOKEN>"
+        "TRIFLE_TOKEN": "<ORG_TOKEN>",
+        "TRIFLE_SOURCE_ID": "<SOURCE_ID>"
       }
     }
   }
@@ -107,7 +117,8 @@ File: `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` (per project).
       "args": ["mcp"],
       "env": {
         "TRIFLE_URL": "https://app.trifle.io",
-        "TRIFLE_TOKEN": "<TOKEN>"
+        "TRIFLE_TOKEN": "<ORG_TOKEN>",
+        "TRIFLE_SOURCE_ID": "<SOURCE_ID>"
       }
     }
   }
@@ -125,7 +136,8 @@ File: `cline_mcp_settings.json` (open via **Cline → MCP Servers → Configure 
       "args": ["mcp"],
       "env": {
         "TRIFLE_URL": "https://app.trifle.io",
-        "TRIFLE_TOKEN": "<TOKEN>"
+        "TRIFLE_TOKEN": "<ORG_TOKEN>",
+        "TRIFLE_SOURCE_ID": "<SOURCE_ID>"
       },
       "disabled": false
     }
@@ -144,7 +156,8 @@ File: `.continue/mcpServers/mcp.json` in your workspace.
       "args": ["mcp"],
       "env": {
         "TRIFLE_URL": "https://app.trifle.io",
-        "TRIFLE_TOKEN": "<TOKEN>"
+        "TRIFLE_TOKEN": "<ORG_TOKEN>",
+        "TRIFLE_SOURCE_ID": "<SOURCE_ID>"
       }
     }
   }

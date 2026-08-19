@@ -50,7 +50,7 @@ trifle metrics get \
 
 ## Bootstrap (signup/login + source setup)
 
-Use bootstrap commands to authenticate, create or configure sources, then use the same token with `--source-id` (or `TRIFLE_SOURCE_ID`) for regular `metrics` commands.
+Use bootstrap commands to authenticate, create or configure sources, then reuse the same organization token with `--source-id` (or `TRIFLE_SOURCE_ID`) for source-bound `metrics`, `transponders`, and MCP operations.
 
 ```sh
 # 1) Authenticate
@@ -81,7 +81,7 @@ trifle metrics get \
   --granularity 1h
 ```
 
-`TRIFLE_SOURCE_ID` is required for source-bound API commands.
+`TRIFLE_SOURCE_ID` is required for source-bound API commands. It becomes the `X-Trifle-Source-Id` request header. Changing the source ID does not require changing a token that already has access to both sources.
 
 `--sqlite-file` uploads a local SQLite file.  
 Use `--file-path` only for manual server-side paths.
@@ -198,6 +198,8 @@ Supported commands for local drivers:
 - `metrics setup` (`sqlite`/`postgres`/`mysql`/`mongo`; for `redis` this is a no-op)
 
 ## Metrics
+
+All examples in this section use the `TRIFLE_URL`, `TRIFLE_TOKEN`, and `TRIFLE_SOURCE_ID` environment variables from the quick start. When using flags instead, pass both `--token` and `--source-id`. Local-driver commands are exempt.
 
 ### List keys
 
@@ -514,6 +516,8 @@ Sample output:
 ```
 
 ## Transponders
+
+Transponder commands are source-bound API operations. Set `TRIFLE_TOKEN` and `TRIFLE_SOURCE_ID`, select an API profile containing `source_id`, or pass `--token` and `--source-id` explicitly.
 
 ### List transponders
 

@@ -61,13 +61,13 @@ LOGIN_JSON="$($CLI auth login \
   --password "$PASSWORD" \
   --token-name "E2E Login Token")"
 echo "$LOGIN_JSON"
-USER_TOKEN="$(printf '%s' "$LOGIN_JSON" | jq -r '.data.token.value')"
+ORG_TOKEN="$(printf '%s' "$LOGIN_JSON" | jq -r '.data.token.value')"
 
 echo "== Create database source (SQLite) =="
 DB_JSON="$($CLI source create database \
   --config "$CONFIG" \
   --url "$BASE_URL" \
-  --user-token "$USER_TOKEN" \
+  --user-token "$ORG_TOKEN" \
   --display-name "E2E SQLite ${STAMP}" \
   --driver sqlite \
   --sqlite-file "$DB_FILE")"
@@ -78,7 +78,7 @@ echo "== Setup database source =="
 $CLI source setup \
   --config "$CONFIG" \
   --url "$BASE_URL" \
-  --user-token "$USER_TOKEN" \
+  --user-token "$ORG_TOKEN" \
   --id "$DB_ID"
 
 echo "== Create project source =="
@@ -86,26 +86,26 @@ if [ -n "$PROJECT_CLUSTER_ID" ]; then
   PROJECT_JSON="$($CLI source create project \
     --config "$CONFIG" \
     --url "$BASE_URL" \
-    --user-token "$USER_TOKEN" \
+    --user-token "$ORG_TOKEN" \
     --name "E2E Project ${STAMP}" \
     --project-cluster-id "$PROJECT_CLUSTER_ID")"
 else
   PROJECT_JSON="$($CLI source create project \
     --config "$CONFIG" \
     --url "$BASE_URL" \
-    --user-token "$USER_TOKEN" \
+    --user-token "$ORG_TOKEN" \
     --name "E2E Project ${STAMP}")"
 fi
 echo "$PROJECT_JSON"
 PROJECT_ID="$(printf '%s' "$PROJECT_JSON" | jq -r '.data.source.id')"
 
 echo "== List sources =="
-$CLI source list --config "$CONFIG" --url "$BASE_URL" --user-token "$USER_TOKEN"
+$CLI source list --config "$CONFIG" --url "$BASE_URL" --user-token "$ORG_TOKEN"
 
 echo "== Fetch metrics (expected empty) =="
 $CLI metrics get \
   --url "$BASE_URL" \
-  --token "$USER_TOKEN" \
+  --token "$ORG_TOKEN" \
   --source-id "$DB_ID" \
   --key event::signup \
   --from 2026-01-01T00:00:00Z \
@@ -114,7 +114,7 @@ $CLI metrics get \
 
 $CLI metrics get \
   --url "$BASE_URL" \
-  --token "$USER_TOKEN" \
+  --token "$ORG_TOKEN" \
   --source-id "$PROJECT_ID" \
   --key event::signup \
   --from 2026-01-01T00:00:00Z \
@@ -129,7 +129,7 @@ Use `--file-path` only when you want Trifle to reference an existing server-side
 
 ## Store sample data (project source)
 
-Use the same organization token and scope each call with `--source-id`.
+Use the same organization token and scope each call with `--source-id`. The token is global; the header selects the project or database for that request.
 
 ```sh
 BASE_URL=https://app.trifle.io
