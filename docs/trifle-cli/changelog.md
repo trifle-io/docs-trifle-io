@@ -13,7 +13,7 @@ nav_order: 100
   - Feat: Upload loal SQLite files to App
   - Chore: update to latest trifle_stats_go with better Token handling
 
-### **0.7.0** - *February 15, 2026*
+### **0.7.0** - *March 1, 2026*
   - Feat: Add Bootstrap endpoints.
   - Feat: Add Database endpoints.
   - Feat: Add Source endpoints.
