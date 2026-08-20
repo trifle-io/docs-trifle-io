@@ -8,4 +8,4 @@ nav_order: 91
 
 Using `Trifle::Traces` does't take much. Especially when integrating with middleware. Browsing your logs or executions is completely in your hands and you may come up with some pretty interesting ideas. 
 
-If you would like to be featured here, please send me an email to jozef@trifle.io.
+If you use Trifle::Traces and want to share what you built, [join the Trifle Discord](https://discord.gg/8rfPvNKVnf).

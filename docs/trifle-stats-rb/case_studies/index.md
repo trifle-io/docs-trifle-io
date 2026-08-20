@@ -1,11 +1,17 @@
 ---
-title: Case Studies
-description: Learn how others use Trifle::Stats to their advantage.
+title: Ruby Case Studies
+description: See how Ruby teams use Trifle::Stats to monitor high-volume background work and business operations.
 nav_order: 91
 ---
 
-# Case Studies
+# Ruby Case Studies
 
-Using `Trifle::Stats` is not complicated. Most of the work comes down to building your own dashboards. On this page you can see some usecases that showcase why and how others are using `Trifle::Stats` for.
+These production stories show how Ruby teams use `Trifle::Stats` to turn application events into operational signals. The examples cover metric design, useful aggregation windows, and the dashboards built on top of the resulting series.
 
-If you would like to be featured here, please send me an email to jozef@trifle.io.
+## DropBot: monitoring product calculations
+
+DropBot uses `Trifle::Stats` to observe source-data refreshes, queue events, and the product calculations they trigger. Hourly and daily series make spikes and long-term data-quality changes visible across tens of millions of calculations.
+
+[Read the DropBot case study](./case_studies/dropbot)
+
+If your Ruby application uses Trifle and you want to share what you built, [join the Trifle Discord](https://discord.gg/8rfPvNKVnf).
