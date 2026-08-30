@@ -77,22 +77,45 @@ record = Trifle::Traces.find(reference)
 record.key        #=> "jobs/invoice_charge"
 record.state      #=> :success
 record.tags       #=> ["invoice:42"]
+record.duration   #=> 5321 (integer milliseconds)
+record.counters   #=> {
+                  #     states: { success: 8, warning: 1, error: 0, debug: 2 },
+                  #     types: { text: 7, head: 1, raw: 2, media: 1 },
+                  #     max_level: 2
+                  #   }
 record.parts      #=> 2
 ```
 
-Or search — by key-path segment, tags and state, newest-first, with cursor pagination:
+Or search by key-path segment, tags, state, start time and minimum duration:
 
 ```ruby
 result = Trifle::Traces.search(
-  segment: 'jobs',            # matches jobs, jobs/invoice_charge, ...
-  tags: ['invoice:42'],       # any-match
+  segment: 'jobs',
+  tags: {
+    any: ['invoice:42', 'invoice:43'],
+    all: ['billing']
+  },
   state: :error,
+  from: Time.utc(2026, 8, 30),
+  to: Time.utc(2026, 8, 31),
+  duration_min: 5_000,
   limit: 50,
-  cursor: nil                 # pass result[:cursor] to fetch the next page
+  cursor: nil # pass result[:cursor] to fetch the next page
 )
 result[:traces]  #=> [TraceRecord, ...]
 result[:cursor]  #=> opaque cursor or nil on the last page
 ```
+
+All supplied filters are combined. `segment` matches one of the materialized
+key prefixes, so `'jobs'` matches `jobs/invoice_charge` without a regular
+expression. Tag groups mean `(invoice:42 OR invoice:43) AND billing`; empty
+groups are ignored. Scalar and array tag shorthand are not supported.
+
+Time filtering selects traces that started in the half-open interval
+`first_at >= from` and `first_at < to`. `duration_min` is inclusive and uses
+milliseconds. Results sort by `first_at` descending and then reference
+descending, making the opaque cursor deterministic even when traces share a
+start timestamp.
 
 Load the payload and artifacts through the data driver:
 

@@ -8,7 +8,7 @@ nav_order: 5
 
 `Trifle::Traces` persists traces through two pluggable drivers, each with its own responsibility:
 
-- **[Index drivers](/trifle-traces/drivers/index)** store one searchable metadata entry per trace — key, segments, tags, state, timestamps, retention — and answer `find`/`search`. This is the small, hot dataset your trace browser queries.
+- **[Index drivers](/trifle-traces/drivers/index)** store one searchable metadata entry per trace — key, segments, tags, state, duration, counters, timestamps, retention — and answer `find`/`search`. This is the small, hot dataset your trace browser queries.
 - **[Data drivers](/trifle-traces/drivers/data)** store the trace payload — the actual trace lines, as numbered parts, plus named artifacts. This is the large, append-heavy dataset that is only read when someone opens a single trace.
 
 Configure one of each and the gem handles the whole lifecycle for you — creating the entry, flushing payload parts as the trace runs, finalizing on `wrapup`, and deleting ignored traces. Without configured drivers nothing persists and trace data stays on the tracer for your [callbacks](/trifle-traces/callbacks).
@@ -48,7 +48,22 @@ or pass `mode: :deferred` to the tracer constructor. `config.default_mode` sets 
 
 ## TraceRecord
 
-Drivers exchange `Trifle::Traces::TraceRecord` value objects with these fields: `reference`, `key`, `state`, `tags`, `meta`, `context`, `length`, `parts`, `first_at`, `last_at`, `retention`, `expires_at`, `bucket_id`. `record.segments` derives cumulative key-path prefixes (`"a/b/c"` → `["a", "a/b", "a/b/c"]`) used for prefix search.
+Drivers exchange `Trifle::Traces::TraceRecord` value objects with these fields: `reference`, `key`, `state`, `tags`, `meta`, `context`, `duration`, `counters`, `length`, `parts`, `first_at`, `last_at`, `retention`, `expires_at`, `bucket_id`. `record.segments` derives cumulative key-path prefixes (`"a/b/c"` → `["a", "a/b", "a/b/c"]`) used for prefix search.
+
+`duration` is elapsed monotonic time in integer milliseconds. `counters`
+summarizes successfully persisted payload entries:
+
+```ruby
+{
+  states: { success: 0, warning: 0, error: 0, debug: 0 },
+  types: { text: 0, head: 0, raw: 0, media: 0 },
+  max_level: 0
+}
+```
+
+Entries are counted after their payload part writes successfully, so a retry
+does not increment them twice. Oversized entries that are offloaded count as
+`media`, matching the persisted payload.
 
 ## Retention
 

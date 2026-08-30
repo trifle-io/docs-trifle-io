@@ -6,7 +6,7 @@ nav_order: 2
 
 # Memory (index driver)
 
-Memory index driver keeps trace entries in the current process. It implements the full contract — including `find` and `search` with cursor pagination — and exists for tests and development. Nothing survives a restart, and nothing is shared between processes.
+Memory index driver keeps trace entries in the current process. It implements the full contract — including structured tag groups, start-time and duration filters, and stable `first_at` / reference cursor pagination — and exists for tests and development. Nothing survives a restart, and nothing is shared between processes.
 
 ```ruby
 Trifle::Traces.configure do |config|

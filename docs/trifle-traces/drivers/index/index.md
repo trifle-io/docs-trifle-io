@@ -26,19 +26,32 @@ Every driver declares this via `capabilities`. The dispatcher validates them at 
 
 ## What gets stored
 
-Each entry carries the [TraceRecord](/trifle-traces/drivers#tracerecord) fields: `reference`, `key`, `segments`, `tags`, `state`, `meta`, `context` (your extracted fields), `length`, `parts`, `first_at`, `last_at`, `retention`, `expires_at` and `bucket_id`. How they map to the backend (document fields, columns) is each driver's choice.
+Each entry carries the [TraceRecord](/trifle-traces/drivers#tracerecord) fields: `reference`, `key`, `segments`, `tags`, `state`, `meta`, `context` (stored metadata), `duration`, `counters`, `length`, `parts`, `first_at`, `last_at`, `retention`, `expires_at` and `bucket_id`. How they map to the backend (document fields, columns) is each driver's choice.
 
 ## The search contract
 
 Search is deliberately narrow so it stays fast at high volume:
 
-- `segment` — key-path prefix match (`'jobs'` matches `jobs` and `jobs/import/...`), any-match over a small array.
-- `tags` — any-match.
+- `segment` — exact match against a materialized key-path prefix (`'jobs'` matches `jobs` and `jobs/import/...`).
+- `tags` — `{ any: [...], all: [...] }`; any values are ORed, all values are ANDed, and the groups are ANDed together.
 - `state` — exact match.
-- Results are newest-first only, paginated with an opaque `cursor`, no counts.
+- `from` / `to` — trace start time, inclusive lower bound and exclusive upper bound.
+- `duration_min` — inclusive minimum duration in integer milliseconds.
+- Results are ordered by `first_at DESC, reference DESC`, paginated with an opaque cursor, with no count query.
+
+All supplied filters are combined. Empty tag groups are ignored. `context`
+remains retrievable metadata but is not part of the search contract.
 
 ```ruby
-Trifle::Traces.search(segment: 'jobs/import', tags: ['tenant:42'], state: :error, limit: 50)
+Trifle::Traces.search(
+  segment: 'jobs/import',
+  tags: { any: ['tenant:42', 'tenant:43'], all: ['failed'] },
+  state: :error,
+  from: Time.utc(2026, 8, 30),
+  to: Time.utc(2026, 8, 31),
+  duration_min: 5_000,
+  limit: 50
+)
 #=> { traces: [TraceRecord, ...], cursor: "..." }
 ```
 
@@ -48,10 +61,10 @@ An index driver is duck-typed and implements:
 
 - `generate_reference` — returns a `String` reference. Must be I/O-free and time-sortable (lexicographic order equals chronological order); this is what makes `:deferred` mode possible.
 - `create(record)` — insert the entry. In `:deferred` mode this is the only index write and `record.state` is already final.
-- `update(record)` — persist the mutable fields (`state`, `tags`, `context`, `length`, `parts`, `last_at`, `expires_at`). Optional; declare via `capabilities`.
+- `update(record)` — persist the mutable fields (`state`, `tags`, `context`, `duration`, `counters`, `length`, `parts`, `last_at`, `expires_at`). Optional; declare via `capabilities`.
 - `delete(reference)` — remove the entry (used by `ignore!` in `:live` mode). Optional.
 - `find(reference)` — return a `TraceRecord` or `nil`.
-- `search(segment:, tags:, state:, limit:, cursor:)` — return `{ traces: [...], cursor: String | nil }`.
+- `search(segment:, tags:, state:, from:, to:, duration_min:, limit:, cursor:)` — return `{ traces: [...], cursor: String | nil }`.
 - `capabilities` — return `{ update:, delete:, search:, ttl: }` where `ttl` is `:native`, `:cleanup` (driver provides `cleanup!` for cron) or `:none`.
 - `self.setup!(...)` — create indexes; run once.
 

@@ -18,7 +18,8 @@ langs: <linearGradient id="ruby-original-a" gradientUnits="userSpaceOnUse" x1="1
 - Wraps blocks and records their outputs.
 - Adds tags, artifacts, and state to trace lines.
 - Persists trace metadata through an index driver and payloads through a data driver.
-- Finds and searches persisted traces by key segment, tags, and state.
+- Tracks trace duration and persisted-entry counters alongside searchable metadata.
+- Finds and searches persisted traces by key segment, structured tag groups, state, start time, and minimum duration.
 
 ## Quick example
 

@@ -123,8 +123,21 @@ Trifle::Traces.tag("invoice:42")
 Trifle::Traces.tracer.wrapup
 
 record = Trifle::Traces.find(Trifle::Traces.tracer.reference)
-Trifle::Traces.search(segment: "jobs", state: :error, limit: 50)
+Trifle::Traces.search(
+  segment: "jobs",
+  tags: { any: ["invoice:42", "invoice:43"], all: ["failed"] },
+  state: :error,
+  from: Time.utc(2026, 8, 30),
+  to: Time.utc(2026, 8, 31),
+  duration_min: 5_000,
+  limit: 50
+)
 ```
+
+Trace records include monotonic `duration` in integer milliseconds and
+persisted-entry `counters`. Search combines all filters, uses an inclusive
+`from`, exclusive `to`, inclusive `duration_min`, and paginates newest-first
+with an opaque `(first_at, reference)` cursor.
 
 ## Conventions and data model
 - Metric keys are strings like `event::signup` or `service.latency`.

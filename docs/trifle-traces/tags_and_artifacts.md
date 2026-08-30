@@ -16,10 +16,24 @@ Trifle::Traces.tag('billing')
 ## Searching by tags
 
 ```ruby
-Trifle::Traces.search(tags: ['invoice:42'])
+Trifle::Traces.search(tags: { any: ['invoice:42', 'invoice:43'] })
 ```
 
-Tags use any-match: a trace matches when it carries at least one of the given tags.
+Use `any` when at least one tag must match, `all` when every tag must match, or
+combine them:
+
+```ruby
+Trifle::Traces.search(
+  tags: {
+    any: ['invoice:42', 'invoice:43'],
+    all: ['billing', 'failed']
+  }
+)
+```
+
+This means `(invoice:42 OR invoice:43) AND billing AND failed`. Empty groups
+are ignored. Search accepts only the structured hash; `tags: 'invoice:42'` and
+`tags: ['invoice:42']` are not supported.
 
 # Artifacts
 
