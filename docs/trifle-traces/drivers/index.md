@@ -26,7 +26,7 @@ Database and storage clients are always injected — `trifle-traces` has zero ru
 
 ## Why two drivers?
 
-Metadata and payload have opposite storage profiles. Metadata is small, queried by many dimensions, and benefits from a database with indexes. Payload is large, written once per flush, read rarely, and benefits from cheap object or file storage. Splitting them lets each live where it is cheapest and fastest — for example Mongo for the index and S3 for the payload.
+Metadata and payload have opposite storage profiles. Metadata is small, queried by many dimensions, and benefits from a database with indexes. Payload is large, written once per flush, read rarely, and benefits from cheap object or file storage. Splitting them lets each live where it is cheapest and fastest — for example Postgres or Mongo for the index and S3 for the payload.
 
 ## Write modes
 
@@ -67,7 +67,7 @@ does not increment them twice. Oversized entries that are offloaded count as
 
 ## Retention
 
-Retention travels as data on every record — `retention` (days) plus a computed `expires_at`. Each driver maps it to whatever its backend does best: the Mongo index driver relies on a native TTL index, the S3 data driver expires payloads with one bucket lifecycle rule per retention class, the File driver ships a `cleanup!` method for cron.
+Retention travels as data on every record — `retention` (days) plus a computed `expires_at`. Each driver maps it to whatever its backend does best: the Mongo index driver relies on a native TTL index, the Postgres index driver and File data driver provide `cleanup!` methods for scheduled jobs, and the S3 data driver expires payloads with one bucket lifecycle rule per retention class.
 
 Resolve retention per trace in configuration:
 

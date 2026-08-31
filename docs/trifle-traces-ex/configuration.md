@@ -52,6 +52,18 @@ config = Trifle.Traces.Configuration.new(
 Callbacks are notification hooks and their return values are ignored.
 Persistence completes before the callback runs.
 
+For a production application that already uses Ecto and PostgreSQL, reuse its
+Repo as the index queryable:
+
+```elixir
+Trifle.Traces.configure(
+  index_driver: Trifle.Traces.Driver.Index.Postgres.new(MyApp.Repo)
+)
+```
+
+See [Postgres Index](/trifle-traces-ex/drivers/postgres) for one-time schema
+setup and retention cleanup.
+
 ```elixir
 Trifle.Traces.configure(
   context: fn tracer ->

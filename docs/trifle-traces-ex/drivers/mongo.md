@@ -1,7 +1,7 @@
 ---
 title: Mongo Index
 description: Configure searchable trace metadata in MongoDB.
-nav_order: 1
+nav_order: 2
 ---
 
 # Mongo Index

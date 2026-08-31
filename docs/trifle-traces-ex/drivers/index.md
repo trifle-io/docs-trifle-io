@@ -13,7 +13,7 @@ Trifle.Traces separates storage into two contracts:
 
 ```elixir
 Trifle.Traces.configure(
-  index_driver: Trifle.Traces.Driver.Index.Mongo.new(mongo),
+  index_driver: Trifle.Traces.Driver.Index.Postgres.new(MyApp.Repo),
   data_driver: Trifle.Traces.Driver.Data.S3.new(
     buckets: ["traces-a", "traces-b"],
     gzip: true
@@ -21,8 +21,8 @@ Trifle.Traces.configure(
 )
 ```
 
-Available index drivers are Mongo, Memory, and Null. Available data drivers are
-S3, File, Memory, and Null.
+Available index drivers are Postgres, Mongo, Memory, and Null. Available data
+drivers are S3, File, Memory, and Null.
 
 ## Write modes
 
@@ -49,5 +49,6 @@ Implement `Trifle.Traces.Driver.Index` or `Trifle.Traces.Driver.Data` and pass a
 driver struct in configuration. Keep search semantics identical across index
 backends rather than adding backend-specific filters.
 
+- [Postgres index](/trifle-traces-ex/drivers/postgres)
 - [Mongo index](/trifle-traces-ex/drivers/mongo)
 - [File and S3 data](/trifle-traces-ex/drivers/data)

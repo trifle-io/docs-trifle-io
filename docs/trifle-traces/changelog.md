@@ -7,7 +7,8 @@ nav_order: 100
 # Changelog
 
 ### **2.0.0.rc1** - *Unreleased*
-  - Feature: Driver-based persistence. Trace metadata persists through an index driver (`Mongo`, `Memory`, `Null`) and payloads through a data driver (`S3`, `File`, `Memory`, `Null`).
+  - Feature: Driver-based persistence. Trace metadata persists through an index driver (`Postgres`, `Mongo`, `Memory`, `Null`) and payloads through a data driver (`S3`, `File`, `Memory`, `Null`).
+  - Feature: PostgreSQL index driver with a Ruby/Elixir-compatible JSONB schema, indexed search, stable cursor pagination, and scheduled retention cleanup.
   - Feature: Per-tracer write modes: `:live` (default) and `:deferred` (single write at wrapup for high-volume jobs). Configurable via `sidekiq_options tracer_mode:` or the tracer's `mode:` argument.
   - Feature: Read API: `Trifle::Traces.find`, `.search` (segment, structured tag groups, state, start-time range, minimum duration, stable newest-first cursor pagination), `.payload` and `.read_artifact`.
   - Feature: Trace records track monotonic `duration` in integer milliseconds plus persisted-entry counters by state/type and maximum nesting level.

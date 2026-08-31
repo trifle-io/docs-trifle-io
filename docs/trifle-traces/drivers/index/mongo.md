@@ -1,7 +1,7 @@
 ---
 title: Mongo
 description: Learn in depth about the Mongo index driver implementation.
-nav_order: 1
+nav_order: 2
 ---
 
 # Mongo (index driver)

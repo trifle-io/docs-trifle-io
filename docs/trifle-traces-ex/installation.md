@@ -33,6 +33,7 @@ The core requires Elixir 1.15 or newer. Its mandatory runtime dependencies are
 Add only what your application uses:
 
 ```elixir
+{:postgrex, "~> 0.17"}         # Postgres index (often already present via Ecto SQL)
 {:mongodb_driver, "~> 1.2.0"} # Mongo index
 {:ex_aws, "~> 2.5"}           # S3 data
 {:ex_aws_s3, "~> 2.5"}

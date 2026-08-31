@@ -12,7 +12,8 @@ It captures the complete flow of a request, job, or integration and can persist
 the searchable metadata separately from the larger trace payload.
 
 It is data-compatible with [Trifle::Traces for Ruby](/trifle-traces): both
-implementations can share Mongo index records and File or S3 payloads.
+implementations can share PostgreSQL or Mongo index records and File or S3
+payloads.
 
 ## What it does
 

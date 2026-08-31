@@ -10,6 +10,7 @@ An index driver stores one metadata entry per trace and answers `find`/`search`.
 
 ## Available drivers
 
+- [Postgres](/trifle-traces/drivers/index/postgres) — PostgreSQL JSONB table shared with the Elixir implementation.
 - [Mongo](/trifle-traces/drivers/index/mongo) — MongoDB collection with compound search indexes and TTL-based retention.
 - [Memory](/trifle-traces/drivers/index/memory) — in-process, for tests and development.
 - [Null](/trifle-traces/drivers/index/null) — generates references, persists nothing (the default).
@@ -18,6 +19,7 @@ An index driver stores one metadata entry per trace and answers `find`/`search`.
 
 | Driver | update | delete | search | ttl |
 |--------|--------|--------|--------|-----|
+| Postgres | YES  | YES    | YES    | cleanup |
 | Mongo  | YES    | YES    | YES    | native |
 | Memory | YES    | YES    | YES    | none |
 | Null   | YES    | YES    | NO     | none |
