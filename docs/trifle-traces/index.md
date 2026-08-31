@@ -13,6 +13,9 @@ langs: <linearGradient id="ruby-original-a" gradientUnits="userSpaceOnUse" x1="1
 
 `Trifle::Traces` is a lightweight tracer that captures messages, return values, and metadata from your code blocks and persists them through pluggable drivers.
 
+Using Elixir? See [Trifle.Traces](/trifle-traces-ex), which shares the same
+2.0 Mongo and File/S3 persistence format.
+
 ## What it does
 
 - Wraps blocks and records their outputs.

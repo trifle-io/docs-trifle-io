@@ -6,7 +6,7 @@ nav_order: 100
 
 # Changelog
 
-### **2.0.0** - *July 6, 2026*
+### **2.0.0.rc1** - *Unreleased*
   - Feature: Driver-based persistence. Trace metadata persists through an index driver (`Mongo`, `Memory`, `Null`) and payloads through a data driver (`S3`, `File`, `Memory`, `Null`).
   - Feature: Per-tracer write modes: `:live` (default) and `:deferred` (single write at wrapup for high-volume jobs). Configurable via `sidekiq_options tracer_mode:` or the tracer's `mode:` argument.
   - Feature: Read API: `Trifle::Traces.find`, `.search` (segment, structured tag groups, state, start-time range, minimum duration, stable newest-first cursor pagination), `.payload` and `.read_artifact`.
